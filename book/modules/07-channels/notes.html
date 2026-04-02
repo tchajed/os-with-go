@@ -1,0 +1,1118 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>7. Channels and Select - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-7-channels-and-select-60-min"><a class="header" href="#module-7-channels-and-select-60-min">Module 7: Channels and Select (60 min)</a></h1>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>Channels are Go’s primary communication primitive, implementing Hoare’s
+Communicating Sequential Processes (CSP) model. Under the hood, a channel is a
+mutex-protected circular buffer with embedded wait queues. The <code>select</code>
+statement multiplexes across multiple channels using a carefully designed
+algorithm that prevents deadlocks and ensures fairness.</p>
+<p>This module examines the runtime implementation of channels and select in detail,
+studying the data structures, synchronization invariants, and the multi-pass
+select algorithm.</p>
+<hr>
+<h2 id="1-channel-invariants"><a class="header" href="#1-channel-invariants">1. Channel Invariants</a></h2>
+<p>The channel implementation maintains a key structural invariant, documented at
+the top of <code>chan.go</code>:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 9-18
+
+// Invariants:
+//  At least one of c.sendq and c.recvq is empty,
+//  except for the case of an unbuffered channel with a single goroutine
+//  blocked on it for both sending and receiving using a select statement,
+//  in which case the length of c.sendq and c.recvq is limited only by the
+//  size of the select statement.
+//
+// For buffered channels, also:
+//  c.qcount &gt; 0 implies that c.recvq is empty.
+//  c.qcount &lt; c.dataqsiz implies that c.sendq is empty.
+</code></pre>
+<p>These invariants encode a fundamental property: if there is data in the buffer,
+no goroutine should be blocked waiting to receive; if the buffer is not full, no
+goroutine should be blocked waiting to send. The only exception is select
+statements on unbuffered channels, where a single goroutine might appear on both
+queues simultaneously.</p>
+<p><strong>OS connection:</strong> These invariants are analogous to the monitor invariants in
+classical synchronization – they define the legal states of the shared data
+structure and constrain when threads (goroutines) may block.</p>
+<hr>
+<h2 id="2-the-hchan-struct-channel-internals"><a class="header" href="#2-the-hchan-struct-channel-internals">2. The hchan Struct: Channel Internals</a></h2>
+<p>Every channel in Go is represented at runtime by an <code>hchan</code> struct:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 34-55
+
+type hchan struct {
+    qcount   uint           // total data in the queue
+    dataqsiz uint           // size of the circular queue
+    buf      unsafe.Pointer // points to an array of dataqsiz elements
+    elemsize uint16
+    closed   uint32
+    timer    *timer // timer feeding this chan
+    elemtype *_type // element type
+    sendx    uint   // send index
+    recvx    uint   // receive index
+    recvq    waitq  // list of recv waiters
+    sendq    waitq  // list of send waiters
+    bubble   *synctestBubble
+
+    // lock protects all fields in hchan, as well as several
+    // fields in sudogs blocked on this channel.
+    //
+    // Do not change another G's status while holding this lock
+    // (in particular, do not ready a G), as this can deadlock
+    // with stack shrinking.
+    lock mutex
+}
+</code></pre>
+<h3 id="field-by-field-analysis"><a class="header" href="#field-by-field-analysis">Field-by-field analysis</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>qcount</code></td><td>Number of elements currently in the buffer.</td></tr>
+<tr><td><code>dataqsiz</code></td><td>Capacity of the buffer (0 for unbuffered channels).</td></tr>
+<tr><td><code>buf</code></td><td>Pointer to the circular buffer array.</td></tr>
+<tr><td><code>elemsize</code></td><td>Size of each element in bytes.</td></tr>
+<tr><td><code>closed</code></td><td>Non-zero if the channel has been closed.</td></tr>
+<tr><td><code>elemtype</code></td><td>Type descriptor for elements (used by GC and <code>typedmemmove</code>).</td></tr>
+<tr><td><code>sendx</code></td><td>Next index for writing into the buffer (producer cursor).</td></tr>
+<tr><td><code>recvx</code></td><td>Next index for reading from the buffer (consumer cursor).</td></tr>
+<tr><td><code>recvq</code></td><td>Doubly-linked list of goroutines waiting to receive.</td></tr>
+<tr><td><code>sendq</code></td><td>Doubly-linked list of goroutines waiting to send.</td></tr>
+<tr><td><code>lock</code></td><td>Mutex protecting all mutable fields.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <code>sendx</code> and <code>recvx</code> indices implement a standard circular buffer: they
+advance through the buffer array and wrap to 0 when they reach <code>dataqsiz</code>. The
+channel is full when <code>qcount == dataqsiz</code> and empty when <code>qcount == 0</code>.</p>
+<p><strong>Important design note:</strong> The comment on <code>lock</code> warns against readying a
+goroutine while holding the channel lock, because <code>goready</code> can trigger stack
+shrinking, and stack shrinking also needs to acquire channel locks – creating a
+potential deadlock cycle. This is a concrete example of lock ordering constraints
+in the runtime.</p>
+<hr>
+<h2 id="3-the-waitq-and-sudog-structs"><a class="header" href="#3-the-waitq-and-sudog-structs">3. The waitq and sudog Structs</a></h2>
+<h3 id="waitq"><a class="header" href="#waitq">waitq</a></h3>
+<p>The wait queue is a simple doubly-linked list:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 57-60
+
+type waitq struct {
+    first *sudog
+    last  *sudog
+}
+</code></pre>
+<h3 id="sudog-pseudo-g"><a class="header" href="#sudog-pseudo-g">sudog (pseudo-g)</a></h3>
+<p>A <code>sudog</code> represents a goroutine waiting on a synchronization object. The name
+stands for “pseudo-g” – it is a proxy for a <code>g</code> (goroutine) in a wait list:</p>
+<pre><code class="language-go">// src/runtime/runtime2.go, lines 396-448
+
+// sudog (pseudo-g) represents a g in a wait list, such as for sending/receiving
+// on a channel.
+//
+// sudog is necessary because the g &lt;-&gt; synchronization object relation
+// is many-to-many. A g can be on many wait lists, so there may be
+// many sudogs for one g; and many gs may be waiting on the same
+// synchronization object, so there may be many sudogs for one object.
+//
+// sudogs are allocated from a special pool. Use acquireSudog and
+// releaseSudog to allocate and free them.
+type sudog struct {
+    // The following fields are protected by the hchan.lock of the
+    // channel this sudog is blocking on. shrinkstack depends on
+    // this for sudogs involved in channel ops.
+
+    g *g
+
+    next *sudog
+    prev *sudog
+
+    elem maybeTraceablePtr // data element (may point to stack)
+
+    // The following fields are never accessed concurrently.
+    // For channels, waitlink is only accessed by g.
+    // For semaphores, all fields (including the ones above)
+    // are only accessed when holding a semaRoot lock.
+
+    acquiretime int64
+    releasetime int64
+    ticket      uint32
+
+    // isSelect indicates g is participating in a select, so
+    // g.selectDone must be CAS'd to win the wake-up race.
+    isSelect bool
+
+    // success indicates whether communication over channel c
+    // succeeded. It is true if the goroutine was awoken because a
+    // value was delivered over channel c, and false if awoken
+    // because c was closed.
+    success bool
+
+    waiters uint16
+
+    parent   *sudog             // semaRoot binary tree
+    waitlink *sudog             // g.waiting list or semaRoot
+    waittail *sudog             // semaRoot
+    c        maybeTraceableChan // channel
+}
+</code></pre>
+<h3 id="why-sudogs-exist"><a class="header" href="#why-sudogs-exist">Why sudogs exist</a></h3>
+<p>A goroutine blocked in a <code>select</code> statement may be waiting on <em>multiple</em>
+channels simultaneously. A single <code>g</code> struct cannot appear in multiple wait
+queues, so the runtime allocates a separate <code>sudog</code> for each channel case. This
+is the “many-to-many” relationship the comment describes.</p>
+<p>Key fields for channel operations:</p>
+<ul>
+<li><strong><code>g</code></strong>: Points back to the goroutine this sudog represents.</li>
+<li><strong><code>next</code>/<code>prev</code></strong>: Links for the channel’s <code>waitq</code> linked list.</li>
+<li><strong><code>elem</code></strong>: Pointer to the data element being sent or received. May point into the goroutine’s stack.</li>
+<li><strong><code>isSelect</code></strong>: If true, waking this sudog requires a CAS on <code>g.selectDone</code> to handle the race where multiple channels become ready simultaneously.</li>
+<li><strong><code>success</code></strong>: Indicates whether the channel operation completed normally (<code>true</code>) or the channel was closed (<code>false</code>).</li>
+<li><strong><code>waitlink</code></strong>: Used by <code>select</code> to chain all of a goroutine’s sudogs together for cleanup.</li>
+</ul>
+<p><strong>OS connection:</strong> The sudog pool is analogous to how OS kernels pre-allocate
+wait queue entries rather than embedding them in thread structures, allowing a
+thread to wait on multiple events simultaneously (cf. Linux <code>poll</code>/<code>epoll</code>
+implementation).</p>
+<hr>
+<h2 id="4-makechan-channel-creation"><a class="header" href="#4-makechan-channel-creation">4. makechan: Channel Creation</a></h2>
+<p>The <code>makechan</code> function is called by the compiler when it encounters <code>make(chan T, size)</code>:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 75-125
+
+func makechan(t *chantype, size int) *hchan {
+    elem := t.Elem
+
+    // compiler checks this but be safe.
+    if elem.Size_ &gt;= 1&lt;&lt;16 {
+        throw("makechan: invalid channel element type")
+    }
+    if hchanSize%maxAlign != 0 || elem.Align_ &gt; maxAlign {
+        throw("makechan: bad alignment")
+    }
+
+    mem, overflow := math.MulUintptr(elem.Size_, uintptr(size))
+    if overflow || mem &gt; maxAlloc-hchanSize || size &lt; 0 {
+        panic(plainError("makechan: size out of range"))
+    }
+
+    // Hchan does not contain pointers interesting for GC when elements
+    // stored in buf do not contain pointers.
+    // buf points into the same allocation, elemtype is persistent.
+    // SudoG's are referenced from their owning thread so they can't be collected.
+    var c *hchan
+    switch {
+    case mem == 0:
+        // Queue or element size is zero.
+        c = (*hchan)(mallocgc(hchanSize, nil, true))
+        // Race detector uses this location for synchronization.
+        c.buf = c.raceaddr()
+    case !elem.Pointers():
+        // Elements do not contain pointers.
+        // Allocate hchan and buf in one call.
+        c = (*hchan)(mallocgc(hchanSize+mem, nil, true))
+        c.buf = add(unsafe.Pointer(c), hchanSize)
+    default:
+        // Elements contain pointers.
+        c = new(hchan)
+        c.buf = mallocgc(mem, elem, true)
+    }
+
+    c.elemsize = uint16(elem.Size_)
+    c.elemtype = elem
+    c.dataqsiz = uint(size)
+    lockInit(&amp;c.lock, lockRankHchan)
+
+    if debugChan {
+        print("makechan: chan=", c, "; elemsize=", elem.Size_, "; dataqsiz=", size, "\n")
+    }
+    return c
+}
+</code></pre>
+<h3 id="three-allocation-strategies"><a class="header" href="#three-allocation-strategies">Three allocation strategies</a></h3>
+<ol>
+<li>
+<p><strong>Unbuffered or zero-size elements (<code>mem == 0</code>)</strong>: Only the <code>hchan</code> struct
+itself is allocated. No buffer is needed.</p>
+</li>
+<li>
+<p><strong>Pointer-free elements (<code>!elem.Pointers()</code>)</strong>: The <code>hchan</code> struct and the
+buffer are allocated in a <em>single</em> <code>mallocgc</code> call. The buffer is placed
+immediately after the struct in memory (<code>c.buf = add(unsafe.Pointer(c), hchanSize)</code>). This is an optimization: the GC doesn’t need to scan the
+buffer, so a single non-pointer allocation suffices.</p>
+</li>
+<li>
+<p><strong>Pointer-containing elements (default)</strong>: Two separate allocations are
+needed. The buffer must be allocated with type information (<code>mallocgc(mem, elem, true)</code>) so the GC can scan it for pointers.</p>
+</li>
+</ol>
+<p><strong>OS connection:</strong> This is a nice example of how a runtime can cooperate with
+its garbage collector by choosing different allocation strategies based on type
+information – something impossible with a C-style malloc that has no type
+awareness.</p>
+<hr>
+<h2 id="5-chansend-sending-on-a-channel"><a class="header" href="#5-chansend-sending-on-a-channel">5. chansend: Sending on a Channel</a></h2>
+<p>The <code>chansend</code> function is the heart of the send operation (<code>c &lt;- x</code>):</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 176-183
+
+func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
+    if c == nil {
+        if !block {
+            return false
+        }
+        gopark(nil, nil, waitReasonChanSendNilChan, traceBlockForever, 2)
+        throw("unreachable")
+    }
+</code></pre>
+<p>Sending on a nil channel parks the goroutine forever. This is by design: it
+allows <code>select</code> statements to disable cases by setting channel variables to nil.</p>
+<h3 id="phase-1-non-blocking-fast-path-no-lock"><a class="header" href="#phase-1-non-blocking-fast-path-no-lock">Phase 1: Non-blocking fast path (no lock)</a></h3>
+<pre><code class="language-go">// src/runtime/chan.go, lines 197-214
+
+    // Fast path: check for failed non-blocking operation without acquiring the lock.
+    //
+    // After observing that the channel is not closed, we observe that the channel is
+    // not ready for sending. Each of these observations is a single word-sized read
+    // (first c.closed and second full()).
+    // Because a closed channel cannot transition from 'ready for sending' to
+    // 'not ready for sending', even if the channel is closed between the two
+    // observations, they imply a moment between the two when the channel was both
+    // not yet closed and not ready for sending. We behave as if we observed the
+    // channel at that moment, and report that the send cannot proceed.
+    if !block &amp;&amp; c.closed == 0 &amp;&amp; full(c) {
+        return false
+    }
+</code></pre>
+<p>This is a lock-free fast path for non-blocking sends (used by <code>select</code> with a
+<code>default</code> case). The comment explains a subtle linearizability argument: even
+though the two reads (<code>c.closed</code> and <code>full(c)</code>) are not atomic together, the
+monotonicity of <code>closed</code> (once closed, always closed) guarantees correctness.</p>
+<h3 id="phase-2-direct-send-to-waiting-receiver"><a class="header" href="#phase-2-direct-send-to-waiting-receiver">Phase 2: Direct send to waiting receiver</a></h3>
+<pre><code class="language-go">// src/runtime/chan.go, lines 222-233
+
+    lock(&amp;c.lock)
+
+    if c.closed != 0 {
+        unlock(&amp;c.lock)
+        panic(plainError("send on closed channel"))
+    }
+
+    if sg := c.recvq.dequeue(); sg != nil {
+        // Found a waiting receiver. We pass the value we want to send
+        // directly to the receiver, bypassing the channel buffer (if any).
+        send(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+        return true
+    }
+</code></pre>
+<p>If a receiver is already waiting, the send copies the value <em>directly</em> to the
+receiver’s stack, bypassing the channel buffer entirely. This is an important
+optimization: even on a buffered channel, if a receiver is blocked, the data
+goes straight to the receiver without first going into the buffer and then back
+out.</p>
+<h3 id="phase-3-buffered-send"><a class="header" href="#phase-3-buffered-send">Phase 3: Buffered send</a></h3>
+<pre><code class="language-go">// src/runtime/chan.go, lines 236-249
+
+    if c.qcount &lt; c.dataqsiz {
+        // Space is available in the channel buffer. Enqueue the element to send.
+        qp := chanbuf(c, c.sendx)
+        typedmemmove(c.elemtype, qp, ep)
+        c.sendx++
+        if c.sendx == c.dataqsiz {
+            c.sendx = 0
+        }
+        c.qcount++
+        unlock(&amp;c.lock)
+        return true
+    }
+</code></pre>
+<p>Standard circular buffer enqueue: copy the element to the <code>sendx</code> slot, advance
+the index (wrapping at <code>dataqsiz</code>), increment the count.</p>
+<h3 id="phase-4-blocking"><a class="header" href="#phase-4-blocking">Phase 4: Blocking</a></h3>
+<pre><code class="language-go">// src/runtime/chan.go, lines 257-283
+
+    // Block on the channel. Some receiver will complete our operation for us.
+    gp := getg()
+    mysg := acquireSudog()
+    mysg.releasetime = 0
+    if t0 != 0 {
+        mysg.releasetime = -1
+    }
+    // No stack splits between assigning elem and enqueuing mysg
+    // on gp.waiting where copystack can find it.
+    mysg.elem.set(ep)
+    mysg.waitlink = nil
+    mysg.g = gp
+    mysg.isSelect = false
+    mysg.c.set(c)
+    gp.waiting = mysg
+    gp.param = nil
+    c.sendq.enqueue(mysg)
+    // Signal to anyone trying to shrink our stack that we're about
+    // to park on a channel. The window between when this G's status
+    // changes and when we set gp.activeStackChans is not safe for
+    // stack shrinking.
+    gp.parkingOnChan.Store(true)
+    reason := waitReasonChanSend
+    if c.bubble != nil {
+        reason = waitReasonSynctestChanSend
+    }
+    gopark(chanparkcommit, unsafe.Pointer(&amp;c.lock), reason, traceBlockChanSend, 2)
+</code></pre>
+<p>When the buffer is full (or the channel is unbuffered and no receiver is
+waiting), the goroutine parks itself:</p>
+<ol>
+<li>Acquires a <code>sudog</code> from the pool.</li>
+<li>Records the element pointer (<code>mysg.elem</code>) so the eventual receiver can copy the data.</li>
+<li>Enqueues the <code>sudog</code> on <code>c.sendq</code>.</li>
+<li>Calls <code>gopark</code> to suspend the goroutine, releasing the channel lock atomically.</li>
+</ol>
+<p>When a receiver eventually arrives, it will dequeue this <code>sudog</code>, copy the data
+from <code>mysg.elem</code>, and call <code>goready</code> to wake the sender.</p>
+<p><strong>Critical subtlety:</strong> The comment about “No stack splits” is important. Between
+setting <code>mysg.elem</code> (which points into the sender’s stack) and enqueuing the
+sudog where <code>copystack</code> can find it, a stack copy would invalidate the pointer.
+The runtime prevents this by ensuring no function calls that could trigger stack
+growth occur in this window.</p>
+<hr>
+<h2 id="6-chanrecv-receiving-from-a-channel"><a class="header" href="#6-chanrecv-receiving-from-a-channel">6. chanrecv: Receiving from a Channel</a></h2>
+<p>The receive operation (<code>&lt;-c</code>) is implemented by <code>chanrecv</code>, which is symmetric
+to <code>chansend</code>:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 518-524
+
+// chanrecv receives on channel c and writes the received data to ep.
+// ep may be nil, in which case received data is ignored.
+// If block == false and no elements are available, returns (false, false).
+// Otherwise, if c is closed, zeros *ep and returns (true, false).
+// Otherwise, fills in *ep with an element and returns (true, true).
+// A non-nil ep must point to the heap or the caller's stack.
+func chanrecv(c *hchan, ep unsafe.Pointer, block bool) (selected, received bool) {
+</code></pre>
+<h3 id="receive-phases"><a class="header" href="#receive-phases">Receive phases</a></h3>
+<p>The function follows the same structure as <code>chansend</code>:</p>
+<ol>
+<li>
+<p><strong>Nil channel check</strong> (line 532-538): Receiving from a nil channel parks forever.</p>
+</li>
+<li>
+<p><strong>Non-blocking fast path</strong> (lines 548-579): Check <code>empty(c)</code> without the lock.
+If the channel is closed and empty, return the zero value.</p>
+</li>
+<li>
+<p><strong>Direct receive from waiting sender</strong> (lines 600-609):</p>
+<pre><code class="language-go">if sg := c.sendq.dequeue(); sg != nil {
+    // Found a waiting sender. If buffer is size 0, receive value
+    // directly from sender. Otherwise, receive from head of queue
+    // and add sender's value to the tail of the queue (both map to
+    // the same buffer slot because the queue is full).
+    recv(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+    return true, true
+}
+</code></pre>
+<p>For unbuffered channels, data is copied directly from sender to receiver.
+For buffered channels (which must be full if a sender is blocked), the
+receiver takes from the buffer head, and the sender’s value fills the buffer
+tail.</p>
+</li>
+<li>
+<p><strong>Buffered receive</strong> (lines 612-629): Standard circular buffer dequeue.</p>
+<pre><code class="language-go">if c.qcount &gt; 0 {
+    // Receive directly from queue
+    qp := chanbuf(c, c.recvx)
+    if ep != nil {
+        typedmemmove(c.elemtype, ep, qp)
+    }
+    typedmemclr(c.elemtype, qp)
+    c.recvx++
+    if c.recvx == c.dataqsiz {
+        c.recvx = 0
+    }
+    c.qcount--
+    unlock(&amp;c.lock)
+    return true, true
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Blocking</strong> (lines 636-685): Acquire a sudog, enqueue on <code>c.recvq</code>, park.</p>
+</li>
+</ol>
+<hr>
+<h2 id="7-closechan-closing-a-channel"><a class="header" href="#7-closechan-closing-a-channel">7. closechan: Closing a Channel</a></h2>
+<p>Closing a channel wakes up <em>all</em> waiters:</p>
+<pre><code class="language-go">// src/runtime/chan.go, lines 414-486
+
+func closechan(c *hchan) {
+    if c == nil {
+        panic(plainError("close of nil channel"))
+    }
+
+    lock(&amp;c.lock)
+    if c.closed != 0 {
+        unlock(&amp;c.lock)
+        panic(plainError("close of closed channel"))
+    }
+
+    c.closed = 1
+
+    var glist gList
+
+    // release all readers
+    for {
+        sg := c.recvq.dequeue()
+        if sg == nil {
+            break
+        }
+        if sg.elem.get() != nil {
+            typedmemclr(c.elemtype, sg.elem.get())
+            sg.elem.set(nil)
+        }
+        gp := sg.g
+        gp.param = unsafe.Pointer(sg)
+        sg.success = false
+        glist.push(gp)
+    }
+
+    // release all writers (they will panic)
+    for {
+        sg := c.sendq.dequeue()
+        if sg == nil {
+            break
+        }
+        sg.elem.set(nil)
+        gp := sg.g
+        gp.param = unsafe.Pointer(sg)
+        sg.success = false
+        glist.push(gp)
+    }
+    unlock(&amp;c.lock)
+
+    // Ready all Gs now that we've dropped the channel lock.
+    for !glist.empty() {
+        gp := glist.pop()
+        gp.schedlink = 0
+        goready(gp, 3)
+    }
+}
+</code></pre>
+<h3 id="key-points"><a class="header" href="#key-points">Key points</a></h3>
+<ol>
+<li>
+<p><strong>Double close panics</strong>: The runtime checks <code>c.closed != 0</code> under the lock.</p>
+</li>
+<li>
+<p><strong>Receivers get zero values</strong>: The <code>typedmemclr</code> call zeros out the receive
+buffer. The <code>success = false</code> flag tells receivers they woke due to close,
+not data delivery.</p>
+</li>
+<li>
+<p><strong>Senders will panic</strong>: Woken senders see <code>success == false</code>, check
+<code>c.closed</code>, and panic with “send on closed channel.”</p>
+</li>
+<li>
+<p><strong>Lock ordering</strong>: All goroutines are collected into <code>glist</code> <em>before</em>
+releasing the lock, then readied <em>after</em> the lock is released. This follows
+the constraint from the <code>hchan.lock</code> comment: “do not ready a G while holding
+this lock.”</p>
+</li>
+</ol>
+<p><strong>OS connection:</strong> This wake-all pattern is analogous to <code>pthread_cond_broadcast</code>
+or the Linux <code>FUTEX_WAKE</code> with a large wake count. Closing a channel is
+effectively a broadcast signal to all waiters.</p>
+<hr>
+<h2 id="8-the-select-statement-implementation"><a class="header" href="#8-the-select-statement-implementation">8. The select Statement Implementation</a></h2>
+<h3 id="the-scase-struct"><a class="header" href="#the-scase-struct">The scase struct</a></h3>
+<p>Each case in a <code>select</code> statement is described by an <code>scase</code>:</p>
+<pre><code class="language-go">// src/runtime/select.go, lines 20-23
+
+type scase struct {
+    c    *hchan         // chan
+    elem unsafe.Pointer // data element
+}
+</code></pre>
+<p>This is remarkably simple: just a channel pointer and a pointer to the data
+element. The direction (send vs. receive) is implicit in the position: send
+cases come first, followed by receive cases.</p>
+<h3 id="compiler-optimizations"><a class="header" href="#compiler-optimizations">Compiler optimizations</a></h3>
+<p>Before <code>selectgo</code> is called, the compiler has already optimized away simple
+cases:</p>
+<ul>
+<li><code>select {}</code> (no cases): compiled to a direct <code>block()</code> call (parks forever).</li>
+<li><code>select</code> with one case + default: compiled to a non-blocking <code>chansend</code>/<code>chanrecv</code>.</li>
+<li><code>select</code> with one case (no default): compiled to a blocking <code>chansend</code>/<code>chanrecv</code>.</li>
+</ul>
+<p>Only multi-case selects (or degenerate cases where channels have been niled out)
+reach <code>selectgo</code>.</p>
+<h3 id="selectgo-the-multi-pass-algorithm"><a class="header" href="#selectgo-the-multi-pass-algorithm">selectgo: The Multi-Pass Algorithm</a></h3>
+<pre><code class="language-go">// src/runtime/select.go, lines 107-122
+
+// selectgo implements the select statement.
+//
+// cas0 points to an array of type [ncases]scase, and order0 points to
+// an array of type [2*ncases]uint16 where ncases must be &lt;= 65536.
+// Both reside on the goroutine's stack (regardless of any escaping in
+// selectgo).
+//
+// selectgo returns the index of the chosen scase, which matches the
+// ordinal position of its respective select{recv,send,default} call.
+// Also, if the chosen scase was a receive operation, it reports whether
+// a value was received.
+func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int,
+              block bool) (int, bool) {
+</code></pre>
+<p>The function takes a flat array of cases and an array that is split into two
+halves: <code>pollorder</code> (randomized iteration order) and <code>lockorder</code> (sorted by
+channel address for lock acquisition).</p>
+<h4 id="step-1-generate-randomized-poll-order"><a class="header" href="#step-1-generate-randomized-poll-order">Step 1: Generate randomized poll order</a></h4>
+<pre><code class="language-go">// src/runtime/select.go, lines 167-197
+
+    // generate permuted order
+    norder := 0
+    for i := range scases {
+        cas := &amp;scases[i]
+
+        // Omit cases without channels from the poll and lock orders.
+        if cas.c == nil {
+            cas.elem = nil // allow GC
+            continue
+        }
+
+        // ...
+
+        j := cheaprandn(uint32(norder + 1))
+        pollorder[norder] = pollorder[j]
+        pollorder[j] = uint16(i)
+        norder++
+    }
+</code></pre>
+<p>Cases with nil channels are skipped. The remaining cases are shuffled using a
+Fisher-Yates shuffle (<code>cheaprandn</code>). This randomization is critical for
+<strong>fairness</strong>: without it, earlier cases in the source code would always have
+priority, potentially starving later cases.</p>
+<h4 id="step-2-sort-lock-order-by-channel-address"><a class="header" href="#step-2-sort-lock-order-by-channel-address">Step 2: Sort lock order by channel address</a></h4>
+<pre><code class="language-go">// src/runtime/select.go, lines 206-240
+
+    // sort the cases by Hchan address to get the locking order.
+    // simple heap sort, to guarantee n log n time and constant stack footprint.
+    for i := range lockorder {
+        j := i
+        // Start with the pollorder to permute cases on the same channel.
+        c := scases[pollorder[i]].c
+        for j &gt; 0 &amp;&amp; scases[lockorder[(j-1)/2]].c.sortkey() &lt; c.sortkey() {
+            k := (j - 1) / 2
+            lockorder[j] = lockorder[k]
+            j = k
+        }
+        lockorder[j] = pollorder[i]
+    }
+</code></pre>
+<p>A heap sort orders cases by channel address. This establishes a <strong>global lock
+ordering</strong> that prevents deadlocks when two goroutines running select statements
+try to lock overlapping sets of channels.</p>
+<p><strong>OS connection:</strong> This is a textbook application of lock ordering to prevent
+deadlock – the same technique used in database systems (two-phase locking with
+ordered resources) and OS kernels (e.g., Linux’s lock ordering for inodes).</p>
+<h4 id="pass-1-try-all-cases-without-blocking-fast-path"><a class="header" href="#pass-1-try-all-cases-without-blocking-fast-path">Pass 1: Try all cases without blocking (fast path)</a></h4>
+<pre><code class="language-go">// src/runtime/select.go, lines 264-301
+
+    // pass 1 - look for something already waiting
+    var casi int
+    var cas *scase
+    var caseSuccess bool
+    for _, casei := range pollorder {
+        casi = int(casei)
+        cas = &amp;scases[casi]
+        c = cas.c
+
+        if casi &gt;= nsends {
+            sg = c.sendq.dequeue()
+            if sg != nil {
+                goto recv
+            }
+            if c.qcount &gt; 0 {
+                goto bufrecv
+            }
+            if c.closed != 0 {
+                goto rclose
+            }
+        } else {
+            if c.closed != 0 {
+                goto sclose
+            }
+            sg = c.recvq.dequeue()
+            if sg != nil {
+                goto send
+            }
+            if c.qcount &lt; c.dataqsiz {
+                goto bufsend
+            }
+        }
+    }
+
+    if !block {
+        selunlock(scases, lockorder)
+        casi = -1
+        goto retc
+    }
+</code></pre>
+<p>After locking all channels (in lock order), the function iterates through cases
+in the <em>randomized</em> poll order. For each case:</p>
+<ul>
+<li><strong>Receive cases</strong> (<code>casi &gt;= nsends</code>): Check for a waiting sender, buffered
+data, or a closed channel.</li>
+<li><strong>Send cases</strong>: Check for close (panic), a waiting receiver, or buffer space.</li>
+</ul>
+<p>If any case can proceed immediately, the function jumps to the appropriate
+handler, which performs the operation, unlocks all channels, and returns.</p>
+<p>If no case is ready and there’s a default clause (<code>!block</code>), unlock and return -1.</p>
+<h4 id="pass-2-enqueue-on-all-channels-and-park"><a class="header" href="#pass-2-enqueue-on-all-channels-and-park">Pass 2: Enqueue on all channels and park</a></h4>
+<pre><code class="language-go">// src/runtime/select.go, lines 309-351
+
+    // pass 2 - enqueue on all chans
+    nextp = &amp;gp.waiting
+    for _, casei := range lockorder {
+        casi = int(casei)
+        cas = &amp;scases[casi]
+        c = cas.c
+        sg := acquireSudog()
+        sg.g = gp
+        sg.isSelect = true
+        // No stack splits between assigning elem and enqueuing
+        // sg on gp.waiting where copystack can find it.
+        sg.elem.set(cas.elem)
+        sg.c.set(c)
+        // Construct waiting list in lock order.
+        *nextp = sg
+        nextp = &amp;sg.waitlink
+
+        if casi &lt; nsends {
+            c.sendq.enqueue(sg)
+        } else {
+            c.recvq.enqueue(sg)
+        }
+    }
+
+    // wait for someone to wake us up
+    gp.param = nil
+    gp.parkingOnChan.Store(true)
+    gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
+</code></pre>
+<p>If no case is immediately ready, the goroutine enqueues a sudog on <em>every</em>
+channel and parks itself. Key details:</p>
+<ul>
+<li>Each sudog has <code>isSelect = true</code>, signaling that waking this goroutine requires
+a CAS on <code>g.selectDone</code>.</li>
+<li>The sudogs are chained together via <code>waitlink</code> in lock order, so pass 3 can
+efficiently clean up.</li>
+</ul>
+<h4 id="pass-3-dequeue-from-losers-and-return-winner"><a class="header" href="#pass-3-dequeue-from-losers-and-return-winner">Pass 3: Dequeue from losers and return winner</a></h4>
+<pre><code class="language-go">// src/runtime/select.go, lines 354-401
+
+    sellock(scases, lockorder)
+
+    gp.selectDone.Store(0)
+    sg = (*sudog)(gp.param)
+    gp.param = nil
+
+    // pass 3 - dequeue from unsuccessful chans
+    // otherwise they stack up on quiet channels
+    // record the successful case, if any.
+    casi = -1
+    cas = nil
+    caseSuccess = false
+    sglist = gp.waiting
+    // Clear all elem before unlinking from gp.waiting.
+    for sg1 := gp.waiting; sg1 != nil; sg1 = sg1.waitlink {
+        sg1.isSelect = false
+        sg1.elem.set(nil)
+        sg1.c.set(nil)
+    }
+    gp.waiting = nil
+
+    for _, casei := range lockorder {
+        k = &amp;scases[casei]
+        if sg == sglist {
+            // sg has already been dequeued by the G that woke us up.
+            casi = int(casei)
+            cas = k
+            caseSuccess = sglist.success
+        } else {
+            c = k.c
+            if int(casei) &lt; nsends {
+                c.sendq.dequeueSudoG(sglist)
+            } else {
+                c.recvq.dequeueSudoG(sglist)
+            }
+        }
+        sgnext = sglist.waitlink
+        sglist.waitlink = nil
+        releaseSudog(sglist)
+        sglist = sgnext
+    }
+</code></pre>
+<p>When the goroutine wakes up:</p>
+<ol>
+<li>Re-lock all channels (in lock order).</li>
+<li>Find which sudog caused the wakeup (<code>gp.param</code>).</li>
+<li>Walk through all sudogs: the winning sudog has already been dequeued by the
+channel that woke us; dequeue the losers from their respective channels.</li>
+<li>Release all sudogs back to the pool.</li>
+</ol>
+<h3 id="sellock-and-selunlock-careful-lock-management"><a class="header" href="#sellock-and-selunlock-careful-lock-management">sellock and selunlock: Careful lock management</a></h3>
+<pre><code class="language-go">// src/runtime/select.go, lines 34-43
+
+func sellock(scases []scase, lockorder []uint16) {
+    var c *hchan
+    for _, o := range lockorder {
+        c0 := scases[o].c
+        if c0 != c {
+            c = c0
+            lock(&amp;c.lock)
+        }
+    }
+}
+</code></pre>
+<p>The <code>sellock</code> function locks channels in sorted order, skipping duplicates (when
+the same channel appears in multiple cases). <code>selunlock</code> unlocks in reverse
+order, also skipping duplicates.</p>
+<hr>
+<h2 id="9-summary-channel-operation-decision-tree"><a class="header" href="#9-summary-channel-operation-decision-tree">9. Summary: Channel Operation Decision Tree</a></h2>
+<h3 id="send-c---x"><a class="header" href="#send-c---x">Send (<code>c &lt;- x</code>)</a></h3>
+<pre><code>c == nil?  --&gt; park forever
+           |
+           v
+[lock channel]
+           |
+c.closed?  --&gt; panic("send on closed channel")
+           |
+           v
+receiver waiting?  --&gt; copy directly to receiver, wake receiver
+           |
+           v
+buffer space?  --&gt; enqueue in buffer
+           |
+           v
+[block: park until receiver arrives]
+</code></pre>
+<h3 id="receive--c"><a class="header" href="#receive--c">Receive (<code>&lt;-c</code>)</a></h3>
+<pre><code>c == nil?  --&gt; park forever
+           |
+           v
+[lock channel]
+           |
+c.closed &amp;&amp; empty?  --&gt; return zero value
+           |
+           v
+sender waiting?  --&gt; receive from sender/buffer, wake sender
+           |
+           v
+buffer data?  --&gt; dequeue from buffer
+           |
+           v
+[block: park until sender arrives]
+</code></pre>
+<hr>
+<h2 id="10-os-concepts-illustrated"><a class="header" href="#10-os-concepts-illustrated">10. OS Concepts Illustrated</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS Concept</th><th>Channel Implementation</th></tr>
+</thead>
+<tbody>
+<tr><td>Bounded buffer / producer-consumer</td><td><code>hchan</code> circular buffer with <code>sendx</code>/<code>recvx</code></td></tr>
+<tr><td>Condition variable wait/signal</td><td><code>gopark</code>/<code>goready</code> on send/recv queues</td></tr>
+<tr><td>Broadcast signal</td><td><code>closechan</code> waking all waiters</td></tr>
+<tr><td>Monitor</td><td>The channel lock protecting all shared state</td></tr>
+<tr><td>Lock ordering (deadlock prevention)</td><td><code>select</code> sorting channels by address</td></tr>
+<tr><td>Fairness</td><td><code>select</code> randomizing poll order</td></tr>
+<tr><td>Wait-free fast path</td><td>Non-blocking check before acquiring lock</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="discussion-questions"><a class="header" href="#discussion-questions">Discussion Questions</a></h2>
+<ol>
+<li>
+<p>Why does <code>chansend</code> copy data directly to a waiting receiver instead of
+putting it in the buffer first? What performance benefit does this provide?</p>
+</li>
+<li>
+<p>The non-blocking fast path in <code>chansend</code> reads <code>c.closed</code> and <code>full(c)</code>
+without holding the lock. Why is this safe? Under what conditions could this
+produce a “stale” answer, and why is a stale answer acceptable here?</p>
+</li>
+<li>
+<p>In <code>closechan</code>, goroutines are collected into a list before being readied.
+Why can’t we call <code>goready</code> while holding the channel lock?</p>
+</li>
+<li>
+<p>Why does <code>select</code> use randomization for the poll order but a deterministic
+sort for the lock order? What would go wrong if we used the same order for
+both?</p>
+</li>
+<li>
+<p>Consider a select statement with 100 cases, all on the same channel. How
+does the lock ordering logic handle this? (Hint: look at <code>sellock</code>’s
+duplicate detection.)</p>
+</li>
+</ol>
+<hr>
+<h2 id="further-reading"><a class="header" href="#further-reading">Further Reading</a></h2>
+<ul>
+<li>Source files:
+<ul>
+<li><code>/Users/tchajed/sw/go/src/runtime/chan.go</code> – channel implementation</li>
+<li><code>/Users/tchajed/sw/go/src/runtime/select.go</code> – select implementation</li>
+<li><code>/Users/tchajed/sw/go/src/runtime/runtime2.go</code> – sudog struct (line 406)</li>
+</ul>
+</li>
+<li>Hoare, C.A.R. “Communicating Sequential Processes.” <em>Communications of the ACM</em>, 1978.</li>
+<li>The Go Memory Model: https://go.dev/ref/mem</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../modules/06-synchronization/comprehension.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../modules/07-channels/slides.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../modules/06-synchronization/comprehension.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../modules/07-channels/slides.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

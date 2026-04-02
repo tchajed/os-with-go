@@ -1,0 +1,707 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Slides - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-7-channels-and-select"><a class="header" href="#module-7-channels-and-select">Module 7: Channels and Select</a></h1>
+<h2 id="slides"><a class="header" href="#slides">Slides</a></h2>
+<hr>
+<h2 id="slide-1-channels--gos-communication-primitive"><a class="header" href="#slide-1-channels--gos-communication-primitive">Slide 1: Channels – Go’s Communication Primitive</a></h2>
+<p>“Do not communicate by sharing memory; instead, share memory by communicating.”</p>
+<ul>
+<li>Channels implement Hoare’s CSP (Communicating Sequential Processes)</li>
+<li>A channel is: <strong>mutex + circular buffer + two wait queues</strong></li>
+<li>Compile-time type safety; runtime synchronization</li>
+<li>Key operations: <code>make(chan T, n)</code>, <code>ch &lt;- v</code>, <code>v := &lt;-ch</code>, <code>close(ch)</code></li>
+</ul>
+<hr>
+<h2 id="slide-2-channel-invariants"><a class="header" href="#slide-2-channel-invariants">Slide 2: Channel Invariants</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 9-18
+// Invariants:
+//  At least one of c.sendq and c.recvq is empty,
+//  except for the case of an unbuffered channel with a single goroutine
+//  blocked on it for both sending and receiving using a select statement.
+//
+// For buffered channels, also:
+//  c.qcount &gt; 0 implies that c.recvq is empty.
+//  c.qcount &lt; c.dataqsiz implies that c.sendq is empty.
+</code></pre>
+<ul>
+<li>If data is buffered, no one should be waiting to receive</li>
+<li>If buffer has space, no one should be waiting to send</li>
+<li>OS parallel: monitor invariants in classical synchronization</li>
+</ul>
+<hr>
+<h2 id="slide-3-the-hchan-struct"><a class="header" href="#slide-3-the-hchan-struct">Slide 3: The hchan Struct</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 34-55
+type hchan struct {
+    qcount   uint           // total data in the queue
+    dataqsiz uint           // size of the circular queue
+    buf      unsafe.Pointer // points to an array of dataqsiz elements
+    elemsize uint16
+    closed   uint32
+    elemtype *_type // element type
+    sendx    uint   // send index
+    recvx    uint   // receive index
+    recvq    waitq  // list of recv waiters
+    sendq    waitq  // list of send waiters
+    lock     mutex
+}
+</code></pre>
+<hr>
+<h2 id="slide-4-hchan-memory-layout"><a class="header" href="#slide-4-hchan-memory-layout">Slide 4: hchan Memory Layout</a></h2>
+<pre><code>+------------------+
+| hchan struct     |
+|  qcount          |
+|  dataqsiz        |
+|  buf        --------&gt; [slot0][slot1][slot2]...[slotN-1]
+|  elemsize        |         ^recvx       ^sendx
+|  closed          |
+|  sendx, recvx    |    Circular buffer:
+|  recvq -----+    |    sendx advances on send, wraps at dataqsiz
+|  sendq --+  |    |    recvx advances on recv, wraps at dataqsiz
+|  lock    |  |    |
++---------+--+----+
+          |  |
+          v  v
+       waitq: doubly-linked list of sudogs
+</code></pre>
+<hr>
+<h2 id="slide-5-waitq-and-sudog"><a class="header" href="#slide-5-waitq-and-sudog">Slide 5: waitq and sudog</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 57-60
+type waitq struct {
+    first *sudog
+    last  *sudog
+}
+</code></pre>
+<pre><code class="language-go">// src/runtime/runtime2.go, lines 406-448
+type sudog struct {
+    g    *g
+    next *sudog
+    prev *sudog
+    elem maybeTraceablePtr  // data element (may point to stack)
+    isSelect bool           // participating in select?
+    success  bool           // woken by data or close?
+    waitlink *sudog         // g.waiting list
+    c        maybeTraceableChan
+}
+</code></pre>
+<p><strong>Why sudog?</strong> A goroutine in <code>select</code> waits on multiple channels – needs one proxy per channel.</p>
+<hr>
+<h2 id="slide-6-makechan--three-allocation-strategies"><a class="header" href="#slide-6-makechan--three-allocation-strategies">Slide 6: makechan – Three Allocation Strategies</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 96-111
+switch {
+case mem == 0:
+    // Unbuffered or zero-size elements
+    c = (*hchan)(mallocgc(hchanSize, nil, true))
+case !elem.Pointers():
+    // No pointers: single allocation for hchan + buffer
+    c = (*hchan)(mallocgc(hchanSize+mem, nil, true))
+    c.buf = add(unsafe.Pointer(c), hchanSize)
+default:
+    // Contains pointers: separate allocations
+    c = new(hchan)
+    c.buf = mallocgc(mem, elem, true)
+}
+</code></pre>
+<p>GC-aware allocation: pointer-free buffers use a single allocation.</p>
+<hr>
+<h2 id="slide-7-chansend-overview"><a class="header" href="#slide-7-chansend-overview">Slide 7: chansend Overview</a></h2>
+<pre><code>chansend(c, ep, block, callerpc)
+    |
+    v
+nil channel? --&gt; gopark forever
+    |
+    v
+Fast path (no lock): !block &amp;&amp; !closed &amp;&amp; full? --&gt; return false
+    |
+    v
+lock(c.lock)
+    |
+    v
+closed? --&gt; panic
+    |
+    v
+receiver waiting? --&gt; direct send, bypass buffer
+    |
+    v
+buffer space? --&gt; circular buffer enqueue
+    |
+    v
+block: acquireSudog, enqueue on sendq, gopark
+</code></pre>
+<hr>
+<h2 id="slide-8-the-non-blocking-fast-path"><a class="header" href="#slide-8-the-non-blocking-fast-path">Slide 8: The Non-Blocking Fast Path</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 197-214
+// Fast path: check for failed non-blocking operation
+// without acquiring the lock.
+if !block &amp;&amp; c.closed == 0 &amp;&amp; full(c) {
+    return false
+}
+</code></pre>
+<p><strong>Linearizability argument:</strong></p>
+<ul>
+<li>Read <code>c.closed</code> (== 0), then read <code>full(c)</code> (== true)</li>
+<li>Closed channel cannot transition from “ready” to “not ready”</li>
+<li>Therefore there exists a moment when channel was both open and full</li>
+<li>Safe to report “send cannot proceed”</li>
+</ul>
+<p><strong>No lock needed!</strong> Used by select with default case.</p>
+<hr>
+<h2 id="slide-9-direct-send--bypassing-the-buffer"><a class="header" href="#slide-9-direct-send--bypassing-the-buffer">Slide 9: Direct Send – Bypassing the Buffer</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 229-233
+if sg := c.recvq.dequeue(); sg != nil {
+    // Found a waiting receiver. We pass the value we want to send
+    // directly to the receiver, bypassing the channel buffer (if any).
+    send(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+    return true
+}
+</code></pre>
+<ul>
+<li>Even on buffered channels, data goes directly sender -&gt; receiver</li>
+<li>One <code>memmove</code> instead of two (sender-&gt;buffer, buffer-&gt;receiver)</li>
+<li>The <code>send</code> function copies <code>ep</code> to <code>sg.elem</code> and calls <code>goready(sg.g)</code></li>
+</ul>
+<hr>
+<h2 id="slide-10-buffered-send--circular-buffer-enqueue"><a class="header" href="#slide-10-buffered-send--circular-buffer-enqueue">Slide 10: Buffered Send – Circular Buffer Enqueue</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 236-249
+if c.qcount &lt; c.dataqsiz {
+    qp := chanbuf(c, c.sendx)
+    typedmemmove(c.elemtype, qp, ep)
+    c.sendx++
+    if c.sendx == c.dataqsiz {
+        c.sendx = 0  // wrap around
+    }
+    c.qcount++
+    unlock(&amp;c.lock)
+    return true
+}
+</code></pre>
+<p>Classic bounded buffer: copy data, advance index, wrap at capacity.</p>
+<hr>
+<h2 id="slide-11-blocking-send--gopark"><a class="header" href="#slide-11-blocking-send--gopark">Slide 11: Blocking Send – gopark</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 257-283
+gp := getg()
+mysg := acquireSudog()
+mysg.elem.set(ep)       // receiver will copy from here
+mysg.g = gp
+mysg.isSelect = false
+mysg.c.set(c)
+gp.waiting = mysg
+c.sendq.enqueue(mysg)
+gp.parkingOnChan.Store(true)
+gopark(chanparkcommit, unsafe.Pointer(&amp;c.lock), ...)
+</code></pre>
+<ul>
+<li><code>acquireSudog</code>: get a sudog from the per-P pool</li>
+<li><code>mysg.elem</code> points to data on sender’s stack</li>
+<li><code>gopark</code> atomically releases <code>c.lock</code> and suspends goroutine</li>
+<li>Eventually a receiver calls <code>goready</code> to wake this goroutine</li>
+</ul>
+<hr>
+<h2 id="slide-12-chanrecv--symmetric-to-chansend"><a class="header" href="#slide-12-chanrecv--symmetric-to-chansend">Slide 12: chanrecv – Symmetric to chansend</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 600-609
+} else {
+    // Just found waiting sender with not closed.
+    if sg := c.sendq.dequeue(); sg != nil {
+        // Found a waiting sender. If buffer is size 0, receive value
+        // directly from sender. Otherwise, receive from head of queue
+        // and add sender's value to the tail of the queue (both map to
+        // the same buffer slot because the queue is full).
+        recv(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+        return true, true
+    }
+}
+</code></pre>
+<p>Same four phases: nil check, fast path, direct/buffered, block.</p>
+<p>Key difference: receiving from a closed, empty channel returns <code>(true, false)</code> and the zero value.</p>
+<hr>
+<h2 id="slide-13-closechan--wake-all-waiters"><a class="header" href="#slide-13-closechan--wake-all-waiters">Slide 13: closechan – Wake All Waiters</a></h2>
+<pre><code class="language-go">// src/runtime/chan.go, lines 414-486
+func closechan(c *hchan) {
+    lock(&amp;c.lock)
+    c.closed = 1
+
+    var glist gList
+    // release all readers
+    for {
+        sg := c.recvq.dequeue()
+        if sg == nil { break }
+        sg.success = false
+        glist.push(sg.g)
+    }
+    // release all writers (they will panic)
+    for {
+        sg := c.sendq.dequeue()
+        if sg == nil { break }
+        sg.success = false
+        glist.push(sg.g)
+    }
+    unlock(&amp;c.lock)
+    // Ready all Gs AFTER dropping the lock
+    for !glist.empty() {
+        gp := glist.pop()
+        goready(gp, 3)
+    }
+}
+</code></pre>
+<hr>
+<h2 id="slide-14-closechan-design-points"><a class="header" href="#slide-14-closechan-design-points">Slide 14: closechan Design Points</a></h2>
+<ul>
+<li><strong>Double close panics</strong>: checked under lock</li>
+<li><strong>Receivers get zero values</strong>: <code>typedmemclr</code> + <code>success = false</code></li>
+<li><strong>Senders will panic</strong>: <code>success = false</code> -&gt; “send on closed channel”</li>
+<li><strong>Lock ordering</strong>: <code>goready</code> called <em>after</em> releasing <code>c.lock</code>
+<ul>
+<li>Prevents deadlock with stack shrinking</li>
+</ul>
+</li>
+<li><strong>OS parallel</strong>: analogous to <code>pthread_cond_broadcast</code></li>
+</ul>
+<hr>
+<h2 id="slide-15-the-select-statement"><a class="header" href="#slide-15-the-select-statement">Slide 15: The select Statement</a></h2>
+<pre><code class="language-go">select {
+case v := &lt;-ch1:    // receive case
+    use(v)
+case ch2 &lt;- x:     // send case
+    sent()
+default:            // non-blocking
+    nothing()
+}
+</code></pre>
+<p>Compiler optimizations before <code>selectgo</code> is reached:</p>
+<ul>
+<li><code>select {}</code> -&gt; <code>block()</code> (park forever)</li>
+<li>1 case + default -&gt; non-blocking send/recv</li>
+<li>1 case, no default -&gt; blocking send/recv</li>
+<li>Multi-case -&gt; full <code>selectgo</code> algorithm</li>
+</ul>
+<hr>
+<h2 id="slide-16-the-scase-struct"><a class="header" href="#slide-16-the-scase-struct">Slide 16: The scase Struct</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 20-23
+type scase struct {
+    c    *hchan         // chan
+    elem unsafe.Pointer // data element
+}
+</code></pre>
+<ul>
+<li>Direction is implicit: sends come first (<code>nsends</code>), then receives (<code>nrecvs</code>)</li>
+<li>Cases and orders live on the goroutine’s stack (no heap allocation)</li>
+<li><code>order0</code> array is split into two halves: <code>pollorder</code> and <code>lockorder</code></li>
+</ul>
+<hr>
+<h2 id="slide-17-selectgo-signature"><a class="header" href="#slide-17-selectgo-signature">Slide 17: selectgo Signature</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 122
+func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr,
+              nsends, nrecvs int, block bool) (int, bool)
+</code></pre>
+<p>Returns:</p>
+<ul>
+<li><code>int</code>: index of chosen case (-1 if default)</li>
+<li><code>bool</code>: for receive cases, whether a value was received</li>
+</ul>
+<p>The algorithm has <strong>three passes</strong> through the cases.</p>
+<hr>
+<h2 id="slide-18-step-1--randomize-poll-order"><a class="header" href="#slide-18-step-1--randomize-poll-order">Slide 18: Step 1 – Randomize Poll Order</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 167-195
+norder := 0
+for i := range scases {
+    cas := &amp;scases[i]
+    if cas.c == nil {
+        continue  // skip nil channels
+    }
+    j := cheaprandn(uint32(norder + 1))
+    pollorder[norder] = pollorder[j]
+    pollorder[j] = uint16(i)
+    norder++
+}
+</code></pre>
+<ul>
+<li>Fisher-Yates shuffle of case indices</li>
+<li><strong>Fairness</strong>: without this, earlier cases always have priority</li>
+<li>Nil channel cases are excluded (disabling a select case)</li>
+</ul>
+<hr>
+<h2 id="slide-19-step-2--sort-lock-order-by-address"><a class="header" href="#slide-19-step-2--sort-lock-order-by-address">Slide 19: Step 2 – Sort Lock Order by Address</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 206-240
+// sort the cases by Hchan address to get the locking order.
+// simple heap sort, to guarantee n log n time and constant stack footprint.
+for i := range lockorder {
+    j := i
+    c := scases[pollorder[i]].c
+    for j &gt; 0 &amp;&amp; scases[lockorder[(j-1)/2]].c.sortkey() &lt; c.sortkey() {
+        k := (j - 1) / 2
+        lockorder[j] = lockorder[k]
+        j = k
+    }
+    lockorder[j] = pollorder[i]
+}
+</code></pre>
+<ul>
+<li>Heap sort: O(n log n), constant extra stack</li>
+<li><code>sortkey()</code> returns <code>uintptr(unsafe.Pointer(c))</code> – the channel address</li>
+<li><strong>Deadlock prevention</strong>: global ordering prevents ABBA deadlocks</li>
+</ul>
+<hr>
+<h2 id="slide-20-pass-1--try-all-cases-fast-path"><a class="header" href="#slide-20-pass-1--try-all-cases-fast-path">Slide 20: Pass 1 – Try All Cases (Fast Path)</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 264-301
+sellock(scases, lockorder)        // lock ALL channels
+for _, casei := range pollorder { // iterate in RANDOM order
+    c = scases[casei].c
+    if casei &gt;= nsends {          // receive case
+        if c.sendq has waiter  -&gt; goto recv
+        if c.qcount &gt; 0       -&gt; goto bufrecv
+        if c.closed            -&gt; goto rclose
+    } else {                      // send case
+        if c.closed            -&gt; goto sclose (panic)
+        if c.recvq has waiter  -&gt; goto send
+        if buffer has space    -&gt; goto bufsend
+    }
+}
+// No case ready
+if !block { return -1 }          // default case
+</code></pre>
+<hr>
+<h2 id="slide-21-pass-2--enqueue-and-park"><a class="header" href="#slide-21-pass-2--enqueue-and-park">Slide 21: Pass 2 – Enqueue and Park</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 309-351
+nextp = &amp;gp.waiting
+for _, casei := range lockorder {
+    sg := acquireSudog()
+    sg.g = gp
+    sg.isSelect = true
+    sg.elem.set(cas.elem)
+    sg.c.set(c)
+    *nextp = sg
+    nextp = &amp;sg.waitlink
+    if casei &lt; nsends {
+        c.sendq.enqueue(sg)
+    } else {
+        c.recvq.enqueue(sg)
+    }
+}
+gopark(selparkcommit, nil, ...)
+</code></pre>
+<ul>
+<li>One sudog per case, enqueued on each channel</li>
+<li><code>isSelect = true</code>: waker must CAS <code>g.selectDone</code> to win</li>
+<li>Sudogs chained via <code>waitlink</code> for cleanup</li>
+</ul>
+<hr>
+<h2 id="slide-22-pass-3--dequeue-losers-return-winner"><a class="header" href="#slide-22-pass-3--dequeue-losers-return-winner">Slide 22: Pass 3 – Dequeue Losers, Return Winner</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 354-401
+sellock(scases, lockorder)    // re-lock all channels
+sg = (*sudog)(gp.param)      // the winning sudog
+
+for _, casei := range lockorder {
+    if sg == sglist {
+        // This is the winner -- already dequeued by waker
+        casi = int(casei)
+        cas = &amp;scases[casei]
+    } else {
+        // Loser: dequeue from channel's wait queue
+        c.sendq.dequeueSudoG(sglist) // or recvq
+    }
+    releaseSudog(sglist)
+    sglist = sglist.waitlink
+}
+</code></pre>
+<hr>
+<h2 id="slide-23-sellock--lock-ordering-in-practice"><a class="header" href="#slide-23-sellock--lock-ordering-in-practice">Slide 23: sellock – Lock Ordering in Practice</a></h2>
+<pre><code class="language-go">// src/runtime/select.go, lines 34-43
+func sellock(scases []scase, lockorder []uint16) {
+    var c *hchan
+    for _, o := range lockorder {
+        c0 := scases[o].c
+        if c0 != c {
+            c = c0
+            lock(&amp;c.lock)
+        }
+    }
+}
+</code></pre>
+<ul>
+<li>Locks channels in address-sorted order</li>
+<li><strong>Skips duplicates</strong>: same channel in multiple cases -&gt; lock only once</li>
+<li><code>selunlock</code> iterates in reverse, same duplicate detection</li>
+</ul>
+<hr>
+<h2 id="slide-24-select--the-full-picture"><a class="header" href="#slide-24-select--the-full-picture">Slide 24: Select – The Full Picture</a></h2>
+<pre><code>selectgo(cases)
+    |
+    +-- 1. Shuffle pollorder (fairness)
+    |       Sort lockorder by address (deadlock prevention)
+    |
+    +-- 2. Lock all channels (in lock order)
+    |
+    +-- 3. Pass 1: scan in poll order -&gt; if ready, do it and return
+    |
+    +-- 4. Pass 2: enqueue sudog on every channel, gopark
+    |       ... goroutine sleeps ...
+    |       ... some channel operation wakes us ...
+    |
+    +-- 5. Pass 3: re-lock all, find winner, dequeue losers, return
+</code></pre>
+<hr>
+<h2 id="slide-25-os-concepts-recap"><a class="header" href="#slide-25-os-concepts-recap">Slide 25: OS Concepts Recap</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS Concept</th><th>Channel Implementation</th></tr>
+</thead>
+<tbody>
+<tr><td>Bounded buffer</td><td>Circular buffer with <code>sendx</code>/<code>recvx</code></td></tr>
+<tr><td>Condition variable</td><td><code>gopark</code>/<code>goready</code> on wait queues</td></tr>
+<tr><td>Broadcast</td><td><code>closechan</code> wakes all waiters</td></tr>
+<tr><td>Monitor</td><td><code>hchan.lock</code> protects all state</td></tr>
+<tr><td>Lock ordering</td><td>select sorts by channel address</td></tr>
+<tr><td>Fairness</td><td>select randomizes poll order</td></tr>
+<tr><td>Linearizability</td><td>Non-blocking fast path argument</td></tr>
+<tr><td>Wait queue</td><td><code>waitq</code> linked list of <code>sudog</code> nodes</td></tr>
+</tbody>
+</table>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../modules/07-channels/notes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../modules/07-channels/comprehension.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../modules/07-channels/notes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../modules/07-channels/comprehension.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

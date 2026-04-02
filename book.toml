@@ -1,0 +1,11 @@
+[book]
+title = "Operating Systems Through the Go Runtime"
+authors = [""]
+language = "en"
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "ayu"
+git-repository-url = ""
+additional-css = []

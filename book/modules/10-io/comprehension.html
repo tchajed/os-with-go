@@ -1,0 +1,461 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Comprehension Check - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-10-file-systems-io-and-the-network-poller"><a class="header" href="#module-10-file-systems-io-and-the-network-poller">Module 10: File Systems, I/O, and the Network Poller</a></h1>
+<h2 id="comprehension-check"><a class="header" href="#comprehension-check">Comprehension Check</a></h2>
+<h3 id="question-1-code-reading"><a class="header" href="#question-1-code-reading">Question 1 (Code Reading)</a></h3>
+<p>Study this excerpt from <code>runtime/netpoll.go</code>:</p>
+<pre><code class="language-go">// Integrated network poller (platform-independent part).
+// A particular implementation (epoll/kqueue/port/AIX/Windows)
+// must define the following functions:
+//
+// func netpollinit()
+//     Initialize the poller. Only called once.
+//
+// func netpollopen(fd uintptr, pd *pollDesc) int32
+//     Arm edge-triggered notifications for fd.
+//
+// func netpollclose(fd uintptr) int32
+//     Disable notifications for fd.
+//
+// func netpoll(delta int64) (gList, int32)
+//     Poll the network. If delta &lt; 0, block indefinitely.
+//     If delta == 0, poll without blocking.
+//     If delta &gt; 0, block for up to delta nanoseconds.
+//     Return a list of goroutines built by calling netpollready.
+</code></pre>
+<p>Why does the network poller use <strong>edge-triggered</strong> rather than <strong>level-triggered</strong> notifications? What would happen if it used level-triggered mode?</p>
+<details><summary>Answer</summary>
+<p><strong>Edge-triggered</strong> means the poller notifies once when the state changes (e.g., data becomes available), not repeatedly while data remains available.</p>
+<p><strong>Why edge-triggered:</strong></p>
+<ol>
+<li>
+<p><strong>Fewer wakeups:</strong> With level-triggered mode, every call to <code>epoll_wait</code> would return the same file descriptors that still have data, even if the goroutine has not yet read it. In a system with thousands of connections, this causes <code>epoll_wait</code> to repeatedly return large batches of ready FDs, most of which are already being handled.</p>
+</li>
+<li>
+<p><strong>Simpler goroutine model:</strong> The network poller’s design is “one goroutine per FD.” When data arrives, the goroutine for that FD is woken exactly once. With level-triggered, the poller would need to suppress duplicate wakeups (since the FD remains “ready” until the goroutine reads all data), adding complexity.</p>
+</li>
+<li>
+<p><strong>Efficient integration with scheduler:</strong> The poller returns a <code>gList</code> of goroutines to make runnable. With edge-triggered, each FD produces at most one goroutine per state change, keeping the list small and predictable.</p>
+</li>
+</ol>
+<p><strong>If level-triggered were used:</strong></p>
+<ul>
+<li>The <code>netpoll</code> function would return the same goroutines repeatedly on every call until they fully drain their data.</li>
+<li>The scheduler would attempt to wake goroutines that are already running, requiring additional bookkeeping.</li>
+<li>On a busy server with 10,000 connections, each <code>netpoll</code> call might return thousands of “ready” FDs, most already being serviced, causing wasted work scanning the list.</li>
+</ul>
+<p>The tradeoff is that edge-triggered requires the application to fully drain available data on each notification (otherwise data sits unprocessed until the next event). Go handles this by having goroutines read in a loop until <code>EAGAIN</code>.</p>
+</details>
+<hr>
+<h3 id="question-2-short-answer"><a class="header" href="#question-2-short-answer">Question 2 (Short Answer)</a></h3>
+<p>Describe the path a <code>conn.Read()</code> call takes from user code down to the kernel. Include the role of <code>os.File</code>, <code>poll.FD</code>, <code>pollDesc</code>, and the network poller.</p>
+<details><summary>Answer</summary>
+<p>The path from user code to kernel and back:</p>
+<ol>
+<li>
+<p><strong><code>conn.Read(buf)</code></strong> - User calls <code>Read</code> on a <code>net.Conn</code> (e.g., <code>*net.TCPConn</code>).</p>
+</li>
+<li>
+<p><strong><code>net.(*netFD).Read()</code></strong> - The <code>net.Conn</code> wraps a <code>netFD</code>, which delegates to <code>poll.FD</code>.</p>
+</li>
+<li>
+<p><strong><code>poll.(*FD).Read()</code></strong> - This is in <code>internal/poll</code>. It:</p>
+<ul>
+<li>Calls the <code>read()</code> system call (non-blocking, since the FD is set to <code>O_NONBLOCK</code>).</li>
+<li>If data is available, returns immediately (fast path).</li>
+<li>If <code>EAGAIN</code> is returned (no data yet), calls <code>fd.pd.waitRead()</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>poll.(*pollDesc).waitRead()</code></strong> - Calls <code>runtime_pollWait(pd, 'r')</code>.</p>
+</li>
+<li>
+<p><strong><code>runtime.poll_runtime_pollWait()</code></strong> - In the runtime:</p>
+<ul>
+<li>Checks if the FD is already ready (fast path).</li>
+<li>If not, sets the <code>pollDesc.rg</code> field to the current goroutine pointer.</li>
+<li>Calls <code>gopark()</code> to park the goroutine, removing it from the scheduler.</li>
+</ul>
+</li>
+<li>
+<p><strong>The goroutine is now parked.</strong> The network poller (<code>epoll_wait</code>/<code>kqueue</code> running in <code>sysmon</code> or <code>findRunnable</code>) will eventually detect that the FD has data.</p>
+</li>
+<li>
+<p><strong><code>netpoll()</code> returns</strong> - When <code>epoll_wait</code> indicates readiness, <code>netpollready()</code> sets <code>pd.rg = pdReady</code> and adds the goroutine to the return list.</p>
+</li>
+<li>
+<p><strong>Goroutine is made runnable</strong> - The scheduler (via <code>findRunnable</code> or <code>sysmon</code>) injects the goroutine into a P’s run queue.</p>
+</li>
+<li>
+<p><strong><code>poll.(*FD).Read()</code> resumes</strong> - The goroutine wakes up and retries the <code>read()</code> system call, which now succeeds.</p>
+</li>
+</ol>
+</details>
+<hr>
+<h3 id="question-3-truefalse-with-explanation"><a class="header" href="#question-3-truefalse-with-explanation">Question 3 (True/False with Explanation)</a></h3>
+<p><strong>True or False:</strong> File I/O (reading from disk) uses the same network poller mechanism as network I/O in Go.</p>
+<details><summary>Answer</summary>
+<p><strong>Mostly False.</strong> Regular file I/O and network I/O take different paths:</p>
+<p><strong>Network I/O</strong> uses the network poller (<code>epoll</code>/<code>kqueue</code>). Sockets are set to non-blocking mode, and goroutines park/unpark efficiently through <code>pollDesc</code>.</p>
+<p><strong>Regular file I/O</strong> (reading/writing files on disk) does NOT use the network poller. This is because <code>epoll</code> and <code>kqueue</code> do not support regular files – they always report regular files as “ready” since disk I/O is handled differently from socket I/O in the kernel.</p>
+<p>Instead, regular file reads use <strong>blocking system calls</strong> (<code>pread</code>/<code>read</code>). When a goroutine does file I/O:</p>
+<ol>
+<li>It calls <code>entersyscall()</code>, which detaches the P from the M.</li>
+<li>The M blocks in the kernel waiting for disk I/O.</li>
+<li><code>sysmon</code> may retake the P and hand it to another M.</li>
+<li>When the I/O completes, the M calls <code>exitsyscall()</code> and tries to reacquire a P.</li>
+</ol>
+<p><strong>Exception:</strong> On some platforms, certain special files (pipes, FIFOs, device files, eventfd) CAN be polled and do use the poller. Also, some platforms are adding io_uring support which could change this for regular files.</p>
+</details>
+<hr>
+<h3 id="question-4-what-would-happen-if"><a class="header" href="#question-4-what-would-happen-if">Question 4 (What Would Happen If…)</a></h3>
+<p>The <code>pollDesc</code> struct uses a state machine for its <code>rg</code> (read goroutine) field with states: <code>pdReady</code>, <code>pdWait</code>, <code>nil</code>, and a goroutine pointer. What would happen if the implementation skipped the <code>pdWait</code> intermediate state and went directly from <code>nil</code> to a goroutine pointer?</p>
+<details><summary>Answer</summary>
+<p>The <code>pdWait</code> state exists to handle a race condition between the goroutine preparing to park and the I/O becoming ready. The sequence is:</p>
+<pre><code>Normal flow:
+1. goroutine sets rg = pdWait    (preparing to park)
+2. goroutine sets rg = G pointer (committed to parking)
+3. netpoll sets rg = pdReady     (I/O ready, wakes goroutine)
+</code></pre>
+<p><strong>Without <code>pdWait</code> (going directly nil -&gt; G pointer):</strong></p>
+<p>There is a window between when the goroutine decides to wait and when it actually parks. If I/O becomes ready during this window:</p>
+<ol>
+<li>Goroutine calls <code>runtime_pollWait</code>, checks <code>rg == nil</code> (not ready).</li>
+<li><strong>I/O completes.</strong> <code>netpollready</code> tries to wake the goroutine but <code>rg == nil</code> – no goroutine to wake. The wakeup is lost.</li>
+<li>Goroutine sets <code>rg = G pointer</code> and parks.</li>
+<li><strong>Goroutine sleeps forever</strong> – the I/O event was already delivered and will not be re-delivered (edge-triggered).</li>
+</ol>
+<p><strong>With <code>pdWait</code>:</strong></p>
+<ol>
+<li>Goroutine sets <code>rg = pdWait</code> (announces intent to sleep).</li>
+<li>If I/O completes now, <code>netpollready</code> atomically CAS’s <code>pdWait</code> -&gt; <code>pdReady</code>. The goroutine sees <code>pdReady</code> and does not park.</li>
+<li>If I/O has not completed, goroutine CAS’s <code>pdWait</code> -&gt; <code>G pointer</code> and parks.</li>
+<li>When I/O completes, <code>netpollready</code> CAS’s <code>G pointer</code> -&gt; <code>pdReady</code> and wakes the goroutine.</li>
+</ol>
+<p>The <code>pdWait</code> state makes the protocol robust against this race by allowing <code>netpollready</code> to signal readiness even before the goroutine has fully committed to sleeping.</p>
+</details>
+<hr>
+<h3 id="question-5-short-answer"><a class="header" href="#question-5-short-answer">Question 5 (Short Answer)</a></h3>
+<p>Explain the role of <code>sysmon</code> in network polling. Why can’t the scheduler rely solely on <code>findRunnable</code> calling <code>netpoll</code>?</p>
+<details><summary>Answer</summary>
+<p><code>sysmon</code> periodically calls <code>netpoll(0)</code> (non-blocking poll) and injects any ready goroutines into the global run queue.</p>
+<p><strong>Why <code>findRunnable</code> alone is insufficient:</strong></p>
+<ol>
+<li>
+<p><strong>All Ps busy:</strong> <code>findRunnable</code> is only called when a P has no local work. If all Ps are busy executing compute-bound goroutines, <code>netpoll</code> is never called. Network-ready goroutines would be stuck until some P happens to enter <code>findRunnable</code>. <code>sysmon</code> runs on its own M (without a P) and can poll regardless of P utilization.</p>
+</li>
+<li>
+<p><strong>All Ms in syscalls:</strong> If all Ms are blocked in system calls and all Ps have been retaken but are idle (no runnable goroutines), nobody is calling <code>findRunnable</code>. <code>sysmon</code> can still poll and inject work, then wake an M to run it.</p>
+</li>
+<li>
+<p><strong>Latency guarantees:</strong> <code>sysmon</code> provides a guaranteed upper bound on network polling latency (~10ms). Without it, a burst of compute work could delay network polling indefinitely.</p>
+</li>
+<li>
+<p><strong>Timer-based blocking:</strong> <code>findRunnable</code> may call <code>netpoll(delta)</code> with a timeout to block until the next timer fires. But if <code>findRunnable</code> is not being called (all Ps busy), timers also need <code>sysmon</code> to fire them.</p>
+</li>
+</ol>
+<p><code>sysmon</code> acts as a backstop that ensures the network poller is checked regularly regardless of scheduler activity.</p>
+</details>
+<hr>
+<h3 id="question-6-code-reading"><a class="header" href="#question-6-code-reading">Question 6 (Code Reading)</a></h3>
+<p>Consider this comment from <code>runtime/netpoll.go</code> describing <code>pollDesc</code> states:</p>
+<pre><code class="language-go">// pollDesc contains 2 binary semaphores, rg and wg, to park reader and writer
+// goroutines respectively. The semaphore can be in the following states:
+//
+//   pdReady - io readiness notification is pending;
+//             a goroutine consumes the notification by changing the state to pdNil.
+//   pdWait  - a goroutine prepares to park on the semaphore, but not yet parked;
+//             the goroutine commits to park by changing the state to G pointer,
+//             or, alternatively, concurrent io notification changes the state to pdReady,
+//             or, alternatively, concurrent timeout/close changes the state to pdNil.
+//   G pointer - the goroutine is blocked on the semaphore;
+//               io notification or timeout/close changes the state to pdReady or pdNil
+//               respectively and unparks the goroutine.
+</code></pre>
+<p>Draw the state transition diagram for <code>rg</code>. What transitions are valid, and who performs each transition?</p>
+<details><summary>Answer</summary>
+<p>State transitions for <code>rg</code>:</p>
+<pre><code>                    goroutine                    goroutine
+    pdNil -----(prepare to wait)-----&gt; pdWait ------(commit)-----&gt; G pointer
+      ^                                  |                            |
+      |                                  |                            |
+      |              netpollready        |  timeout/close             | netpollready
+      |           (sets pdReady)         |  (sets pdNil)              | (sets pdReady,
+      |                                  |                            |  unparks G)
+      |                                  v                            v
+      +---------(goroutine consumes)--- pdReady &lt;-----(io ready)------+
+</code></pre>
+<p><strong>Transitions and who performs them:</strong></p>
+<ol>
+<li>
+<p><strong>pdNil -&gt; pdWait</strong>: The goroutine, in <code>runtime_pollWait</code>, sets this to announce intent to park.</p>
+</li>
+<li>
+<p><strong>pdWait -&gt; G pointer</strong>: The goroutine, committing to park (CAS in <code>netpollblock</code>).</p>
+</li>
+<li>
+<p><strong>pdWait -&gt; pdReady</strong>: The network poller (<code>netpollready</code>), when I/O becomes ready before the goroutine parked. Goroutine sees this and does not park.</p>
+</li>
+<li>
+<p><strong>pdWait -&gt; pdNil</strong>: Timeout or FD close, aborting the wait before the goroutine parked.</p>
+</li>
+<li>
+<p><strong>G pointer -&gt; pdReady</strong>: The network poller (<code>netpollready</code>), when I/O becomes ready. The goroutine is unparked.</p>
+</li>
+<li>
+<p><strong>G pointer -&gt; pdNil</strong>: Timeout or FD close. The goroutine is unparked with an error.</p>
+</li>
+<li>
+<p><strong>pdReady -&gt; pdNil</strong>: The goroutine, consuming the readiness notification before retrying the I/O operation.</p>
+</li>
+</ol>
+<p>All transitions on <code>rg</code> use atomic CAS operations to handle concurrent access between the goroutine and the network poller / timer / close paths.</p>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../modules/10-io/slides.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../assignments/assignment1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../modules/10-io/slides.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../assignments/assignment1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

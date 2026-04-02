@@ -1,0 +1,636 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Final Exam - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="final-exam-operating-systems-through-the-go-runtime"><a class="header" href="#final-exam-operating-systems-through-the-go-runtime">Final Exam: Operating Systems Through the Go Runtime</a></h1>
+<p><strong>Duration:</strong> 3 hours
+<strong>Total Points:</strong> 100
+<strong>Open book: You may refer to the Go source code and course materials.</strong></p>
+<hr>
+<h2 id="part-a-concept-questions-40-points-4-points-each"><a class="header" href="#part-a-concept-questions-40-points-4-points-each">Part A: Concept Questions (40 points, 4 points each)</a></h2>
+<p>Answer each question in 3-5 sentences.</p>
+<hr>
+<h3 id="a1-modules-1-2"><a class="header" href="#a1-modules-1-2">A1 (Modules 1-2)</a></h3>
+<p>The Go runtime makes system calls directly via assembly (e.g., <code>sys_linux_amd64.s</code>) rather than calling through libc. Explain one situation where this causes a compatibility problem and one situation where it provides a significant advantage.</p>
+<details><summary>Answer</summary>
+<p><strong>Compatibility problem:</strong> On some systems, DNS resolution depends on NSS (Name Service Switch) modules that are loaded as shared libraries by libc’s <code>getaddrinfo()</code>. Since Go bypasses libc, it cannot use these modules and must implement its own DNS resolver (the “pure Go resolver”). This causes issues when systems use LDAP, mDNS, or custom NSS modules for name resolution, as Go’s resolver does not support them.</p>
+<p><strong>Advantage:</strong> Direct syscalls eliminate the overhead of switching to a C calling convention, managing a separate C stack, and coordinating with libc’s internal state (errno, signal masks, thread-local storage). This is critical for the Go scheduler, which makes frequent, performance-sensitive syscalls (e.g., <code>futex</code> for locks, <code>epoll_wait</code> for the network poller) and needs precise control over thread state during these calls. The overhead of a cgo call (~200ns) would be prohibitive for operations that occur millions of times per second.</p>
+</details>
+<hr>
+<h3 id="a2-modules-1-2"><a class="header" href="#a2-modules-1-2">A2 (Modules 1-2)</a></h3>
+<p>When a goroutine makes a blocking system call, the runtime calls <code>entersyscall()</code> before the call and <code>exitsyscall()</code> after it returns. What would happen if these calls were omitted? Describe the impact on both the specific goroutine and the overall scheduler.</p>
+<details><summary>Answer</summary>
+<p>Without <code>entersyscall()</code>:</p>
+<ul>
+<li>The P remains attached to the M during the blocking syscall. Since the M is blocked in the kernel, the P is effectively frozen – no other goroutines on that P’s run queue can execute.</li>
+<li><code>sysmon</code> would not know the M is in a syscall and would not retake the P.</li>
+<li>If all Ps end up blocked in syscalls, the entire program stops executing Go code until some syscall returns.</li>
+</ul>
+<p>Without <code>exitsyscall()</code>:</p>
+<ul>
+<li>The goroutine’s status would remain <code>_Gsyscall</code> after returning from the syscall. The scheduler would not transition it to <code>_Grunning</code>.</li>
+<li>If the P was retaken during the syscall, the goroutine would continue running without a P, violating the invariant that Go code requires a P. This could corrupt scheduler state.</li>
+</ul>
+<p>In short, <code>entersyscall</code>/<code>exitsyscall</code> maintain the invariant that Ps are never wasted on blocked threads, and that the scheduler accurately tracks goroutine states.</p>
+</details>
+<hr>
+<h3 id="a3-modules-3-4"><a class="header" href="#a3-modules-3-4">A3 (Modules 3-4)</a></h3>
+<p>Explain why the Go scheduler uses an M:N threading model rather than a 1:1 model (one goroutine per OS thread) or an N:1 model (all goroutines on one OS thread). What specific limitations of 1:1 and N:1 does M:N overcome?</p>
+<details><summary>Answer</summary>
+<p><strong>1:1 limitations:</strong> OS threads are expensive – each requires ~8KB kernel stack, a full <code>task_struct</code> in the kernel, and creation involves a <code>clone</code> syscall. Thread context switches require kernel transitions. A program with 100,000 goroutines would need 100,000 OS threads, consuming ~800MB of kernel stack alone and overwhelming the kernel scheduler. Go programs routinely create millions of goroutines, which is infeasible with 1:1.</p>
+<p><strong>N:1 limitations:</strong> All goroutines on a single OS thread cannot achieve parallelism on multi-core CPUs. Additionally, one blocking syscall blocks all goroutines, since there is only one thread to run them.</p>
+<p><strong>M:N overcomes both:</strong> Many goroutines (N) are multiplexed onto a smaller number of OS threads (M). This provides: true multi-core parallelism (multiple Ms running in parallel), lightweight concurrency (goroutines are cheap), and syscall resilience (blocking one M does not block other goroutines, because the P is handed to another M). The P abstraction limits parallelism to GOMAXPROCS, keeping OS thread count manageable.</p>
+</details>
+<hr>
+<h3 id="a4-modules-3-4"><a class="header" href="#a4-modules-3-4">A4 (Modules 3-4)</a></h3>
+<p>The <code>g0</code> goroutine exists on every M and has a larger, fixed-size stack. Why can’t the scheduler run on a regular goroutine’s stack? Give two specific operations that require <code>g0</code>.</p>
+<details><summary>Answer</summary>
+<p>The scheduler cannot run on a regular goroutine’s stack because:</p>
+<ol>
+<li>
+<p><strong>Stack growth:</strong> If the scheduler tried to grow a goroutine’s stack while running on that same stack, it would need to copy the memory it is currently executing on – a self-referential operation that would corrupt the active stack frame. <code>g0</code> has a fixed, large stack that never needs growing.</p>
+</li>
+<li>
+<p><strong>Context switching:</strong> When switching from one goroutine to another, the old goroutine’s state (including stack pointer) must be saved to its <code>gobuf</code>. This requires running on a different stack – you cannot save and abandon a stack while still using it.</p>
+</li>
+</ol>
+<p><strong>Two operations requiring <code>g0</code>:</strong></p>
+<ul>
+<li><code>copystack()</code>: Allocates a new stack and copies the goroutine’s stack. Must run on <code>g0</code> because it is modifying the goroutine’s stack.</li>
+<li><code>schedule()</code> and <code>findRunnable()</code>: The scheduling loop runs on <code>g0</code> via <code>mcall()</code> or <code>systemstack()</code>, because it manipulates scheduler data structures that must not be interrupted by stack growth, and because it needs a reliable stack while goroutine stacks are being swapped.</li>
+</ul>
+</details>
+<hr>
+<h3 id="a5-modules-5-6"><a class="header" href="#a5-modules-5-6">A5 (Modules 5-6)</a></h3>
+<p>The Go scheduler limits the number of “spinning” threads. Explain the tradeoff: what happens if no spinning threads are allowed? What happens if the limit is removed and all idle threads spin?</p>
+<details><summary>Answer</summary>
+<p><strong>No spinning threads:</strong> When new work arrives (a goroutine becomes runnable), there would be no thread immediately available to pick it up. An idle thread would need to be unparked from sleep, which involves a <code>futex</code> wakeup syscall and OS scheduler intervention – adding potentially 10-50 microseconds of latency before the goroutine starts running. For latency-sensitive workloads, this delay is significant.</p>
+<p><strong>All idle threads spinning:</strong> Every idle M would be in a busy loop consuming 100% of its CPU core, checking run queues, the global queue, and the network poller repeatedly. On a 64-core machine with only a few goroutines, 60+ cores would be spinning uselessly, wasting power and competing for memory bandwidth and cache. The system would also show 100% CPU utilization even when the Go program has little actual work.</p>
+<p><strong>The balance:</strong> Go allows one spinning thread (approximately). This ensures at least one thread is always ready to immediately pick up new work (low latency), while all other idle threads park (low power/CPU waste). When the single spinning thread finds work, it wakes another thread to spin in its place, maintaining the invariant.</p>
+</details>
+<hr>
+<h3 id="a6-modules-5-6"><a class="header" href="#a6-modules-5-6">A6 (Modules 5-6)</a></h3>
+<p>Compare how Go’s <code>sync.Mutex</code> and the runtime’s internal <code>runtime.mutex</code> handle contention. What happens when a goroutine blocks on each? Why are two different mutex implementations necessary?</p>
+<details><summary>Answer</summary>
+<p><strong><code>runtime.mutex</code> (internal):</strong> When contended, blocks the entire OS thread using <code>futexsleep()</code>. The thread enters the kernel and sleeps until <code>futexwakeup()</code> is called by the unlocker. The Go scheduler cannot schedule other goroutines on this blocked M because the M itself is asleep in the kernel.</p>
+<p><strong><code>sync.Mutex</code> (user-facing):</strong> When contended, parks the goroutine (not the thread) using <code>runtime_SemacquireMutex</code>, which calls <code>gopark()</code>. The M and P remain active and can schedule other goroutines. Only the specific goroutine is blocked. Additionally, <code>sync.Mutex</code> has two modes (normal and starvation) with spinning on the fast path before parking.</p>
+<p><strong>Why two implementations:</strong> <code>runtime.mutex</code> is used to protect scheduler internals (run queues, P state, etc.). Using <code>sync.Mutex</code> there would create a circular dependency – <code>gopark</code> uses the scheduler, and the scheduler uses these locks. You cannot park a goroutine while modifying the data structures that manage goroutine parking. <code>runtime.mutex</code> operates at a lower level (OS thread) to break this circularity.</p>
+</details>
+<hr>
+<h3 id="a7-modules-7-8"><a class="header" href="#a7-modules-7-8">A7 (Modules 7-8)</a></h3>
+<p>When sending a value on an unbuffered channel and a receiver is already waiting, Go copies the value directly from the sender’s stack to the receiver’s stack. Explain why this is safe even though writing to another goroutine’s stack is normally forbidden.</p>
+<details><summary>Answer</summary>
+<p>This direct copy is safe because of several guarantees at the point it occurs:</p>
+<ol>
+<li>
+<p><strong>The receiver is in <code>_Gwaiting</code> state:</strong> It is parked and will not be running or modifying its own stack until <code>goready</code> is called for it. Its stack is stable.</p>
+</li>
+<li>
+<p><strong>The receiver’s stack cannot be moved:</strong> Stack growth only happens at function prologues when the goroutine is running. Since the receiver is parked, its stack cannot grow or be copied to a new location during the direct send.</p>
+</li>
+<li>
+<p><strong>The channel lock is held:</strong> The sender holds <code>c.lock</code>, ensuring no other goroutine can concurrently operate on this channel, and the receiver’s <code>sudog</code> (which contains the pointer to the receiver’s stack location, <code>sg.elem</code>) is stable.</p>
+</li>
+<li>
+<p><strong>GC safety:</strong> The GC will not scan or shrink the receiver’s stack during this operation because it must acquire the channel lock (or observe the goroutine’s status atomically) before manipulating it.</p>
+</li>
+</ol>
+<p>The key invariant is: the receiver goroutine is guaranteed to be completely stopped with a stable stack at the moment of the copy.</p>
+</details>
+<hr>
+<h3 id="a8-modules-7-8"><a class="header" href="#a8-modules-7-8">A8 (Modules 7-8)</a></h3>
+<p>Explain why Go’s garbage collector must use a write barrier during the concurrent mark phase. Give a concrete example of an object that would be incorrectly freed without it.</p>
+<details><summary>Answer</summary>
+<p>During concurrent marking, application goroutines (mutators) run simultaneously with GC mark workers. The write barrier is needed to maintain the tri-color invariant: no black object may point to a white object without an intervening grey object.</p>
+<p><strong>Concrete example:</strong></p>
+<ol>
+<li>Object A (black, already scanned) has a pointer to object B (grey).</li>
+<li>Object B has a pointer to object C (white, not yet discovered).</li>
+<li>The mutator executes: <code>A.ptr = C; B.ptr = nil</code> (moves C’s only reference from B to A).</li>
+<li>Without a write barrier: The GC scans B (greying it -&gt; black), but B no longer points to C. A is already black and will not be rescanned. C remains white.</li>
+<li>Marking finishes: C is white (unreachable by the GC’s reckoning) and is freed.</li>
+<li><strong>Bug:</strong> A still points to C, which has been freed. A has a dangling pointer.</li>
+</ol>
+<p>With the write barrier, step 3 would:</p>
+<ul>
+<li>Grey C when the pointer <code>A.ptr = C</code> is written (Dijkstra insertion barrier), ensuring C is discovered; AND/OR</li>
+<li>Grey C when <code>B.ptr = nil</code> deletes the reference (Yuasa deletion barrier), preserving the snapshot.</li>
+</ul>
+<p>Go’s hybrid barrier combines both, allowing stacks to be treated as always-black after initial scanning.</p>
+</details>
+<hr>
+<h3 id="a9-modules-9-10"><a class="header" href="#a9-modules-9-10">A9 (Modules 9-10)</a></h3>
+<p>A goroutine’s stack starts at 2KB and doubles when it needs to grow. Explain the amortized cost argument for why this is efficient. What is the total copy work done for a goroutine that ultimately needs a 64KB stack?</p>
+<details><summary>Answer</summary>
+<p>The doubling strategy ensures amortized O(1) cost per stack frame push, analogous to dynamic array resizing:</p>
+<p>When a 2KB stack is full, a 4KB stack is allocated and 2KB is copied. When 4KB is full, 8KB is allocated and ~4KB is copied. And so on.</p>
+<p><strong>For a goroutine needing 64KB:</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Growth step</th><th>Old size</th><th>New size</th><th>Bytes copied</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>2KB</td><td>4KB</td><td>2KB</td></tr>
+<tr><td>2</td><td>4KB</td><td>8KB</td><td>4KB</td></tr>
+<tr><td>3</td><td>8KB</td><td>16KB</td><td>8KB</td></tr>
+<tr><td>4</td><td>16KB</td><td>32KB</td><td>16KB</td></tr>
+<tr><td>5</td><td>32KB</td><td>64KB</td><td>32KB</td></tr>
+</tbody>
+</table>
+</div>
+<p>Total bytes copied: 2 + 4 + 8 + 16 + 32 = 62KB, which is slightly less than 2 x 64KB = 128KB.</p>
+<p>In general, the total copy work is bounded by 2 * final_size. Since the goroutine uses final_size bytes of stack over its lifetime, the amortized overhead is at most 2x – a constant factor. Each function call contributes O(1) amortized copying cost.</p>
+<p>With additive growth (e.g., +4KB each time), the total copying would be O(n^2), making deep recursion catastrophically expensive.</p>
+</details>
+<hr>
+<h3 id="a10-modules-9-10"><a class="header" href="#a10-modules-9-10">A10 (Modules 9-10)</a></h3>
+<p>Explain why regular file I/O in Go does not use the network poller (epoll/kqueue), while socket I/O does. What is the scheduling cost of this difference?</p>
+<details><summary>Answer</summary>
+<p><strong>Technical reason:</strong> <code>epoll</code> and <code>kqueue</code> do not support regular files. These multiplexing interfaces are designed for file descriptors that have meaningful “readiness” states (data available, connection accepted, write buffer space). Regular files on local filesystems are always reported as “ready” by epoll – the kernel always allows the read/write call, even though the actual I/O may block waiting for disk. There is no mechanism for the kernel to notify when a disk read completes asynchronously via epoll.</p>
+<p><strong>Scheduling cost:</strong> Network I/O parks the goroutine in user space (<code>gopark</code> via <code>pollDesc</code>) – the M and P remain available for other goroutines. File I/O blocks the entire M in a kernel syscall. The runtime must:</p>
+<ol>
+<li>Detach the P from the blocked M (via <code>entersyscall</code> / <code>sysmon</code> retake).</li>
+<li>Potentially create a new M to run goroutines on the freed P.</li>
+<li>When the I/O completes, the M must reacquire a P.</li>
+</ol>
+<p>This means file I/O is more expensive from a scheduling perspective: it causes M creation (OS thread allocation), P handoffs, and context switches. A server doing 10,000 concurrent file reads might create 10,000 OS threads, whereas 10,000 concurrent socket reads need only GOMAXPROCS threads.</p>
+<p>Modern solutions like <code>io_uring</code> on Linux could eventually allow file I/O to use a poller-like mechanism.</p>
+</details>
+<hr>
+<h2 id="part-b-code-reading-36-points-12-points-each"><a class="header" href="#part-b-code-reading-36-points-12-points-each">Part B: Code Reading (36 points, 12 points each)</a></h2>
+<p>For each question, read the provided Go runtime code and answer the questions.</p>
+<hr>
+<h3 id="b1-channel-send-with-waiting-receiver"><a class="header" href="#b1-channel-send-with-waiting-receiver">B1: Channel Send with Waiting Receiver</a></h3>
+<p>The following is a simplified version of code from <code>runtime/chan.go</code> in the <code>chansend</code> function. This is the path taken when sending on a channel that has a goroutine waiting to receive.</p>
+<pre><code class="language-go">func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
+	// ... (nil check, fast-path checks omitted) ...
+
+	lock(&amp;c.lock)
+
+	if c.closed != 0 {
+		unlock(&amp;c.lock)
+		panic(plainError("send on closed channel"))
+	}
+
+	if sg := c.recvq.dequeue(); sg != nil {
+		// Found a waiting receiver. We pass the value directly to
+		// the receiver, bypassing the channel buffer (if any).
+		send(c, sg, ep, func() { unlock(&amp;c.lock) }, 3)
+		return true
+	}
+
+	// ... (buffered path, blocking path omitted) ...
+}
+
+func send(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
+	if sg.elem != nil {
+		sendDirect(c.elemtype, sg, ep)
+		sg.elem = nil
+	}
+	gp := sg.g
+	unlockf()
+	gp.param = unsafe.Pointer(sg)
+	goready(gp, skip+1)
+}
+</code></pre>
+<p><strong>(a)</strong> (4 points) Why does <code>send()</code> call <code>sendDirect</code> before <code>unlockf()</code> but call <code>goready</code> after <code>unlockf()</code>? What would go wrong if these were reordered?</p>
+<p><strong>(b)</strong> (4 points) The function passes <code>unlockf</code> as a closure rather than calling <code>unlock(&amp;c.lock)</code> directly inside <code>send()</code>. What design flexibility does this provide?</p>
+<p><strong>(c)</strong> (4 points) Explain what <code>gp.param = unsafe.Pointer(sg)</code> accomplishes. How does the receiver goroutine use this value when it wakes up?</p>
+<details><summary>Answer</summary>
+<p><strong>(a)</strong> <code>sendDirect</code> copies data to the receiver’s stack (<code>sg.elem</code>). This must happen while the lock is held because:</p>
+<ul>
+<li>The lock prevents the receiver from being woken by another send or a close operation.</li>
+<li>It ensures <code>sg.elem</code> is still valid (pointing to the receiver’s stack location).</li>
+<li>If <code>unlockf()</code> were called first, another goroutine could modify the channel state or even wake the receiver before the data is copied, leading to a data race or the receiver seeing uninitialized data.</li>
+</ul>
+<p><code>goready</code> is called after <code>unlockf()</code> because:</p>
+<ul>
+<li><code>goready</code> makes the goroutine runnable, which involves modifying scheduler state. The comment in <code>hchan</code> says “Do not change another G’s status while holding this lock… as this can deadlock with stack shrinking.”</li>
+<li>Holding <code>c.lock</code> while calling <code>goready</code> could cause lock ordering violations if the woken goroutine immediately tries to operate on the same channel.</li>
+</ul>
+<p><strong>(b)</strong> Passing <code>unlockf</code> as a closure allows <code>send()</code> to be called from different contexts with different cleanup actions. For example, <code>selectgo</code> may need to perform additional cleanup (dequeuing from multiple channels) in the unlock function. The closure pattern lets <code>send()</code> be agnostic about what cleanup is needed – the caller specifies it. It also allows the unlock to happen at precisely the right point in the <code>send</code> sequence (after data copy, before <code>goready</code>).</p>
+<p><strong>(c)</strong> <code>gp.param = unsafe.Pointer(sg)</code> passes the <code>sudog</code> pointer to the receiver goroutine as a “return value” from <code>gopark</code>. When the receiver was parked in <code>chanrecv</code>, it called <code>gopark</code> and saved its <code>sudog</code>. When it wakes up, it reads <code>gp.param</code> to find the <code>sudog</code> that completed the operation. This tells the receiver:</p>
+<ul>
+<li>That the send completed successfully (vs. being woken by a channel close, where <code>sg.success</code> would be false).</li>
+<li>Which <code>sudog</code> was involved (important for <code>select</code> statements where a goroutine may have multiple pending <code>sudog</code>s).
+The receiver checks <code>sg.success</code> to determine if it received a valid value or if the channel was closed.</li>
+</ul>
+</details>
+<hr>
+<h3 id="b2-work-stealing"><a class="header" href="#b2-work-stealing">B2: Work Stealing</a></h3>
+<p>The following code is from <code>runtime/proc.go</code>:</p>
+<pre><code class="language-go">func stealWork(now int64) (gp *g, inheritTime bool, rnow, pollUntil int64, newWork bool) {
+	pp := getg().m.p.ptr()
+
+	ranTimer := false
+
+	const stealTries = 4
+	for i := 0; i &lt; stealTries; i++ {
+		stealTimersOrRunNextG := i == stealTries-1
+
+		for enum := stealOrder.start(cheaprand()); !enum.done(); enum.next() {
+			if sched.gcwaiting.Load() {
+				return nil, false, now, pollUntil, true
+			}
+			p2 := allp[enum.position()]
+			if pp == p2 {
+				continue
+			}
+
+			// ... (timer stealing on last iteration) ...
+
+			// Don't bother to attempt to steal if p2 is idle.
+			if !idlepMask.read(enum.position()) {
+				if gp := runqsteal(pp, p2, stealTimersOrRunNextG); gp != nil {
+					return gp, false, now, pollUntil, newWork
+				}
+			}
+		}
+	}
+	// ... (return nil if nothing found) ...
+}
+</code></pre>
+<p><strong>(a)</strong> (4 points) <code>stealOrder.start(cheaprand())</code> returns an enumerator that visits all Ps in a pseudo-random order. Why is this preferable to iterating <code>allp[0], allp[1], ..., allp[N-1]</code> in order?</p>
+<p><strong>(b)</strong> (4 points) The code checks <code>!idlepMask.read(enum.position())</code> before attempting to steal. Why is it safe to skip idle Ps? Could this check cause the stealer to miss work?</p>
+<p><strong>(c)</strong> (4 points) The function returns <code>inheritTime = false</code> for stolen goroutines, unlike goroutines from <code>runnext</code> which return <code>inheritTime = true</code>. Explain the scheduling consequence of this difference.</p>
+<details><summary>Answer</summary>
+<p><strong>(a)</strong> If all stealers iterate in the same order, they all try to steal from P0 first, then P1, etc. This causes:</p>
+<ul>
+<li><strong>Contention:</strong> Multiple stealers simultaneously CAS on P0’s run queue, causing atomic operation retries.</li>
+<li><strong>Unfair draining:</strong> P0 would lose goroutines disproportionately, while higher-numbered Ps retain them.</li>
+<li><strong>Correlated behavior:</strong> Stealers would cluster on the same victims, reducing the effective parallelism of the stealing phase.</li>
+</ul>
+<p>Random starting positions spread stealers across different victims, minimizing contention and distributing the load of being stolen from more evenly.</p>
+<p><strong>(b)</strong> If a P is idle (<code>idlepMask</code> bit is set), it has no M running goroutines on it. An idle P’s run queue is expected to be empty (work would have been taken when the P went idle). Skipping it avoids a wasted <code>runqsteal</code> call (which involves atomic operations on the victim’s queue).</p>
+<p>This check COULD theoretically cause a miss: a goroutine could be added to an idle P’s run queue (e.g., by <code>runqput</code> from another P via timer firing) between the idle check and the steal attempt. However, this is benign because:</p>
+<ul>
+<li>The P going from idle to having work will trigger <code>wakep()</code>, which starts a new M.</li>
+<li>The stealer will retry up to 4 times. The idle mask is re-read on each iteration.</li>
+<li>Even if missed, the goroutine will be found on the next scheduling round.</li>
+</ul>
+<p><strong>(c)</strong> <code>inheritTime = true</code> means the goroutine inherits the remaining time slice of the previously running goroutine. This is used for <code>runnext</code> because that goroutine was readied by the current goroutine (e.g., a channel send waking a receiver) and should run as part of the same “scheduling unit” to preserve locality.</p>
+<p><code>inheritTime = false</code> means the goroutine gets a fresh time slice. Stolen goroutines should not inherit time because:</p>
+<ul>
+<li>The stealer’s P may have had its time slice mostly consumed by a different goroutine.</li>
+<li>Inheriting a nearly-expired time slice would cause the stolen goroutine to be immediately preempted.</li>
+<li>The stolen goroutine is running on a different P than it was created for, so time slice inheritance has no locality benefit.</li>
+</ul>
+<p>A fresh time slice ensures stolen goroutines get fair CPU time on their new P.</p>
+</details>
+<hr>
+<h3 id="b3-stack-growth"><a class="header" href="#b3-stack-growth">B3: Stack Growth</a></h3>
+<p>The following code is from <code>runtime/stack.go</code> (simplified):</p>
+<pre><code class="language-go">func newstack() {
+	thisg := getg()
+
+	gp := thisg.m.curg
+
+	// ... (preemption check omitted) ...
+
+	oldsize := gp.stack.hi - gp.stack.lo
+	newsize := oldsize * 2
+
+	// Make sure we grow at least as much as needed.
+	if f := findfunc(gp.sched.pc); f.valid() {
+		max := uintptr(funcMaxSPDelta(f))
+		needed := max + stackGuard
+		used := gp.stack.hi - gp.sched.sp
+		for newsize-used &lt; needed {
+			newsize *= 2
+		}
+	}
+
+	if newsize &gt; maxstacksize {
+		throw("stack overflow")
+	}
+
+	casgstatus(gp, _Grunning, _Gcopystack)
+	copystack(gp, newsize)
+	casgstatus(gp, _Gcopystack, _Grunning)
+}
+</code></pre>
+<p><strong>(a)</strong> (4 points) Why does the function change the goroutine status to <code>_Gcopystack</code> during the copy? What would go wrong if it stayed in <code>_Grunning</code>?</p>
+<p><strong>(b)</strong> (4 points) The code calculates <code>needed</code> based on <code>funcMaxSPDelta</code> and may grow by more than 2x. Under what circumstances would doubling not be sufficient?</p>
+<p><strong>(c)</strong> (4 points) After <code>copystack</code> returns, all pointers within the stack have been adjusted. But what about pointers from the heap into the stack (e.g., a heap object containing a pointer to a stack-allocated variable)? How does Go handle this?</p>
+<details><summary>Answer</summary>
+<p><strong>(a)</strong> The <code>_Gcopystack</code> status serves as a synchronization signal to other parts of the runtime:</p>
+<ul>
+<li><strong>GC safety:</strong> The garbage collector checks goroutine status before scanning stacks. If a goroutine is in <code>_Gcopystack</code>, the GC knows the stack is being moved and must not scan it (the pointers are being adjusted and would be inconsistent).</li>
+<li><strong>Stack shrinking:</strong> The GC’s <code>shrinkstack</code> also checks status and skips goroutines in <code>_Gcopystack</code>.</li>
+<li><strong>Channel operations:</strong> <code>sendDirect</code>/<code>recvDirect</code> write to another goroutine’s stack. If that goroutine’s stack is being copied, the write would go to the old (soon-to-be-freed) memory. The <code>_Gcopystack</code> status prevents concurrent channel operations from writing to the stack.</li>
+</ul>
+<p>If the goroutine stayed in <code>_Grunning</code>, the GC or channel operations could access the stack during the copy, reading inconsistent pointer values or writing to the wrong memory location.</p>
+<p><strong>(b)</strong> Doubling may not be sufficient when a function has a very large stack frame. <code>funcMaxSPDelta</code> returns the maximum stack pointer delta for the function at <code>gp.sched.pc</code> – this is the stack space the function will need. If the function has a local variable like <code>var buf [65536]byte</code>, it needs 64KB of stack space in a single frame.</p>
+<p>If the current stack is 4KB and the function needs 64KB, doubling to 8KB is insufficient. The <code>for</code> loop keeps doubling (<code>8KB -&gt; 16KB -&gt; 32KB -&gt; 64KB -&gt; 128KB</code>) until <code>newsize - used &gt;= needed</code>. This ensures the new stack can accommodate the function that triggered the growth, even if it has an unusually large frame.</p>
+<p><strong>(c)</strong> Go does NOT allow pointers from the heap into the stack. This is a key invariant enforced by the compiler’s escape analysis:</p>
+<ul>
+<li>If a variable’s address escapes (is stored in a heap object, returned from a function, captured by a goroutine), the compiler allocates it on the heap instead of the stack.</li>
+<li>The escape analysis rule ensures that stack-allocated variables are only referenced by stack frames above them in the call chain (which are also on the same stack and will be adjusted by <code>copystack</code>).</li>
+</ul>
+<p>This invariant is what makes stack copying feasible. If heap-to-stack pointers existed, <code>copystack</code> would need to find and update every heap object pointing into the stack, which would be prohibitively expensive (it would require scanning the entire heap).</p>
+<p>The one exception is <code>sudog.elem</code> in channel operations, which is explicitly handled by <code>adjustsudogs</code> during stack copy.</p>
+</details>
+<hr>
+<h2 id="part-c-design-questions-24-points-12-points-each"><a class="header" href="#part-c-design-questions-24-points-12-points-each">Part C: Design Questions (24 points, 12 points each)</a></h2>
+<p>Answer each question in approximately one page (300-500 words). Credit will be given for clarity of reasoning, identification of tradeoffs, and supporting evidence from the Go runtime.</p>
+<hr>
+<h3 id="c1-alternative-memory-allocator-design"><a class="header" href="#c1-alternative-memory-allocator-design">C1: Alternative Memory Allocator Design</a></h3>
+<p>Go’s current memory allocator uses a three-level hierarchy: <code>mcache</code> (per-P, lock-free) -&gt; <code>mcentral</code> (per-size-class, locked) -&gt; <code>mheap</code> (global, locked). A colleague proposes replacing this with a simpler two-level design:</p>
+<ul>
+<li><strong>Level 1:</strong> Per-P free lists for each size class (similar to <code>mcache</code> but with more capacity – each P caches up to 1MB of free objects per size class).</li>
+<li><strong>Level 2:</strong> A global allocator that uses <code>mmap</code> directly whenever a per-P cache is empty.</li>
+</ul>
+<p>Analyze this proposal. Consider:</p>
+<ul>
+<li>Performance on allocation-heavy workloads with many goroutines.</li>
+<li>Memory overhead and waste when some Ps are busy with one size class and others are idle.</li>
+<li>Interaction with the garbage collector’s sweep phase.</li>
+<li>What problems does <code>mcentral</code> solve that this design would reintroduce?</li>
+</ul>
+<details><summary>Answer</summary>
+<p><strong>Performance on allocation-heavy workloads:</strong> The fast path (allocating from the per-P cache) would be similar in performance to the current design – no lock contention. However, when a P’s cache is empty, it must call <code>mmap</code>, which is a system call (thousands of nanoseconds) compared to <code>mcentral</code>’s lock acquisition (tens of nanoseconds in the uncontended case). Under allocation-heavy workloads, cache misses would cause frequent <code>mmap</code> calls, which are orders of magnitude slower than getting a span from <code>mcentral</code>. The current <code>mcentral</code> acts as a fast “refill” mechanism that avoids syscalls.</p>
+<p><strong>Memory overhead and waste:</strong> With 1MB per size class per P, and ~70 size classes, each P would cache up to 70MB. With <code>GOMAXPROCS=64</code>, that is 4.5GB of cached free objects. Most of this would be wasted because real programs use only a few size classes heavily. The current <code>mcache</code> keeps only one active span per size class (typically 8-64KB), totaling ~1-4MB per P. The <code>mcentral</code> acts as a shared pool that redistributes spans between Ps based on demand – if P1 needs lots of 48-byte objects and P2 needs 128-byte objects, <code>mcentral</code> directs spans accordingly.</p>
+<p><strong>GC interaction:</strong> The sweep phase marks spans as free. Currently, swept spans return to <code>mcentral</code>, where any P can claim them. With the proposed design, swept memory would need to go directly to a specific P’s cache or to the global allocator. If it goes to a specific P, that P may not need it (wasting memory). If it goes to the global allocator, subsequent allocations of that size class would require <code>mmap</code>-level operations to reclaim it.</p>
+<p><strong>What <code>mcentral</code> solves:</strong> It provides <strong>cross-P memory redistribution</strong> without syscalls. When P1 frees many 32-byte objects and P2 needs them, <code>mcentral</code> facilitates this transfer with just a lock acquisition. Without it, P1’s freed memory would either sit in P1’s oversized cache (waste) or be returned via <code>munmap</code> and re-obtained via <code>mmap</code> for P2 (expensive). <code>mcentral</code> also provides natural <strong>flow control</strong>: when a P’s span is exhausted, it gets another span (not individual objects), amortizing the lock acquisition cost over hundreds of allocations.</p>
+<p>The three-level design exists precisely because the extremes (fully local = memory waste, fully global = lock contention) are both bad. <code>mcentral</code> provides a balanced middle ground.</p>
+</details>
+<hr>
+<h3 id="c2-channel-vs-shared-memory-for-concurrency"><a class="header" href="#c2-channel-vs-shared-memory-for-concurrency">C2: Channel vs. Shared Memory for Concurrency</a></h3>
+<p>Go’s motto “Do not communicate by sharing memory; instead, share memory by communicating” promotes channels as the primary concurrency primitive. However, the standard library also provides <code>sync.Mutex</code>, <code>sync.RWMutex</code>, <code>sync.Map</code>, and <code>sync/atomic</code>.</p>
+<p>Analyze the tradeoffs between channels and shared-memory primitives for the following scenarios, using your knowledge of their internal implementations:</p>
+<ol>
+<li><strong>High-frequency counter</strong> (millions of increments per second from many goroutines).</li>
+<li><strong>Request routing</strong> (distributing incoming requests to a pool of worker goroutines).</li>
+<li><strong>Cache with read-heavy workload</strong> (95% reads, 5% writes).</li>
+</ol>
+<p>For each scenario, recommend the best primitive and justify your choice based on implementation-level costs (lock acquisition, goroutine parking, memory allocation, cache coherence).</p>
+<details><summary>Answer</summary>
+<p><strong>1. High-frequency counter:</strong></p>
+<p><strong>Recommendation: <code>sync/atomic.AddInt64</code></strong></p>
+<p>Channels are the worst choice here. Each channel send involves: acquiring <code>c.lock</code>, checking for receivers, copying the value to the buffer or directly, potentially calling <code>goready</code>. This is ~100-200ns per operation. A mutex-protected counter requires <code>sync.Mutex.Lock()</code> (futex-based semaphore, ~50-100ns under contention), increment, unlock.</p>
+<p><code>atomic.AddInt64</code> is a single <code>LOCK XADD</code> instruction (~5-20ns), with no goroutine parking, no lock acquisition, and no memory allocation. For millions of increments per second, the 10-40x performance difference is decisive.</p>
+<p><strong>2. Request routing to worker pool:</strong></p>
+<p><strong>Recommendation: Buffered channel</strong></p>
+<p>This is the ideal channel use case. A buffered <code>chan *Request</code> serves as a work queue. Implementation costs are well-amortized:</p>
+<ul>
+<li>Producers <code>Send</code> to the channel (~50-100ns with buffer space available: lock, enqueue, unlock).</li>
+<li>Workers <code>Recv</code> from the channel, parking when idle (no CPU consumption while waiting).</li>
+<li>The channel’s <code>runnext</code> optimization ensures a worker that just finished a request (and is likely “warm” with request-handling code in cache) gets the next request quickly.</li>
+</ul>
+<p>Alternatives like a <code>sync.Mutex</code>-protected queue require busy-polling or <code>sync.Cond</code> signaling, which channels already encapsulate more elegantly. The channel also provides natural backpressure (senders block when the buffer is full).</p>
+<p><strong>3. Read-heavy cache:</strong></p>
+<p><strong>Recommendation: <code>sync.RWMutex</code> protecting a <code>map</code></strong></p>
+<p>With 95% reads, <code>sync.RWMutex</code> excels: <code>RLock</code> allows concurrent readers, so read throughput scales linearly with cores. Each <code>RLock</code>/<code>RUnlock</code> is an atomic add/subtract on <code>readerCount</code> (~10-20ns), with no goroutine parking needed in the common case.</p>
+<p>Using a channel for a cache would require a “cache server” goroutine pattern: all reads and writes are sent as messages to a single goroutine that owns the map. This serializes ALL operations (reads and writes) through one goroutine, destroying read parallelism. A read that would take 20ns with <code>RWMutex</code> would take 200+ns through a channel (send request + receive response, with goroutine scheduling overhead).</p>
+<p><code>sync.Map</code> is another option, optimized for the case where keys are stable (few writes). It uses a read-only map with atomic access (zero contention for reads) and a dirty map for writes. For truly read-heavy workloads with stable key sets, <code>sync.Map</code> can outperform <code>RWMutex</code> by avoiding even the atomic increment of <code>readerCount</code>. However, for workloads with non-trivial write rates, <code>sync.Map</code>’s promotion cost (copying dirty map to read-only map) can cause latency spikes.</p>
+<p><strong>Summary:</strong> The choice depends on the communication pattern. Channels excel when goroutines need to coordinate sequentially (pipelines, fan-out/fan-in). Shared memory primitives excel when the operation is simple (counter), read-dominated (cache), or when goroutine scheduling overhead would dominate the actual work.</p>
+</details>
+<hr>
+<p><em>End of Exam</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../assignments/assignment3.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../extras/glossary.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../assignments/assignment3.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../extras/glossary.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Code Walkthrough - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="guided-code-walkthrough-life-of-a-goroutine"><a class="header" href="#guided-code-walkthrough-life-of-a-goroutine">Guided Code Walkthrough: Life of a Goroutine</a></h1>
+<p>This walkthrough traces the complete lifecycle of a goroutine through the Go runtime
+source code, connecting every module in the course. Use this as a capstone exercise
+or a guided self-study activity.</p>
+<hr>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<p>Open the Go source tree to <code>src/runtime/</code>. You’ll need these files:</p>
+<ul>
+<li><code>proc.go</code> — scheduler</li>
+<li><code>runtime2.go</code> — data structures</li>
+<li><code>chan.go</code> — channels</li>
+<li><code>stack.go</code> — stack management</li>
+<li><code>malloc.go</code> — memory allocation</li>
+</ul>
+<p>We’ll trace what happens when you write:</p>
+<pre><code class="language-go">func main() {
+    ch := make(chan int, 1)
+    go func() {
+        ch &lt;- 42
+    }()
+    fmt.Println(&lt;-ch)
+}
+</code></pre>
+<hr>
+<h2 id="phase-1-goroutine-creation-go-func"><a class="header" href="#phase-1-goroutine-creation-go-func">Phase 1: Goroutine Creation (<code>go func()</code>)</a></h2>
+<p><strong>Start at:</strong> <code>proc.go</code> — search for <code>func newproc(</code></p>
+<p>When the compiler sees <code>go func() { ... }</code>, it emits a call to <code>newproc</code>.</p>
+<h3 id="step-11-newproc"><a class="header" href="#step-11-newproc">Step 1.1: newproc</a></h3>
+<pre><code>proc.go:newproc()
+</code></pre>
+<ul>
+<li>Gets the caller’s PC (program counter)</li>
+<li>Calls <code>newproc1()</code> with the function value and caller info</li>
+</ul>
+<h3 id="step-12-newproc1"><a class="header" href="#step-12-newproc1">Step 1.2: newproc1</a></h3>
+<pre><code>proc.go:newproc1()
+</code></pre>
+<ul>
+<li>Tries to reuse a dead goroutine from the P’s free list (<code>gfget</code>)</li>
+<li>If none available, allocates a new <code>g</code> struct with <code>malg(stackMin)</code>
+<ul>
+<li>This allocates a <strong>2KB stack</strong> (see Module 9)</li>
+<li><code>stackalloc()</code> in <code>stack.go</code> handles the allocation from per-P pools</li>
+</ul>
+</li>
+<li>Initializes the goroutine:
+<ul>
+<li>Sets up the <code>gobuf</code> (saved registers) so that when the goroutine is scheduled,
+it starts executing the target function</li>
+<li>Sets <code>gp.startpc</code> to the function’s address</li>
+<li>Assigns a new goroutine ID (<code>goidgen</code>)</li>
+<li>Sets status to <code>_Grunnable</code></li>
+</ul>
+</li>
+<li>Puts the new goroutine on the current P’s run queue via <code>runqput()</code></li>
+</ul>
+<h3 id="step-13-runqput"><a class="header" href="#step-13-runqput">Step 1.3: runqput</a></h3>
+<pre><code>proc.go:runqput()
+</code></pre>
+<ul>
+<li>If <code>next=true</code>: stores the goroutine in <code>pp.runnext</code> (priority slot)
+<ul>
+<li>Any goroutine already in <code>runnext</code> gets pushed to the regular queue</li>
+</ul>
+</li>
+<li>Otherwise: appends to the circular buffer <code>pp.runq[tail]</code></li>
+<li>If the local queue is full (256 entries): calls <code>runqputslow()</code> to move
+half the queue to the global run queue</li>
+</ul>
+<h3 id="step-14-wakep"><a class="header" href="#step-14-wakep">Step 1.4: wakep</a></h3>
+<pre><code>proc.go:wakep()
+</code></pre>
+<ul>
+<li>Called after adding work to ensure an M is available to run it</li>
+<li>If there’s an idle P and no spinning threads, starts or wakes an M</li>
+</ul>
+<p><strong>Connection to Module 4:</strong> This is the goroutine creation lifecycle.
+<strong>Connection to Module 5:</strong> wakep triggers the spinning thread mechanism.</p>
+<hr>
+<h2 id="phase-2-scheduling"><a class="header" href="#phase-2-scheduling">Phase 2: Scheduling</a></h2>
+<p><strong>Start at:</strong> <code>proc.go</code> — search for <code>func schedule(</code></p>
+<p>An idle M (or one that just finished running a goroutine) calls <code>schedule()</code>.</p>
+<h3 id="step-21-schedule"><a class="header" href="#step-21-schedule">Step 2.1: schedule</a></h3>
+<pre><code>proc.go:schedule()
+</code></pre>
+<ul>
+<li>Calls <code>findRunnable()</code> to find a goroutine to run</li>
+<li>This call <strong>blocks</strong> until work is available</li>
+</ul>
+<h3 id="step-22-findrunnable"><a class="header" href="#step-22-findrunnable">Step 2.2: findRunnable</a></h3>
+<pre><code>proc.go:findRunnable()
+</code></pre>
+<p>The priority order for finding work:</p>
+<ol>
+<li>Check for trace reader goroutines</li>
+<li>Check for GC work</li>
+<li>Every 61st tick: check the <strong>global run queue</strong> (fairness)</li>
+<li>Check for finalizer goroutines</li>
+<li>Check the <strong>local run queue</strong> via <code>runqget()</code></li>
+<li>Check the <strong>global run queue</strong> via <code>globrunqget()</code></li>
+<li>Check the <strong>network poller</strong> via <code>netpoll()</code></li>
+<li><strong>Steal from other Ps</strong> via <code>stealWork()</code></li>
+<li>If nothing found: park the P and block the M</li>
+</ol>
+<h3 id="step-23-execute"><a class="header" href="#step-23-execute">Step 2.3: execute</a></h3>
+<pre><code>proc.go:execute()
+</code></pre>
+<p>Once a runnable goroutine is found:</p>
+<ul>
+<li>Sets <code>mp.curg = gp</code> and <code>gp.m = mp</code> (link M and G)</li>
+<li>Transitions status from <code>_Grunnable</code> to <code>_Grunning</code></li>
+<li>Calls <code>gogo(&amp;gp.sched)</code> — an assembly function that restores the goroutine’s
+saved registers and jumps to its code</li>
+</ul>
+<p><strong>The goroutine is now running.</strong> It executes on the M’s OS thread, using the P’s
+resources (mcache for allocation, local run queue for spawning children).</p>
+<p><strong>Connection to Module 5:</strong> Work stealing in step 2.2.
+<strong>Connection to Module 10:</strong> Network poller integration in step 2.2.</p>
+<hr>
+<h2 id="phase-3-channel-send-blocking"><a class="header" href="#phase-3-channel-send-blocking">Phase 3: Channel Send (Blocking)</a></h2>
+<p><strong>Start at:</strong> <code>chan.go</code> — search for <code>func chansend(</code></p>
+<p>Our goroutine executes <code>ch &lt;- 42</code>.</p>
+<h3 id="step-31-chansend"><a class="header" href="#step-31-chansend">Step 3.1: chansend</a></h3>
+<pre><code>chan.go:chansend()
+</code></pre>
+<p>Since the channel is buffered (size 1) and empty:</p>
+<ul>
+<li>Acquires <code>c.lock</code></li>
+<li>Checks if any receiver is waiting on <code>c.recvq</code> — none yet</li>
+<li>Checks if buffer has space (<code>c.qcount &lt; c.dataqsiz</code>) — yes</li>
+<li>Copies the value into the circular buffer at <code>c.buf[c.sendx]</code></li>
+<li>Increments <code>c.sendx</code> and <code>c.qcount</code></li>
+<li>Releases <code>c.lock</code></li>
+<li>Returns (goroutine is not blocked in this case)</li>
+</ul>
+<p><strong>If the buffer were full</strong>, the goroutine would:</p>
+<ul>
+<li>Create a <code>sudog</code> struct referencing itself</li>
+<li>Enqueue on <code>c.sendq</code></li>
+<li>Call <code>gopark()</code> to block</li>
+</ul>
+<h3 id="step-32-gopark-when-blocking-occurs"><a class="header" href="#step-32-gopark-when-blocking-occurs">Step 3.2: gopark (when blocking occurs)</a></h3>
+<pre><code>proc.go:gopark()
+</code></pre>
+<ul>
+<li>Saves the unlock function and lock pointer to the M</li>
+<li>Calls <code>mcall(park_m)</code> to switch from user goroutine to g0</li>
+</ul>
+<h3 id="step-33-park_m"><a class="header" href="#step-33-park_m">Step 3.3: park_m</a></h3>
+<pre><code>proc.go:park_m()
+</code></pre>
+<ul>
+<li>Transitions goroutine from <code>_Grunning</code> to <code>_Gwaiting</code></li>
+<li>Calls the unlock function (releases the channel lock)</li>
+<li>Calls <code>schedule()</code> to find other work</li>
+</ul>
+<p><strong>Connection to Module 7:</strong> Channel send/receive mechanics.
+<strong>Connection to Module 4:</strong> gopark/schedule interaction.</p>
+<hr>
+<h2 id="phase-4-channel-receive-waking"><a class="header" href="#phase-4-channel-receive-waking">Phase 4: Channel Receive (Waking)</a></h2>
+<p><strong>Start at:</strong> <code>chan.go</code> — search for <code>func chanrecv(</code></p>
+<p>The main goroutine executes <code>&lt;-ch</code>.</p>
+<h3 id="step-41-chanrecv"><a class="header" href="#step-41-chanrecv">Step 4.1: chanrecv</a></h3>
+<pre><code>chan.go:chanrecv()
+</code></pre>
+<ul>
+<li>Acquires <code>c.lock</code></li>
+<li>Checks if any sender is waiting on <code>c.sendq</code> — no (sender already completed)</li>
+<li>Checks if buffer has data (<code>c.qcount &gt; 0</code>) — yes</li>
+<li>Copies value from <code>c.buf[c.recvx]</code> into the receiver’s variable</li>
+<li>Decrements <code>c.qcount</code></li>
+<li>Releases <code>c.lock</code></li>
+<li>Returns the value</li>
+</ul>
+<p><strong>If the buffer were empty and a sender were parked:</strong></p>
+<ul>
+<li>Dequeues the sender’s <code>sudog</code> from <code>c.sendq</code></li>
+<li>Copies the value directly from sender to receiver (bypassing buffer)</li>
+<li>Calls <code>goready()</code> on the sender’s goroutine</li>
+</ul>
+<h3 id="step-42-goready-waking-a-parked-goroutine"><a class="header" href="#step-42-goready-waking-a-parked-goroutine">Step 4.2: goready (waking a parked goroutine)</a></h3>
+<pre><code>proc.go:goready()
+</code></pre>
+<ul>
+<li>Transitions goroutine from <code>_Gwaiting</code> to <code>_Grunnable</code></li>
+<li>Puts it on the current P’s local run queue via <code>runqput()</code></li>
+<li>Calls <code>wakep()</code> to ensure an M picks it up</li>
+</ul>
+<p><strong>Connection to Module 7:</strong> Direct send optimization.
+<strong>Connection to Module 4:</strong> goready/runqput interaction.</p>
+<hr>
+<h2 id="phase-5-goroutine-exit"><a class="header" href="#phase-5-goroutine-exit">Phase 5: Goroutine Exit</a></h2>
+<p><strong>Start at:</strong> <code>proc.go</code> — search for <code>func goexit1(</code></p>
+<p>After <code>ch &lt;- 42</code> completes, the anonymous function returns. The runtime has
+arranged for the return address to be <code>goexit</code>, which calls <code>goexit1</code>.</p>
+<h3 id="step-51-goexit1"><a class="header" href="#step-51-goexit1">Step 5.1: goexit1</a></h3>
+<pre><code>proc.go:goexit1()
+</code></pre>
+<ul>
+<li>Calls <code>mcall(goexit0)</code> to switch to g0</li>
+</ul>
+<h3 id="step-52-goexit0"><a class="header" href="#step-52-goexit0">Step 5.2: goexit0</a></h3>
+<pre><code>proc.go:goexit0()
+</code></pre>
+<ul>
+<li>Transitions goroutine to <code>_Gdead</code></li>
+<li>Clears the goroutine’s fields (stack, M link, etc.)</li>
+<li>Calls <code>gdestroy()</code> to clean up</li>
+<li>Places the dead goroutine on the P’s free list for reuse (<code>gfput</code>)</li>
+<li>Calls <code>schedule()</code> to find new work</li>
+</ul>
+<p><strong>Connection to Module 3:</strong> Goroutine lifecycle states.
+<strong>Connection to Module 9:</strong> Stack is returned to the pool.</p>
+<hr>
+<h2 id="phase-6-stack-growth-if-it-happens"><a class="header" href="#phase-6-stack-growth-if-it-happens">Phase 6: Stack Growth (if it happens)</a></h2>
+<p><strong>Start at:</strong> <code>stack.go</code> — search for <code>func newstack(</code></p>
+<p>If at any point during execution, a function prologue detects that the stack
+pointer is below <code>stackguard0</code>:</p>
+<h3 id="step-61-morestack-assembly"><a class="header" href="#step-61-morestack-assembly">Step 6.1: morestack (assembly)</a></h3>
+<ul>
+<li>Saves current state</li>
+<li>Switches to g0 stack</li>
+<li>Calls <code>newstack()</code></li>
+</ul>
+<h3 id="step-62-newstack"><a class="header" href="#step-62-newstack">Step 6.2: newstack</a></h3>
+<pre><code>stack.go:newstack()
+</code></pre>
+<ul>
+<li>Checks if this is a preemption signal (<code>stackPreempt</code>) — if so, handle preemption</li>
+<li>Otherwise: allocates a new stack at <strong>2x the current size</strong></li>
+<li>Calls <code>copystack()</code> to copy the old stack contents</li>
+<li>Adjusts all pointers that reference the old stack</li>
+<li>Resumes execution on the new stack</li>
+</ul>
+<p><strong>Connection to Module 9:</strong> Contiguous stack design.
+<strong>Connection to Module 5:</strong> Preemption check piggybacks on stack check.</p>
+<hr>
+<h2 id="summary-the-complete-picture"><a class="header" href="#summary-the-complete-picture">Summary: The Complete Picture</a></h2>
+<pre><code>newproc → newproc1 → runqput → wakep
+                                 ↓
+              schedule ← findRunnable (local/global/steal/netpoll)
+                ↓
+             execute → gogo → [user code runs]
+                                 ↓
+                          gopark ← channel/lock/IO blocked
+                            ↓
+                         park_m → schedule (find other work)
+                                    ...
+                          goready ← channel/lock/IO ready
+                            ↓
+                         runqput → schedule picks it up again
+                                    ...
+                          goexit1 → goexit0 → gfput → schedule
+</code></pre>
+<p>Every arrow in this diagram is a function call you can find in the source code.
+The scheduler is not a separate thread — it runs on g0 whenever a goroutine
+voluntarily yields (gopark), is preempted, or exits.</p>
+<hr>
+<h2 id="exercise"><a class="header" href="#exercise">Exercise</a></h2>
+<p>Trace the following program through the runtime, identifying which functions are
+called and in what order. Note where goroutines block and wake up.</p>
+<pre><code class="language-go">func main() {
+    ch := make(chan string)
+
+    go func() {
+        ch &lt;- "hello"   // blocks: unbuffered channel, no receiver yet
+    }()
+
+    msg := &lt;-ch          // wakes sender, receives directly
+    fmt.Println(msg)
+}
+</code></pre>
+<p>Hint: with an unbuffered channel, the send will block (gopark) because there’s
+no receiver. When the main goroutine does <code>&lt;-ch</code>, it will find the sender in
+<code>c.sendq</code>, copy the value directly (bypassing the buffer), and call goready
+on the sender.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../extras/glossary.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../extras/experiments.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../extras/glossary.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../extras/experiments.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

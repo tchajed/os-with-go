@@ -1,0 +1,451 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Comprehension Check - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-9-goroutine-stacks-stack-growth-copying-pools"><a class="header" href="#module-9-goroutine-stacks-stack-growth-copying-pools">Module 9: Goroutine Stacks (Stack Growth, Copying, Pools)</a></h1>
+<h2 id="comprehension-check"><a class="header" href="#comprehension-check">Comprehension Check</a></h2>
+<h3 id="question-1-code-reading"><a class="header" href="#question-1-code-reading">Question 1 (Code Reading)</a></h3>
+<p>Study this excerpt from the stack growth prologue description in <code>runtime/stack.go</code>:</p>
+<pre><code>guard = g-&gt;stackguard
+frame = function's stack frame size
+argsize = size of function arguments (call + return)
+
+stack frame size &lt;= StackSmall:
+    CMPQ guard, SP
+    JHI 3(PC)
+    MOVQ m-&gt;morearg, $(argsize &lt;&lt; 32)
+    CALL morestack(SB)
+
+stack frame size &gt; StackSmall but &lt; StackBig:
+    LEAQ (frame-StackSmall)(SP), R0
+    CMPQ guard, R0
+    JHI 3(PC)
+    MOVQ m-&gt;morearg, $(argsize &lt;&lt; 32)
+    CALL morestack(SB)
+</code></pre>
+<p>Why are there different code sequences for small vs. large stack frames? What optimization does the small-frame case provide?</p>
+<details><summary>Answer</summary>
+<p><strong>Small-frame case (frame &lt;= StackSmall, typically 128 bytes):</strong>
+The prologue simply compares <code>SP</code> against <code>stackguard0</code> (<code>CMPQ guard, SP</code>). This works because the <code>stackguard</code> is set <code>StackGuard</code> bytes above the bottom of the stack, and <code>StackSmall</code> bytes of space below the guard are reserved as a safety margin. For small frames, the function’s stack usage fits within this safety margin, so a simple comparison of SP against the guard is sufficient. <strong>This is the common case and requires only one comparison instruction.</strong></p>
+<p><strong>Larger-frame case (frame &gt; StackSmall):</strong>
+The prologue subtracts the frame size (minus <code>StackSmall</code>) from SP and compares the result against the guard. This is necessary because the function will push more than <code>StackSmall</code> bytes onto the stack – the safety margin is not sufficient, so we must account for the actual frame size in the comparison.</p>
+<p><strong>Very large frames (frame &gt;= StackBig):</strong>
+These skip the comparison entirely and always call <code>morestack</code>, because the frame might need more space than the remaining stack in all cases. The frame size is passed directly to <code>morestack</code> so it can allocate enough space.</p>
+<p>The optimization is about instruction count on the hot path: most functions have small stack frames, so they get the cheapest possible check (one CMP + one conditional jump). The overhead of stack checking is kept to ~2 instructions for the common case.</p>
+</details>
+<hr>
+<h3 id="question-2-code-reading"><a class="header" href="#question-2-code-reading">Question 2 (Code Reading)</a></h3>
+<p>Consider the <code>copystack</code> function:</p>
+<pre><code class="language-go">func copystack(gp *g, newsize uintptr) {
+	old := gp.stack
+	used := old.hi - gp.sched.sp
+
+	// allocate new stack
+	new := stackalloc(uint32(newsize))
+
+	// Compute adjustment.
+	var adjinfo adjustinfo
+	adjinfo.old = old
+	adjinfo.delta = new.hi - old.hi
+
+	// Adjust sudogs, synchronizing with channel ops if necessary.
+	ncopy := used
+	...
+	// Copy the stack to the new location
+	memmove(unsafe.Pointer(new.hi-ncopy), unsafe.Pointer(old.hi-ncopy), ncopy)
+
+	// Adjust pointers in the new stack.
+	adjustctxt(gp, &amp;adjinfo)
+	adjustdefers(gp, &amp;adjinfo)
+	adjustpanics(gp, &amp;adjinfo)
+	adjustsudogs(gp, &amp;adjinfo)
+	...
+	gp.stack = new
+	gp.stackguard0 = new.lo + stackGuard
+}
+</code></pre>
+<p>What does <code>adjinfo.delta</code> represent, and why must pointers within the stack be adjusted after copying?</p>
+<details><summary>Answer</summary>
+<p><strong><code>adjinfo.delta</code></strong> is the difference between the new stack’s high address and the old stack’s high address: <code>new.hi - old.hi</code>. Since stacks grow downward, this represents how much every stack-relative pointer must be shifted.</p>
+<p><strong>Why pointer adjustment is necessary:</strong></p>
+<p>When the stack is copied to a new, larger memory region, its base address changes. Any pointer that refers to a location within the old stack now points to invalid (or freed) memory. These pointers must be adjusted by <code>delta</code> to point to the corresponding location in the new stack.</p>
+<p>Pointers that need adjustment include:</p>
+<ul>
+<li><strong>Frame pointers and return addresses</strong> on the stack itself (stack frames contain pointers to parent frames).</li>
+<li><strong><code>defer</code> records</strong> (<code>_defer</code> structs) that reference stack-allocated arguments.</li>
+<li><strong><code>panic</code> records</strong> that contain stack pointers.</li>
+<li><strong><code>sudog</code> structs</strong> that reference stack-allocated elements (e.g., the value being sent/received on a channel).</li>
+<li><strong>Context pointers</strong> (<code>gp.sched.ctxt</code>, <code>gp.sched.sp</code>, <code>gp.sched.bp</code>).</li>
+</ul>
+<p>This is also why Go switched from <strong>segmented stacks</strong> to <strong>copyable stacks</strong> in Go 1.4. Segmented stacks avoided copying but caused “hot split” problems (rapidly growing/shrinking at a segment boundary). Copyable stacks are simpler and avoid that issue, at the cost of needing pointer adjustment.</p>
+<p>Note: only pointers into the stack need adjustment. Pointers to heap objects are unchanged because the heap does not move.</p>
+</details>
+<hr>
+<h3 id="question-3-truefalse-with-explanation"><a class="header" href="#question-3-truefalse-with-explanation">Question 3 (True/False with Explanation)</a></h3>
+<p><strong>True or False:</strong> Goroutine stacks can only grow, never shrink.</p>
+<details><summary>Answer</summary>
+<p><strong>False.</strong> Goroutine stacks can both grow and shrink.</p>
+<p><strong>Growth:</strong> When a function prologue detects insufficient stack space, it calls <code>morestack</code> -&gt; <code>newstack</code>, which allocates a new stack (typically 2x the current size) and copies the old stack to the new one via <code>copystack</code>.</p>
+<p><strong>Shrinking:</strong> During garbage collection, the GC calls <code>shrinkstack</code> on goroutines whose stacks are less than 25% utilized. <code>shrinkstack</code> calls <code>copystack</code> with a smaller size (half the current size, but never below <code>stackMin</code> = 2048 bytes). This reclaims memory from goroutines that had deep call stacks at some point but are now at shallow call depth.</p>
+<p>Stack shrinking is important for long-lived programs: a goroutine might briefly need a large stack (e.g., during initialization) but then spend most of its time in a shallow call chain. Without shrinking, that memory would be wasted for the goroutine’s entire lifetime.</p>
+<p>Shrinking only happens at GC safe points (when the goroutine is stopped) because it requires the same pointer adjustment as growing.</p>
+</details>
+<hr>
+<h3 id="question-4-what-would-happen-if"><a class="header" href="#question-4-what-would-happen-if">Question 4 (What Would Happen If…)</a></h3>
+<p>Go starts goroutine stacks at 2KB (<code>stackMin = 2048</code>). What would happen if the initial stack size were instead set to 1MB (like a typical OS thread stack)?</p>
+<details><summary>Answer</summary>
+<p>With 1MB initial stacks:</p>
+<ol>
+<li>
+<p><strong>Memory explosion:</strong> A program with 100,000 goroutines would require 100GB of memory just for stacks (vs. ~200MB with 2KB stacks). Most Go server programs create thousands to millions of goroutines, making this impractical.</p>
+</li>
+<li>
+<p><strong>Virtual address space:</strong> Even with lazy physical memory allocation (the OS does not commit all 1MB immediately if the pages are never touched), 1 million goroutines would need 1TB of virtual address space for stacks alone. On 64-bit systems this is technically possible but would strain the page table and TLB.</p>
+</li>
+<li>
+<p><strong>Wasted memory:</strong> Most goroutines use far less than 1MB of stack. A goroutine running a simple channel receive loop might use &lt;4KB. The remaining 99.6% would be wasted.</p>
+</li>
+<li>
+<p><strong>Loss of Go’s concurrency advantage:</strong> Go’s ability to support millions of concurrent goroutines is one of its defining features, and it depends directly on cheap goroutine creation. 1MB stacks would make goroutines nearly as expensive as OS threads, eliminating this advantage.</p>
+</li>
+<li>
+<p><strong>No stack overflow protection improvement:</strong> Go’s growable stacks already prevent stack overflows by growing as needed. The 1MB limit on OS threads is arbitrary and CAN overflow; Go’s approach of growing to any size is strictly better.</p>
+</li>
+</ol>
+<p>The 2KB starting size is carefully chosen: it is large enough for most function calls without immediately triggering growth, yet small enough to allow millions of goroutines.</p>
+</details>
+<hr>
+<h3 id="question-5-short-answer"><a class="header" href="#question-5-short-answer">Question 5 (Short Answer)</a></h3>
+<p>Explain how the stack pool works. What are stack pools, and why does the runtime cache freed stacks instead of always returning memory to the heap?</p>
+<details><summary>Answer</summary>
+<p><strong>Stack pools</strong> are per-size free lists of previously allocated goroutine stacks. When a goroutine’s stack is freed (the goroutine exits), the stack memory is returned to a pool keyed by its size. When a new goroutine needs a stack of that size, the pool is checked first before going to the allocator.</p>
+<p>There are two pool structures:</p>
+<ul>
+<li><strong><code>stackpool</code></strong>: For small stacks (2KB, 4KB, 8KB, 16KB). Each size class has a list of <code>mspan</code> objects with free stack slots. Accessed with a lock.</li>
+<li><strong><code>stackLarge</code></strong>: For larger stacks (&gt;= 32KB). Organized as an array of free lists indexed by <code>log2(size)</code>. Also accessed with a lock.</li>
+</ul>
+<p><strong>Why cache freed stacks:</strong></p>
+<ol>
+<li>
+<p><strong>Allocation speed:</strong> Allocating a stack from a pool is much faster than going to <code>mheap</code> (which may need to search for free pages or call <code>mmap</code>). Goroutine creation/destruction is very frequent in Go programs.</p>
+</li>
+<li>
+<p><strong>Reduced fragmentation:</strong> Reusing stacks of the same size avoids fragmenting the heap with many small span allocations and deallocations.</p>
+</li>
+<li>
+<p><strong>OS call avoidance:</strong> Without pools, high goroutine churn would generate many <code>mmap</code>/<code>munmap</code> system calls, which are expensive (page table manipulation, TLB flushes).</p>
+</li>
+<li>
+<p><strong>Working set reuse:</strong> A reused stack page is likely still in the CPU cache or at least in physical memory. A freshly <code>mmap</code>-ed page requires a page fault.</p>
+</li>
+</ol>
+<p>The GC clears the stack pools periodically (every other GC cycle) to prevent unbounded memory accumulation when goroutine concurrency decreases.</p>
+</details>
+<hr>
+<h3 id="question-6-short-answer"><a class="header" href="#question-6-short-answer">Question 6 (Short Answer)</a></h3>
+<p>What is the “hot split” problem that Go’s original segmented stacks had, and how did the switch to contiguous (copyable) stacks solve it?</p>
+<details><summary>Answer</summary>
+<p><strong>The hot split problem:</strong></p>
+<p>With segmented stacks (Go before 1.4), when a function needed more stack space, a new segment was allocated and chained to the current segment. When the function returned, the segment was freed.</p>
+<p>The problem occurred when a function at the segment boundary was called repeatedly in a loop:</p>
+<pre><code class="language-go">func outer() {
+    for {
+        inner() // inner's frame crosses the segment boundary
+    }
+}
+</code></pre>
+<p>Each call to <code>inner()</code>:</p>
+<ol>
+<li>Detects insufficient space on the current segment.</li>
+<li>Allocates a new segment (involves <code>malloc</code>, linked list manipulation).</li>
+<li>Executes <code>inner()</code>.</li>
+<li>Returns and frees the segment (<code>free</code>, linked list manipulation).</li>
+</ol>
+<p>This cycle repeats every iteration, turning a simple function call into an expensive allocation/deallocation pair. This is the “hot split” – a frequently-called function repeatedly triggers segment creation and destruction.</p>
+<p><strong>How contiguous stacks solve it:</strong></p>
+<p>With contiguous (copyable) stacks, when growth is needed:</p>
+<ol>
+<li>A new, larger stack is allocated (2x the current size).</li>
+<li>The entire old stack is copied to the new one.</li>
+<li>The old stack is freed.</li>
+</ol>
+<p>Because the new stack is 2x larger, the growth is <strong>amortized</strong>: subsequent calls do NOT trigger growth until the new, larger stack is also exhausted. This makes the amortized cost of stack growth O(1) per function call, similar to how dynamic arrays (slices) achieve amortized O(1) append via doubling.</p>
+<p>The hot split problem is completely eliminated because there is no “boundary” to repeatedly cross.</p>
+</details>
+<hr>
+<h3 id="question-7-code-reading"><a class="header" href="#question-7-code-reading">Question 7 (Code Reading)</a></h3>
+<p>The constant <code>stackMin</code> is defined as:</p>
+<pre><code class="language-go">const (
+	stackMin = 2048
+)
+</code></pre>
+<p>And in <code>newstack()</code>, the decision to grow uses doubling:</p>
+<pre><code class="language-go">oldsize := gp.stack.hi - gp.stack.lo
+newsize := oldsize * 2
+</code></pre>
+<p>Why doubling? What would be the time complexity of N nested function calls if the stack grew by a fixed additive amount (e.g., +4KB each time) instead of doubling?</p>
+<details><summary>Answer</summary>
+<p><strong>Why doubling:</strong> Doubling achieves <strong>amortized O(1) cost per function call</strong> for stack growth, similar to the analysis for dynamic arrays:</p>
+<ul>
+<li>A goroutine starts with a 2KB stack.</li>
+<li>After k growths, the stack is 2KB * 2^k.</li>
+<li>The total copy work across all growths is: 2KB + 4KB + 8KB + … + 2KB*2^k = 2KB * (2^(k+1) - 1) ≈ 2 * final_size.</li>
+<li>So the total copy work is proportional to the final stack size, meaning each frame push costs O(1) amortized.</li>
+</ul>
+<p><strong>With additive growth (+4KB each time):</strong></p>
+<ul>
+<li>N nested calls on a 2KB stack would trigger growth approximately every time the stack is exhausted.</li>
+<li>After k growths, the stack is 2KB + 4KB*k.</li>
+<li>Each growth copies the entire current stack: 2KB, 6KB, 10KB, 14KB, …</li>
+<li>Total copy work: sum of (2KB + 4KB*i) for i=0..k ≈ O(k^2).</li>
+<li>Since k is proportional to N (number of calls), the total cost is <strong>O(N^2)</strong> for N nested calls.</li>
+</ul>
+<p>This means a deep recursion of depth 1000 with additive growth would do ~500x more copying work than with doubling. For recursive algorithms (tree traversal, parsing, etc.), this would be catastrophic.</p>
+<p>Doubling is the standard technique for amortized-efficient resizable data structures, and its application to stacks is directly analogous to <code>append()</code> on slices.</p>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../modules/09-stacks/slides.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../modules/10-io/notes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../modules/09-stacks/slides.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../modules/10-io/notes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

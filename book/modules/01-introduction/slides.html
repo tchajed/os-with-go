@@ -1,0 +1,546 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Slides - Operating Systems Through the Go Runtime</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-2459343d.css">
+        <link rel="stylesheet" href="../../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../";
+            const default_light_theme = "light";
+            const default_dark_theme = "ayu";
+            window.path_to_searchindex_js = "../../searchindex-3d666eaa.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../toc-9753c588.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Operating Systems Through the Go Runtime</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h2 id="module-1-the-runtime-as-an-os"><a class="header" href="#module-1-the-runtime-as-an-os">Module 1: The Runtime as an OS</a></h2>
+<p>Operating Systems Through the Go Runtime</p>
+<hr>
+<h2 id="what-does-an-os-do"><a class="header" href="#what-does-an-os-do">What Does an OS Do?</a></h2>
+<p>Three fundamental jobs:</p>
+<ul>
+<li><strong>Resource management</strong> – multiplex CPUs, memory, I/O across programs</li>
+<li><strong>Abstraction</strong> – hide hardware behind clean interfaces (files, processes, virtual memory)</li>
+<li><strong>Protection</strong> – isolate programs from each other</li>
+</ul>
+<p>Every OS textbook starts here. But a <em>language runtime</em> solves the same problems.</p>
+<hr>
+<h2 id="the-go-runtime-a-user-space-os"><a class="header" href="#the-go-runtime-a-user-space-os">The Go Runtime: A User-Space OS</a></h2>
+<p>The Go runtime (~150k lines) ships in every Go binary.</p>
+<p>It implements:</p>
+<ul>
+<li><strong>Scheduling</strong> – goroutines on OS threads</li>
+<li><strong>Memory management</strong> – garbage-collected heap</li>
+<li><strong>I/O multiplexing</strong> – integrated epoll/kqueue netpoller</li>
+<li><strong>Preemption</strong> – signal-based goroutine preemption</li>
+<li><strong>Stack management</strong> – growable, copyable stacks</li>
+</ul>
+<hr>
+<h2 id="os-vs-runtime-side-by-side"><a class="header" href="#os-vs-runtime-side-by-side">OS vs. Runtime: Side by Side</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>OS Concept</th><th>Kernel</th><th>Go Runtime</th></tr>
+</thead>
+<tbody>
+<tr><td>Threads</td><td><code>clone</code>/<code>pthread_create</code></td><td>Goroutines</td></tr>
+<tr><td>Scheduling</td><td>CFS, run queues</td><td>Work-stealing, per-P queues</td></tr>
+<tr><td>Virtual memory</td><td>Page tables, <code>mmap</code></td><td>GC heap, <code>mspan</code>, <code>mcache</code></td></tr>
+<tr><td>I/O multiplex</td><td><code>epoll</code>, <code>kqueue</code></td><td>Integrated netpoller</td></tr>
+<tr><td>Preemption</td><td>Timer interrupts</td><td><code>SIGURG</code> signals</td></tr>
+<tr><td>Syscall mgmt</td><td>Trap table</td><td><code>entersyscall</code>/<code>exitsyscall</code></td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="why-study-the-go-runtime"><a class="header" href="#why-study-the-go-runtime">Why Study the Go Runtime?</a></h2>
+<ul>
+<li><strong>Readable</strong> – mostly Go, targeted assembly only where needed</li>
+<li><strong>Self-contained</strong> – single <code>src/runtime/</code> directory (~250 files)</li>
+<li><strong>Runnable</strong> – modify, rebuild, test immediately</li>
+<li><strong>Production</strong> – runs at Google, Cloudflare, thousands more</li>
+<li><strong>Same problems</strong> as a real kernel, approachable code</li>
+</ul>
+<hr>
+<h2 id="the-runtime-source-tree"><a class="header" href="#the-runtime-source-tree">The Runtime Source Tree</a></h2>
+<pre><code>src/runtime/
+├── proc.go           # Scheduler: schedule(), findRunnable(), sysmon
+├── runtime2.go       # Core structs: g, m, p, schedt
+├── malloc.go         # Memory allocator: mallocgc, size classes
+├── mgc.go            # Garbage collector
+├── stack.go          # Goroutine stack management
+├── chan.go            # Channel implementation
+├── netpoll.go         # I/O multiplexing interface
+├── sys_linux_amd64.s  # Linux syscall wrappers (assembly)
+├── sys_darwin_arm64.s # macOS syscall trampolines (assembly)
+├── lock_futex.go      # Futex-based locks (Linux)
+└── sema.go            # Semaphore implementation
+</code></pre>
+<hr>
+<h2 id="the-three-abstractions-g-m-p"><a class="header" href="#the-three-abstractions-g-m-p">The Three Abstractions: G, M, P</a></h2>
+<p>From <code>src/runtime/proc.go</code> (lines 24-34):</p>
+<pre><code class="language-go">// The main concepts are:
+// G - goroutine.
+// M - worker thread, or machine.
+// P - processor, a resource that is required to execute Go code.
+//     M must have an associated P to execute Go code, however
+//     it can be blocked or in a syscall w/o an associated P.
+</code></pre>
+<hr>
+<h2 id="g--goroutine"><a class="header" href="#g--goroutine">G – Goroutine</a></h2>
+<pre><code class="language-go">// src/runtime/runtime2.go, line 473
+type g struct {
+    stack       stack   // [stack.lo, stack.hi)
+    stackguard0 uintptr // for stack growth check
+    _panic    *_panic
+    _defer    *_defer
+    m         *m        // current thread
+    sched     gobuf     // saved PC, SP for context switch
+    atomicstatus atomic.Uint32
+    goid         uint64
+    ...
+}
+</code></pre>
+<p>A goroutine: lightweight (2-8 KB stack), user-space scheduled, growable stack.</p>
+<hr>
+<h2 id="g-status-a-goroutines-lifecycle"><a class="header" href="#g-status-a-goroutines-lifecycle">G Status: A Goroutine’s Lifecycle</a></h2>
+<pre><code>         newproc()
+            │
+            v
+  ┌─&gt; _Grunnable ──&gt; _Grunning ──&gt; _Gdead
+  │        ^              │
+  │        │              ├──&gt; _Gsyscall ──┐
+  │        │              │                │
+  │        │              └──&gt; _Gwaiting ──┘
+  │        │                       │
+  └────────┴───────────────────────┘
+</code></pre>
+<ul>
+<li><code>_Grunnable</code> (1) – on a run queue, ready to run</li>
+<li><code>_Grunning</code> (2) – executing on an M with a P</li>
+<li><code>_Gsyscall</code> (3) – in a system call, M may lose its P</li>
+<li><code>_Gwaiting</code> (4) – blocked on channel, mutex, sleep</li>
+</ul>
+<hr>
+<h2 id="m--machine-os-thread"><a class="header" href="#m--machine-os-thread">M – Machine (OS Thread)</a></h2>
+<pre><code class="language-go">// src/runtime/runtime2.go, line 618
+type m struct {
+    g0       *g       // scheduling stack
+    curg     *g       // current running goroutine
+    p        puintptr // attached P (nil if not running Go code)
+    oldp     puintptr // P before entering syscall
+    spinning bool     // looking for work
+    blocked  bool     // blocked on a note
+    ...
+}
+</code></pre>
+<ul>
+<li><code>g0</code>: special goroutine whose stack runs scheduler code</li>
+<li>Like a kernel switching to a kernel stack for interrupts</li>
+</ul>
+<hr>
+<h2 id="p--processor-logical-cpu"><a class="header" href="#p--processor-logical-cpu">P – Processor (Logical CPU)</a></h2>
+<pre><code class="language-go">// src/runtime/runtime2.go, line 773
+type p struct {
+    id          int32
+    status      uint32
+    m           muintptr   // back-link to associated M
+    mcache      *mcache    // per-P memory cache
+    // Local run queue (lock-free!)
+    runqhead uint32
+    runqtail uint32
+    runq     [256]guintptr
+    runnext  guintptr      // next G to run (cache-friendly)
+    ...
+}
+</code></pre>
+<ul>
+<li>Number of Ps = <code>GOMAXPROCS</code> (default: CPU count)</li>
+<li>Each P has a local run queue: <strong>no lock needed</strong> for scheduling</li>
+</ul>
+<hr>
+<h2 id="why-the-p-exists"><a class="header" href="#why-the-p-exists">Why the P Exists</a></h2>
+<p>Before Go 1.1: only G and M. Global run queue with a single mutex.</p>
+<p><strong>Problem</strong>: every <code>go</code> statement, every scheduling decision locks the global queue.</p>
+<p><strong>Solution</strong> (Dmitry Vyukov, 2012): add P as a scheduling context.</p>
+<ul>
+<li>Each P has its own run queue (256 slots, lock-free)</li>
+<li>Each P has its own memory cache (<code>mcache</code>)</li>
+<li>Work stealing balances load across Ps</li>
+</ul>
+<hr>
+<h2 id="how-g-m-p-connect"><a class="header" href="#how-g-m-p-connect">How G, M, P Connect</a></h2>
+<pre><code>    ┌─────┐     ┌─────┐     ┌─────┐
+    │ P0  │     │ P1  │     │ P2  │  GOMAXPROCS=3
+    │runq │     │runq │     │(idle)│
+    └──┬──┘     └──┬──┘     └─────┘
+       │           │
+    ┌──┴──┐     ┌──┴──┐     ┌─────┐
+    │ M0  │     │ M1  │     │ M2  │  (in syscall, no P)
+    └──┬──┘     └──┬──┘     └──┬──┘
+       │           │           │
+    ┌──┴──┐     ┌──┴──┐     ┌──┴──┐
+    │ G5  │     │ G12 │     │ G7  │
+    │(run)│     │(run)│     │(sys)│
+    └─────┘     └─────┘     └─────┘
+</code></pre>
+<p>An M needs a P to run Go code. Syscall-blocked Ms release their P.</p>
+<hr>
+<h2 id="the-scheduler-loop-preview"><a class="header" href="#the-scheduler-loop-preview">The Scheduler Loop (Preview)</a></h2>
+<pre><code class="language-go">// Simplified from proc.go
+func schedule() {
+    gp := findRunnable()  // blocks until work found
+    execute(gp)           // context switch to gp
+}
+
+func findRunnable() *g {
+    // 1. Check local run queue
+    // 2. Check global run queue
+    // 3. Poll network
+    // 4. Steal from other Ps
+}
+</code></pre>
+<p>We’ll study this in detail in Module 3.</p>
+<hr>
+<h2 id="sysmon-the-watchdog-thread"><a class="header" href="#sysmon-the-watchdog-thread">sysmon: The Watchdog Thread</a></h2>
+<ul>
+<li>Runs on its own M, <strong>without a P</strong></li>
+<li>Polls every 20us-10ms</li>
+<li>Retakes Ps from goroutines stuck in syscalls</li>
+<li>Preempts goroutines running too long (&gt;10ms)</li>
+<li>Triggers garbage collection</li>
+<li>Polls the network if no other P is doing it</li>
+</ul>
+<p>Analogous to a kernel’s timer interrupt handler.</p>
+<hr>
+<h2 id="course-roadmap"><a class="header" href="#course-roadmap">Course Roadmap</a></h2>
+<ol>
+<li><strong>Introduction</strong> – The runtime as a user-space OS (today)</li>
+<li><strong>System Calls</strong> – Crossing the user/kernel boundary</li>
+<li><strong>Scheduling</strong> – Work-stealing, <code>schedule()</code>, <code>findRunnable()</code></li>
+<li><strong>Preemption</strong> – Cooperative + async preemption via SIGURG</li>
+<li><strong>Memory Management</strong> – Allocator hierarchy, virtual memory</li>
+<li><strong>Garbage Collection</strong> – Concurrent mark-sweep, write barriers</li>
+<li><strong>Stacks</strong> – Growable stacks, stack copying</li>
+<li><strong>Synchronization</strong> – Futexes, channels, mutexes</li>
+<li><strong>I/O Multiplexing</strong> – epoll/kqueue, netpoller</li>
+<li><strong>Tracing and Profiling</strong> – Observing the runtime</li>
+</ol>
+<hr>
+<h2 id="scale-comparison"><a class="header" href="#scale-comparison">Scale Comparison</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>OS Thread</th><th>Goroutine</th></tr>
+</thead>
+<tbody>
+<tr><td>Stack size</td><td>~1 MB (fixed)</td><td>2-8 KB (growable)</td></tr>
+<tr><td>Creation cost</td><td>~1-10 us</td><td>~0.3 us</td></tr>
+<tr><td>Context switch</td><td>~1-5 us (kernel)</td><td>~0.1 us (user space)</td></tr>
+<tr><td>Max practical count</td><td>~10,000</td><td>~1,000,000</td></tr>
+<tr><td>Scheduling</td><td>Kernel (preemptive)</td><td>Runtime (cooperative + async)</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="hands-on-explore-the-source"><a class="header" href="#hands-on-explore-the-source">Hands-On: Explore the Source</a></h2>
+<pre><code class="language-bash"># Clone the Go source
+git clone https://go.googlesource.com/go ~/go-src
+cd ~/go-src/src/runtime
+
+# Read the scheduler's opening comment
+head -80 proc.go
+
+# Find the g, m, p struct definitions
+grep -n "^type [gmp] struct" runtime2.go
+
+# Count runtime source files
+ls *.go | wc -l    # ~130 Go files
+ls *.s  | wc -l    # ~40 assembly files
+</code></pre>
+<hr>
+<h2 id="exercise-1-goroutine-scale"><a class="header" href="#exercise-1-goroutine-scale">Exercise 1: Goroutine Scale</a></h2>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "runtime"
+    "sync"
+    "time"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 0; i &lt; 100_000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            time.Sleep(time.Second)
+        }()
+    }
+    fmt.Println("goroutines:", runtime.NumGoroutine())
+    wg.Wait()
+}
+</code></pre>
+<p>How much memory per goroutine? (Hint: check with <code>runtime.MemStats</code>)</p>
+<hr>
+<h2 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h2>
+<ol>
+<li>
+<p>The Go runtime solves the <strong>same problems</strong> as an OS kernel: scheduling, memory management, I/O multiplexing, preemption.</p>
+</li>
+<li>
+<p>The <strong>G-M-P model</strong> decouples goroutines from OS threads, enabling millions of concurrent tasks.</p>
+</li>
+<li>
+<p>The <strong>P</strong> is the key innovation – it provides per-CPU local state (run queue, memory cache) without global locking.</p>
+</li>
+<li>
+<p>Studying the runtime gives you real systems code that is <strong>readable, runnable, and production-quality</strong>.</p>
+</li>
+</ol>
+<hr>
+<h2 id="next-module-system-calls"><a class="header" href="#next-module-system-calls">Next Module: System Calls</a></h2>
+<p>How does the Go runtime cross into the kernel?</p>
+<ul>
+<li>The <code>SYSCALL</code> instruction on Linux</li>
+<li>libc trampolines on macOS</li>
+<li><code>entersyscall</code> / <code>exitsyscall</code> – how the scheduler stays informed</li>
+<li>VDSO: avoiding the kernel for time queries</li>
+</ul>
+<p>See you in Module 2!</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../modules/01-introduction/notes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../../modules/01-introduction/comprehension.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../modules/01-introduction/notes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../../modules/01-introduction/comprehension.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-c2a407aa.js"></script>
+
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
