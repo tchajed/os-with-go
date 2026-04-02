@@ -93,7 +93,7 @@ The Go runtime lives at `src/runtime/` within the Go source tree. Here are the k
 
 ## 4. The Key Abstractions: G, M, P (10 min)
 
-The Go scheduler is built around three core data structures, defined in `src/runtime/runtime2.go`. The comment at the top of `src/runtime/proc.go` introduces them:
+The Go scheduler is built around three core data structures, defined in `src/runtime/runtime2.go`. The comment at the top of [`src/runtime/proc.go`, lines 24-34](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=24) introduces them:
 
 ```go
 // src/runtime/proc.go, lines 24-34
@@ -113,10 +113,10 @@ The Go scheduler is built around three core data structures, defined in `src/run
 
 ### G -- Goroutine
 
-A `g` represents a goroutine. It holds the goroutine's stack, saved registers (program counter, stack pointer), status, and a pointer to the `m` currently running it.
+A `g` represents a goroutine. It holds the goroutine's stack, saved registers (program counter, stack pointer), status, and a pointer to the `m` currently running it ([`src/runtime/runtime2.go`, lines 473-509](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=473)):
 
 ```go
-// src/runtime/runtime2.go, lines 473-491
+// src/runtime/runtime2.go, lines 473-509
 
 type g struct {
     // Stack parameters.
@@ -150,10 +150,10 @@ A goroutine moves through well-defined states (also in `runtime2.go`, lines 35-7
 
 ### M -- Machine (OS Thread)
 
-An `m` represents an OS thread. It points to the goroutine it's currently running (`curg`), its associated P, and a special `g0` goroutine used for scheduling stack frames.
+An `m` represents an OS thread. It points to the goroutine it's currently running (`curg`), its associated P, and a special `g0` goroutine used for scheduling stack frames ([`src/runtime/runtime2.go`, lines 618-653](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=618)):
 
 ```go
-// src/runtime/runtime2.go, lines 618-644
+// src/runtime/runtime2.go, lines 618-653
 
 type m struct {
     g0      *g     // goroutine with scheduling stack
@@ -173,10 +173,10 @@ Key insight: `m.g0` is a special goroutine whose stack is used whenever the sche
 
 ### P -- Processor (Logical CPU)
 
-A `p` represents a "logical processor" -- a resource token that an M must hold to execute Go code. The number of Ps equals `GOMAXPROCS` (default: number of CPU cores).
+A `p` represents a "logical processor" -- a resource token that an M must hold to execute Go code. The number of Ps equals `GOMAXPROCS` (default: number of CPU cores) ([`src/runtime/runtime2.go`, lines 772-818](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=772)):
 
 ```go
-// src/runtime/runtime2.go, lines 773-819
+// src/runtime/runtime2.go, lines 772-818
 
 type p struct {
     id          int32
@@ -265,6 +265,6 @@ Three optional modules provide deeper dives into specific subsystems:
 ## Further Reading
 
 - [The Go scheduler design document](https://golang.org/s/go11sched) (Dmitry Vyukov, 2012)
-- [Go source: `src/runtime/proc.go`](https://cs.opensource.google/go/go/+/master:src/runtime/proc.go) -- The scheduler
-- [Go source: `src/runtime/runtime2.go`](https://cs.opensource.google/go/go/+/master:src/runtime/runtime2.go) -- Core data structures
+- [Go source: `src/runtime/proc.go`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go) -- The scheduler
+- [Go source: `src/runtime/runtime2.go`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go) -- Core data structures
 - [GopherCon 2018: Kavya Joshi - The Scheduler Saga](https://www.youtube.com/watch?v=YHRO5WQGh0k)

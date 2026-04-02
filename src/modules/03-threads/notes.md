@@ -167,7 +167,7 @@ Go creates OS threads through platform-specific mechanisms. On **Linux**, it use
 
 **Linux: `newosproc` calls `clone()`**
 
-From `src/runtime/os_linux.go`, lines 170-201:
+From [`src/runtime/os_linux.go`, lines 170-201](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/os_linux.go;l=170):
 
 ```go
 func newosproc(mp *m) {
@@ -189,7 +189,7 @@ func newosproc(mp *m) {
 }
 ```
 
-The actual `clone` system call is issued from assembly in `src/runtime/sys_linux_amd64.s`, lines 574-623:
+The actual `clone` system call is issued from assembly in [`src/runtime/sys_linux_amd64.s`, lines 574-623](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=574):
 
 ```asm
 TEXT runtime·clone(SB),NOSPLIT|NOFRAME,$0
@@ -211,7 +211,7 @@ Key observation: the `clone()` call receives the flags, the new stack pointer, a
 
 **Darwin: `newosproc` calls `pthread_create()`**
 
-From `src/runtime/os_darwin.go`, lines 224-258:
+From [`src/runtime/os_darwin.go`, lines 224-258](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/os_darwin.go;l=224):
 
 ```go
 func newosproc(mp *m) {
@@ -245,12 +245,12 @@ On Darwin, Go cannot use `clone()` (that is Linux-specific), so it goes through 
 
 ## Part 3: The M Struct -- Go's Representation of an OS Thread (10 min)
 
-In Go's runtime, every OS thread is represented by an `m` struct (M for "machine"). This is defined in `src/runtime/runtime2.go`, lines 618-719.
+In Go's runtime, every OS thread is represented by an `m` struct (M for "machine"). This is defined in [`src/runtime/runtime2.go`, lines 618-727](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=618).
 
 ### Key Fields
 
 ```go
-// src/runtime/runtime2.go, lines 618-719
+// src/runtime/runtime2.go, lines 618-727 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=618)
 type m struct {
     g0      *g     // goroutine with scheduling stack
     morebuf gobuf  // gobuf arg to morestack
@@ -292,12 +292,12 @@ type m struct {
 
 ## Part 4: Goroutines -- The G Struct (15 min)
 
-A goroutine is Go's lightweight, user-level thread. Each goroutine is represented by a `g` struct, defined in `src/runtime/runtime2.go`, lines 473-579.
+A goroutine is Go's lightweight, user-level thread. Each goroutine is represented by a `g` struct, defined in [`src/runtime/runtime2.go`, lines 473-598](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=473).
 
 ### Key Fields
 
 ```go
-// src/runtime/runtime2.go, lines 473-569
+// src/runtime/runtime2.go, lines 473-598 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=473)
 type g struct {
     // Stack parameters.
     // stack describes the actual stack memory: [stack.lo, stack.hi).
@@ -339,14 +339,14 @@ type g struct {
 ### The Stack
 
 ```go
-// src/runtime/runtime2.go, lines 460-465
+// src/runtime/runtime2.go, lines 462-465 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=462)
 type stack struct {
     lo uintptr
     hi uintptr
 }
 ```
 
-Goroutine stacks start small. From `src/runtime/stack.go`, line 78:
+Goroutine stacks start small. From [`src/runtime/stack.go`, line 78](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=78):
 
 ```go
 // The minimum size of stack used by Go code
@@ -358,7 +358,7 @@ That is **2 KB** -- compare this to the 1-8 MB default for OS thread stacks. Gor
 ### The gobuf: Saved Execution Context
 
 ```go
-// src/runtime/runtime2.go, lines 303-322
+// src/runtime/runtime2.go, lines 303-322 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=303)
 type gobuf struct {
     sp   uintptr
     pc   uintptr
@@ -383,12 +383,12 @@ The goroutine context switch saves only 6 values. The Go compiler ensures that n
 
 ## Part 5: Goroutine States (10 min)
 
-Goroutine states are defined as constants in `src/runtime/runtime2.go`, lines 17-119. The primary states are:
+Goroutine states are defined as constants in [`src/runtime/runtime2.go`, lines 17-120](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=17). The primary states are:
 
 ### State Definitions
 
 ```go
-// src/runtime/runtime2.go, lines 17-99
+// src/runtime/runtime2.go, lines 17-120 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=17)
 const (
     // _Gidle means this goroutine was just allocated and has not
     // yet been initialized.

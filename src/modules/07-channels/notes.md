@@ -92,7 +92,7 @@ The channel implementation maintains a key structural invariant, documented at
 the top of `chan.go`:
 
 ```go
-// src/runtime/chan.go, lines 9-18
+// src/runtime/chan.go, lines 9-18 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=9)
 
 // Invariants:
 //  At least one of c.sendq and c.recvq is empty,
@@ -123,7 +123,7 @@ structure and constrain when threads (goroutines) may block.
 Every channel in Go is represented at runtime by an `hchan` struct:
 
 ```go
-// src/runtime/chan.go, lines 34-55
+// src/runtime/chan.go, lines 34-55 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=34)
 
 type hchan struct {
     qcount   uint           // total data in the queue
@@ -184,7 +184,7 @@ in the runtime.
 The wait queue is a simple doubly-linked list:
 
 ```go
-// src/runtime/chan.go, lines 57-60
+// src/runtime/chan.go, lines 57-60 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=57)
 
 type waitq struct {
     first *sudog
@@ -198,7 +198,7 @@ A `sudog` represents a goroutine waiting on a synchronization object. The name
 stands for "pseudo-g" -- it is a proxy for a `g` (goroutine) in a wait list:
 
 ```go
-// src/runtime/runtime2.go, lines 396-448
+// src/runtime/runtime2.go, lines 396-448 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=396)
 
 // sudog (pseudo-g) represents a g in a wait list, such as for sending/receiving
 // on a channel.
@@ -278,7 +278,7 @@ implementation).
 The `makechan` function is called by the compiler when it encounters `make(chan T, size)`:
 
 ```go
-// src/runtime/chan.go, lines 75-125
+// src/runtime/chan.go, lines 75-125 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=75)
 
 func makechan(t *chantype, size int) *hchan {
     elem := t.Elem
@@ -357,7 +357,7 @@ awareness.
 The `chansend` function is the heart of the send operation (`c <- x`):
 
 ```go
-// src/runtime/chan.go, lines 176-183
+// src/runtime/chan.go, lines 176-183 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=176)
 
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
     if c == nil {
@@ -375,7 +375,7 @@ allows `select` statements to disable cases by setting channel variables to nil.
 ### Phase 1: Non-blocking fast path (no lock)
 
 ```go
-// src/runtime/chan.go, lines 197-214
+// src/runtime/chan.go, lines 197-215 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=197)
 
     // Fast path: check for failed non-blocking operation without acquiring the lock.
     //
@@ -400,7 +400,7 @@ monotonicity of `closed` (once closed, always closed) guarantees correctness.
 ### Phase 2: Direct send to waiting receiver
 
 ```go
-// src/runtime/chan.go, lines 222-233
+// src/runtime/chan.go, lines 222-234 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=222)
 
     lock(&c.lock)
 
@@ -426,7 +426,7 @@ out.
 ### Phase 3: Buffered send
 
 ```go
-// src/runtime/chan.go, lines 236-249
+// src/runtime/chan.go, lines 236-250 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=236)
 
     if c.qcount < c.dataqsiz {
         // Space is available in the channel buffer. Enqueue the element to send.
@@ -448,7 +448,7 @@ the index (wrapping at `dataqsiz`), increment the count.
 ### Phase 4: Blocking
 
 ```go
-// src/runtime/chan.go, lines 257-283
+// src/runtime/chan.go, lines 257-283 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=257)
 
     // Block on the channel. Some receiver will complete our operation for us.
     gp := getg()
@@ -504,7 +504,7 @@ The receive operation (`<-c`) is implemented by `chanrecv`, which is symmetric
 to `chansend`:
 
 ```go
-// src/runtime/chan.go, lines 518-524
+// src/runtime/chan.go, lines 518-524 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=518)
 
 // chanrecv receives on channel c and writes the received data to ep.
 // ep may be nil, in which case received data is ignored.
@@ -568,7 +568,7 @@ The function follows the same structure as `chansend`:
 Closing a channel wakes up *all* waiters:
 
 ```go
-// src/runtime/chan.go, lines 414-486
+// src/runtime/chan.go, lines 414-486 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/chan.go;l=414)
 
 func closechan(c *hchan) {
     if c == nil {
@@ -653,7 +653,7 @@ effectively a broadcast signal to all waiters.
 Each case in a `select` statement is described by an `scase`:
 
 ```go
-// src/runtime/select.go, lines 20-23
+// src/runtime/select.go, lines 20-23 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/select.go;l=20)
 
 type scase struct {
     c    *hchan         // chan
@@ -679,7 +679,7 @@ reach `selectgo`.
 ### selectgo: The Multi-Pass Algorithm
 
 ```go
-// src/runtime/select.go, lines 107-122
+// src/runtime/select.go, lines 107-122 (https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/select.go;l=107)
 
 // selectgo implements the select statement.
 //

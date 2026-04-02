@@ -54,6 +54,8 @@ The Go runtime implements system calls directly in assembly, bypassing libc enti
 
 The file begins by defining the syscall numbers as constants, matching the Linux kernel's numbering:
 
+[`src/runtime/sys_linux_amd64.s`, lines 16-49](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=16):
+
 ```asm
 // src/runtime/sys_linux_amd64.s, lines 16-49
 
@@ -85,6 +87,8 @@ These numbers are stable ABI -- the Linux kernel guarantees they won't change. T
 
 ### exit: The Simplest Syscall
 
+[`src/runtime/sys_linux_amd64.s`, lines 51-55](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=51):
+
 ```asm
 // src/runtime/sys_linux_amd64.s, lines 51-55
 
@@ -106,6 +110,8 @@ Line by line:
 Note: Go uses `exit_group` (not `exit`) because a Go process has multiple OS threads. `exit` would only terminate one thread; `exit_group` terminates the entire process.
 
 ### read, write: I/O Syscalls
+
+[`src/runtime/sys_linux_amd64.s`, lines 93-109](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=93):
 
 ```asm
 // src/runtime/sys_linux_amd64.s, lines 93-109
@@ -136,6 +142,8 @@ The pattern is always the same:
 4. Store the return value from `AX` back into the Go return slot on the stack
 
 ### open: Error Handling Pattern
+
+[`src/runtime/sys_linux_amd64.s`, lines 69-81](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=69):
 
 ```asm
 // src/runtime/sys_linux_amd64.s, lines 69-81
@@ -171,6 +179,8 @@ Since macOS on Apple Silicon uses ARM64, the assembly syntax below differs from 
 
 The trampoline pattern is visible in `src/runtime/sys_darwin_arm64.s`:
 
+[`src/runtime/sys_darwin_arm64.s`, lines 21-29](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_darwin_arm64.s;l=21):
+
 ```asm
 // src/runtime/sys_darwin_arm64.s, lines 21-29
 
@@ -192,6 +202,8 @@ Key differences from Linux:
 3. **Variadic argument handling**: `open()` in C is variadic (the `mode` argument is only present with `O_CREAT`). On ARM64, variadic arguments go on the stack, not in registers -- hence the `MOVW R2, (RSP)`.
 
 ### write and read trampolines with error handling
+
+[`src/runtime/sys_darwin_arm64.s`, lines 36-62](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_darwin_arm64.s;l=36):
 
 ```asm
 // src/runtime/sys_darwin_arm64.s, lines 36-62
@@ -232,6 +244,8 @@ On macOS, libc functions return `-1` on error and set `errno` (a thread-local va
 
 ### exit trampoline
 
+[`src/runtime/sys_darwin_arm64.s`, lines 72-77](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_darwin_arm64.s;l=72):
+
 ```asm
 // src/runtime/sys_darwin_arm64.s, lines 72-77
 
@@ -262,12 +276,16 @@ User code doesn't call the runtime's raw assembly directly. Instead, the `syscal
 
 From `src/syscall/syscall_linux.go` (lines 55-90):
 
+[`src/syscall/syscall_linux.go`, lines 55-57](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_linux.go;l=55):
+
 ```go
 // src/syscall/syscall_linux.go, lines 55-57
 func RawSyscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) {
     return RawSyscall6(trap, a1, a2, a3, 0, 0, 0)
 }
 ```
+
+[`src/syscall/syscall_linux.go`, lines 63-68](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_linux.go;l=63):
 
 ```go
 // src/syscall/syscall_linux.go, lines 63-68
@@ -283,6 +301,8 @@ func RawSyscall6(trap, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err Errn
 
 The safe version notifies the scheduler:
 
+[`src/syscall/syscall_linux.go`, lines 73-90](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_linux.go;l=73):
+
 ```go
 // src/syscall/syscall_linux.go, lines 73-90
 func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) {
@@ -294,6 +314,8 @@ func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) {
 ```
 
 The critical difference: `Syscall` wraps the raw call with `runtime_entersyscall()` / `runtime_exitsyscall()`. These are linked to the runtime's `entersyscall` and `exitsyscall` functions:
+
+[`src/syscall/syscall_linux.go`, lines 29-33](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_linux.go;l=29):
 
 ```go
 // src/syscall/syscall_linux.go, lines 29-33
@@ -314,6 +336,8 @@ Using `RawSyscall` for a blocking call is a bug: it can cause the entire program
 ### Errno: Error Handling
 
 From `src/syscall/syscall_unix.go` (lines 94-108):
+
+[`src/syscall/syscall_unix.go`, lines 94-108](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_unix.go;l=94):
 
 ```go
 // src/syscall/syscall_unix.go, lines 94-108
@@ -339,6 +363,8 @@ type Errno uintptr
 
 The `Errno.Is()` method (lines 120-131) maps errno values to Go's standard error sentinels:
 
+[`src/syscall/syscall_unix.go`, lines 120-131](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_unix.go;l=120):
+
 ```go
 // src/syscall/syscall_unix.go, lines 120-131
 func (e Errno) Is(target error) bool {
@@ -359,6 +385,8 @@ func (e Errno) Is(target error) bool {
 ### Higher-level wrappers: Read and Write
 
 The `syscall` package also provides higher-level Go functions. For example:
+
+[`src/syscall/syscall_unix.go`, lines 182-199](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/syscall/syscall_unix.go;l=182):
 
 ```go
 // src/syscall/syscall_unix.go, lines 182-199
@@ -391,6 +419,8 @@ Some syscalls are so frequent that even the overhead of the `SYSCALL` instructio
 Linux provides the **vDSO** (virtual Dynamic Shared Object): a small shared library that the kernel maps into every process's address space. It contains user-space implementations of certain syscalls that can execute without trapping into the kernel.
 
 The Go runtime looks up the vDSO symbol at startup (`src/runtime/vdso_linux.go`) and uses it as a fast path:
+
+[`src/runtime/sys_linux_amd64.s`, lines 222-298](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s;l=222):
 
 ```asm
 // src/runtime/sys_linux_amd64.s, lines 222-298
@@ -444,6 +474,8 @@ Consider: goroutine G7 is running on M3 with P2. G7 calls `read()` on a network 
 
 ### entersyscall: Preparing for the Block
 
+[`src/runtime/proc.go`, lines 4627-4716](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4627):
+
 ```go
 // src/runtime/proc.go, lines 4627-4716
 func reentersyscall(pc, sp, bp uintptr) {
@@ -489,8 +521,10 @@ The P remains attached to the M, but the status change to `_Gsyscall` signals to
 
 ### exitsyscall: Coming Back
 
+[`src/runtime/proc.go`, lines 4883-4953](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4883):
+
 ```go
-// src/runtime/proc.go, lines 4883-4962
+// src/runtime/proc.go, lines 4883-4953
 func exitsyscall() {
     gp := getg()
 
@@ -541,8 +575,10 @@ Two paths:
 
 The `sysmon` thread periodically checks for Ps that are stuck in syscalls:
 
+[`src/runtime/proc.go`, lines 6630-6652](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6630):
+
 ```go
-// src/runtime/proc.go, lines 6630-6670
+// src/runtime/proc.go, lines 6630-6652
 func retake(now int64) uint32 {
     n := 0
     lock(&allpLock)
@@ -626,12 +662,12 @@ This design is elegant: the common case (fast syscall) has minimal overhead (jus
 
 3. **VDSO experiment**: Write a tight loop calling `time.Now()` one million times and measure elapsed time. Compare this with a tight loop calling `syscall.Syscall(SYS_clock_gettime, ...)`. How much faster is the vDSO path?
 
-4. **Read the entersyscall code**: Open `src/runtime/proc.go` and read `reentersyscall` (line 4627) through `exitsyscall` (line 4962). Draw a state diagram showing all the possible transitions for G status, P ownership, and M activity during a syscall.
+4. **Read the entersyscall code**: Open `src/runtime/proc.go` and read `reentersyscall` (line 4627) through `exitsyscall` (line 5025). Draw a state diagram showing all the possible transitions for G status, P ownership, and M activity during a syscall.
 
 ## Further Reading
 
 - Linux syscall table: `arch/x86/entry/syscalls/syscall_64.tbl` in the Linux kernel source
 - [The Definitive Guide to Linux System Calls](https://blog.packagecloud.io/the-definitive-guide-to-linux-system-calls/) -- covers `SYSCALL`, `SYSENTER`, vDSO
-- [Go source: `src/runtime/sys_linux_amd64.s`](https://cs.opensource.google/go/go/+/master:src/runtime/sys_linux_amd64.s) -- Linux syscall assembly
-- [Go source: `src/runtime/sys_darwin_arm64.s`](https://cs.opensource.google/go/go/+/master:src/runtime/sys_darwin_arm64.s) -- macOS trampoline assembly
-- [Go source: `src/runtime/proc.go`](https://cs.opensource.google/go/go/+/master:src/runtime/proc.go) -- `entersyscall`/`exitsyscall`
+- [Go source: `src/runtime/sys_linux_amd64.s`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_linux_amd64.s) -- Linux syscall assembly
+- [Go source: `src/runtime/sys_darwin_arm64.s`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sys_darwin_arm64.s) -- macOS trampoline assembly
+- [Go source: `src/runtime/proc.go`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go) -- `entersyscall`/`exitsyscall`

@@ -34,10 +34,11 @@ By the end of this module, students will be able to:
 
 ### Overview
 
-The Go scheduler is built around three core abstractions, described at the top of `src/runtime/proc.go`, lines 24-34:
+The Go scheduler is built around three core abstractions, described at the top of [`src/runtime/proc.go`, lines 24-34](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=24):
 
 ```go
-// src/runtime/proc.go, lines 24-34
+// src/runtime/proc.go lines 24-34
+// https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=24
 // Goroutine scheduler
 // The scheduler's job is to distribute ready-to-run goroutines over
 // worker threads.
@@ -76,7 +77,7 @@ Rule: an M must hold a P to execute Go code.
 
 ### Worker Thread Parking/Unparking
 
-The scheduler must balance two competing goals (from `src/runtime/proc.go`, lines 36-43):
+The scheduler must balance two competing goals (from [`src/runtime/proc.go`, lines 36-43](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=36)):
 
 1. Keep enough running worker threads to utilize available hardware parallelism
 2. Park excessive running worker threads to conserve CPU resources and power
@@ -87,12 +88,13 @@ This is hard because scheduler state is distributed (per-P queues) and we cannot
 
 ## Part 2: The P Struct (10 min)
 
-The P struct is defined in `src/runtime/runtime2.go`, lines 773-929.
+The P struct is defined in [`src/runtime/runtime2.go`, lines 772-928](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=772).
 
 ### Key Fields
 
 ```go
-// src/runtime/runtime2.go, lines 773-819
+// src/runtime/runtime2.go lines 772-818
+// https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=772
 type p struct {
     id          int32
     status      uint32     // one of pidle/prunning/...

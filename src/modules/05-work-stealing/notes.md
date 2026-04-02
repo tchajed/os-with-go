@@ -33,8 +33,7 @@ Traditional OS schedulers and early Go (before Go 1.1) used a single global run 
 The Go scheduler explicitly rejected centralization. From the top-of-file comment in `proc.go`:
 
 ```go
-// src/runtime/proc.go, lines 36-56
-//
+// [src/runtime/proc.go, lines 36-56](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=36)
 // Worker thread parking/unparking.
 // We need to balance between keeping enough running worker threads to utilize
 // available hardware parallelism and parking excessive running worker threads
@@ -268,7 +267,7 @@ func resetspinning() {
 The transition from spinning to non-spinning is the trickiest part of the scheduler. There is a race between a thread submitting new work and a spinning thread deciding to park:
 
 ```go
-// src/runtime/proc.go, lines 3622-3657
+// src/runtime/proc.go, lines 3622-3638
 // Delicate dance: thread transitions from spinning to non-spinning
 // state, potentially concurrently with submission of new work. We must
 // drop nmspinning first and then check all sources again (with
@@ -313,7 +312,7 @@ This is a classic example of the "flag + data" synchronization pattern. The memo
 When a P's local run queue is full (256 entries), the next `runqput` call triggers `runqputslow`, which moves half the local queue to the global queue:
 
 ```go
-// src/runtime/proc.go, lines 7524-7559
+// src/runtime/proc.go, lines 7524-7560
 func runqputslow(pp *p, gp *g, h, t uint32) bool {
     var batch [len(pp.runq)/2 + 1]*g
 
@@ -618,7 +617,7 @@ When the M returns from the syscall, it finds its P gone. It must acquire a new 
 The main scheduler loop ties everything together:
 
 ```go
-// src/runtime/proc.go, lines 4135-4164
+// src/runtime/proc.go, lines 4135-4231
 func schedule() {
     mp := getg().m
 

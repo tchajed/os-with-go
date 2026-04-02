@@ -112,8 +112,10 @@ runtime uses this as its sole interface to the OS for heap memory.
 
 The allocator is documented at the top of `malloc.go`:
 
+[`src/runtime/malloc.go` lines 5-25](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=5):
+
 ```go
-// src/runtime/malloc.go, lines 5-63
+// src/runtime/malloc.go, lines 5-25
 
 // Memory allocator.
 //
@@ -139,6 +141,8 @@ The allocator is documented at the top of `malloc.go`:
 ```
 
 ### The allocation hierarchy
+
+[`src/runtime/malloc.go` lines 27-63](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=27):
 
 ```
 // src/runtime/malloc.go, lines 27-63
@@ -167,6 +171,8 @@ The allocator is documented at the top of `malloc.go`:
 ```
 
 ### Deallocation (sweeping) hierarchy
+
+[`src/runtime/malloc.go` lines 49-63](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=49):
 
 ```
 // src/runtime/malloc.go, lines 49-63
@@ -226,8 +232,10 @@ The allocator is documented at the top of `malloc.go`:
 
 Go organizes its heap into **arenas**:
 
+[`src/runtime/malloc.go` lines 79-94](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=79):
+
 ```go
-// src/runtime/malloc.go, lines 77-99
+// src/runtime/malloc.go, lines 79-94
 
 // The heap consists of a set of arenas, which are 64MB on 64-bit and
 // 4MB on 32-bit (heapArenaBytes). Each arena's start address is also
@@ -250,6 +258,8 @@ Go organizes its heap into **arenas**:
 The two-level arena map allows the runtime to cover the entire 48-bit virtual
 address space without allocating metadata for unused regions:
 
+[`src/runtime/mheap.go` line 150](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=150):
+
 ```go
 // src/runtime/mheap.go, line 150
 arenas [1 << arenaL1Bits]*[1 << arenaL2Bits]*heapArena
@@ -257,8 +267,10 @@ arenas [1 << arenaL1Bits]*[1 << arenaL2Bits]*heapArena
 
 Each `heapArena` stores metadata for one 64 MB region:
 
+[`src/runtime/mheap.go` lines 268-338](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=268):
+
 ```go
-// src/runtime/mheap.go, lines 266-338
+// src/runtime/mheap.go, lines 268-338
 
 type heapArena struct {
     _ sys.NotInHeap
@@ -294,8 +306,10 @@ addresses to span metadata.
 
 The `mheap` is the single global heap structure:
 
+[`src/runtime/mheap.go` lines 64-264](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=64):
+
 ```go
-// src/runtime/mheap.go, lines 58-262
+// src/runtime/mheap.go, lines 64-264
 
 type mheap struct {
     _ sys.NotInHeap
@@ -363,6 +377,8 @@ span are the same size, so any free slot can satisfy any request of that class.
 ### The mspan struct
 
 An `mspan` represents a contiguous run of pages dedicated to one size class:
+
+[`src/runtime/mheap.go` lines 422-516](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=422):
 
 ```go
 // src/runtime/mheap.go, lines 422-516
@@ -440,6 +456,8 @@ slot using a single `ctz` (count trailing zeros) CPU instruction.
 
 ### Span states
 
+[`src/runtime/mheap.go` lines 386-390](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=386):
+
 ```go
 // src/runtime/mheap.go, lines 386-390
 const (
@@ -458,6 +476,8 @@ correctness of concurrent marking.
 
 The `mcache` is the first level of the allocation hierarchy. There is one per P
 (logical processor), so allocations from it require **no locking**:
+
+[`src/runtime/mcache.go` lines 14-66](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mcache.go;l=14):
 
 ```go
 // src/runtime/mcache.go, lines 14-66
@@ -518,6 +538,8 @@ contention on the global heap.
 For very small allocations (< 16 bytes) that do not contain pointers, Go uses a
 special **tiny allocator** that packs multiple objects into a single 16-byte
 block:
+
+[`src/runtime/malloc.go` lines 1270-1298](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1270):
 
 ```go
 // src/runtime/malloc.go, lines 1270-1298

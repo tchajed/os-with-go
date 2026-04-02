@@ -81,12 +81,14 @@ These provide memory ordering guarantees:
 
 These appear throughout the run queue implementation:
 
+[src/runtime/proc.go, lines 7664-7665](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7664)
 ```go
 // src/runtime/proc.go, lines 7664-7665 (in runqgrab)
 h := atomic.LoadAcq(&pp.runqhead) // load-acquire, synchronize with other consumers
 t := atomic.LoadAcq(&pp.runqtail) // load-acquire, synchronize with the producer
 ```
 
+[src/runtime/proc.go, line 7721](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7721)
 ```go
 // src/runtime/proc.go, line 7721 (in runqgrab)
 if atomic.CasRel(&pp.runqhead, h, h+n) { // cas-release, commits consume
@@ -96,6 +98,7 @@ if atomic.CasRel(&pp.runqhead, h, h+n) { // cas-release, commits consume
 
 `atomic.Xchg(addr, new)` atomically writes `new` and returns the old value. Used in the mutex fast path:
 
+[src/runtime/lock_spinbit.go, line 165](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_spinbit.go;l=165)
 ```go
 // src/runtime/lock_spinbit.go, line 165
 v8 := atomic.Xchg8(k8, mutexLocked)
@@ -121,8 +124,9 @@ The Go runtime on Linux (`lock_futex.go`) uses futexes for two purposes:
 
 A `note` is the simplest synchronization primitive: a one-shot event. One thread sleeps on it; another wakes it. It cannot be reused without calling `noteclear`.
 
+[src/runtime/lock_futex.go, lines 21-33](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_futex.go;l=21)
 ```go
-// src/runtime/lock_futex.go, lines 22-33
+// src/runtime/lock_futex.go, lines 21-33
 // One-time notifications.
 func noteclear(n *note) {
     n.key = 0
@@ -145,6 +149,7 @@ The protocol:
 
 The sleeping side:
 
+[src/runtime/lock_futex.go, lines 35-53](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_futex.go;l=35)
 ```go
 // src/runtime/lock_futex.go, lines 35-53
 func notesleep(n *note) {
@@ -178,6 +183,7 @@ Key details:
 
 These are used by the runtime mutex to park and wake OS threads:
 
+[src/runtime/lock_futex.go, lines 138-163](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_futex.go;l=138)
 ```go
 // src/runtime/lock_futex.go, lines 138-163
 //go:nosplit
@@ -222,6 +228,7 @@ macOS doesn't have futexes. Instead, `lock_sema.go` uses OS-level semaphores (pt
 
 ### notesleep / notewakeup on macOS
 
+[src/runtime/lock_sema.go, lines 23-44](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_sema.go;l=23)
 ```go
 // src/runtime/lock_sema.go, lines 23-44
 func notewakeup(n *note) {
@@ -253,6 +260,7 @@ The note's `key` field serves triple duty:
 - `locked` (= 1) = signaled
 - Any other value = pointer to the waiting M
 
+[src/runtime/lock_sema.go, lines 46-72](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_sema.go;l=46)
 ```go
 // src/runtime/lock_sema.go, lines 46-72
 func notesleep(n *note) {
@@ -299,8 +307,9 @@ The protocol:
 
 The runtime mutex (`runtime.mutex`) is used internally throughout the Go runtime -- for the scheduler lock, timer heaps, and more. The current implementation (`lock_spinbit.go`, introduced in Go 1.24) uses an elegant bit-packing scheme.
 
+[src/runtime/lock_spinbit.go, lines 29-45](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_spinbit.go;l=29)
 ```go
-// src/runtime/lock_spinbit.go, lines 29-51
+// src/runtime/lock_spinbit.go, lines 29-45
 // The mutex state consists of four flags and a pointer. The flag at bit 0,
 // mutexLocked, represents the lock itself. Bit 1, mutexSleeping, is a hint that
 // the pointer is non-nil. The fast paths for locking and unlocking the mutex
@@ -329,6 +338,7 @@ The state word layout:
 
 ### The Fast Path: 8-bit Swap
 
+[src/runtime/lock_spinbit.go, lines 155-171](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_spinbit.go;l=155)
 ```go
 // src/runtime/lock_spinbit.go, lines 155-171
 func lock2(l *mutex) {
@@ -360,8 +370,9 @@ The uncontended case is a single `atomic.Xchg8` -- an 8-bit atomic swap of just 
 
 ### The Slow Path: Spin then Sleep
 
+[src/runtime/lock_spinbit.go, lines 182-257](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_spinbit.go;l=182)
 ```go
-// src/runtime/lock_spinbit.go, lines 177-257
+// src/runtime/lock_spinbit.go, lines 182-257
     var weSpin, atTail, haveTimers bool
     v := atomic.Loaduintptr(&l.key)
 tryAcquire:
@@ -408,6 +419,7 @@ The slow path progression:
 
 Waiting Ms are linked through their `mWaitList.next` fields, forming a LIFO stack. The head of the stack is packed into the upper bits of `l.key`:
 
+[src/runtime/lock_spinbit.go, lines 88-91](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/lock_spinbit.go;l=88)
 ```go
 // src/runtime/lock_spinbit.go, lines 88-91
 type mWaitList struct {
@@ -426,8 +438,9 @@ When a thread goes to sleep, it CASes its M pointer into the upper bits of `l.ke
 
 The `sema.go` semaphore is the mechanism that `sync.Mutex`, `sync.RWMutex`, and `sync.WaitGroup` use to block and wake goroutines (not OS threads). Unlike the runtime mutex which blocks Ms, this semaphore blocks Gs.
 
+[src/runtime/sema.go, lines 5-15](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=5)
 ```go
-// src/runtime/sema.go, lines 1-18
+// src/runtime/sema.go, lines 5-15
 // Semaphore implementation exposed to Go.
 // Intended use is provide a sleep and wakeup
 // primitive that can be used in the contended case
@@ -445,6 +458,7 @@ The `sema.go` semaphore is the mechanism that `sync.Mutex`, `sync.RWMutex`, and 
 
 To avoid a single global lock, the semaphore system uses a hash table indexed by the address of the semaphore word:
 
+[src/runtime/sema.go, lines 48-58](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=48)
 ```go
 // src/runtime/sema.go, lines 48-58
 // Prime to not correlate with any user patterns.
@@ -470,6 +484,7 @@ Each `semaRoot` contains a **treap** (tree + heap): a balanced binary search tre
 - The **BST property** is on the semaphore address: left subtree has smaller addresses, right subtree has larger
 - The **heap property** is on a random priority (`ticket`): parents have smaller tickets than children
 
+[src/runtime/sema.go, lines 30-44](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=30)
 ```go
 // src/runtime/sema.go, lines 30-44
 // A semaRoot holds a balanced tree of sudog with distinct addresses (s.elem).
@@ -507,6 +522,7 @@ Within each treap node, goroutines waiting on the *same* address form a linked l
 
 ### semacquire1: The Core Acquire
 
+[src/runtime/sema.go, lines 146-201](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=146)
 ```go
 // src/runtime/sema.go, lines 146-201
 func semacquire1(addr *uint32, lifo bool, profile semaProfileFlags, skipframes int, reason waitReason) {
@@ -558,6 +574,7 @@ The flow:
 
 ### cansemacquire: The Atomic Fast Path
 
+[src/runtime/sema.go, lines 291-301](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=291)
 ```go
 // src/runtime/sema.go, lines 291-301
 func cansemacquire(addr *uint32) bool {
@@ -577,6 +594,7 @@ A simple CAS loop: atomically decrement the counter if it's positive. This is th
 
 ### semrelease1: Release and Wake
 
+[src/runtime/sema.go, lines 207-289](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=207)
 ```go
 // src/runtime/sema.go, lines 207-289
 func semrelease1(addr *uint32, handoff bool, skipframes int) {
@@ -625,6 +643,7 @@ Key steps:
 
 The `handoff` parameter is critical for fairness. When `sync.Mutex` enters starvation mode (a goroutine has been waiting > 1ms), it calls `semrelease` with `handoff=true`.
 
+[src/runtime/sema.go, lines 260-287](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=260)
 ```go
 // src/runtime/sema.go, lines 260-287
         if handoff && cansemacquire(addr) {
@@ -659,6 +678,7 @@ In handoff mode:
 
 ### The queue Method: Treap Insertion
 
+[src/runtime/sema.go, lines 370-396](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/sema.go;l=370)
 ```go
 // src/runtime/sema.go, lines 370-396
     // Add s as new leaf in tree of unique addrs.
@@ -703,6 +723,7 @@ The treap maintains balance probabilistically:
 
 The runtime's `rwmutex` (in `rwmutex.go`) is used internally by the runtime (e.g., for protecting allocator state). It's a simplified version of `sync.RWMutex`.
 
+[src/runtime/rwmutex.go, lines 18-30](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=18)
 ```go
 // src/runtime/rwmutex.go, lines 18-30
 type rwmutex struct {
@@ -722,6 +743,7 @@ type rwmutex struct {
 
 ### The rwmutexMaxReaders Trick
 
+[src/runtime/rwmutex.go, line 67](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=67)
 ```go
 // src/runtime/rwmutex.go, line 67
 const rwmutexMaxReaders = 1 << 30
@@ -733,6 +755,7 @@ This constant is the key to the reader-writer protocol. `readerCount` serves dua
 
 ### Read Lock (rlock)
 
+[src/runtime/rwmutex.go, lines 70-98](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=70)
 ```go
 // src/runtime/rwmutex.go, lines 70-98
 func (rw *rwmutex) rlock() {
@@ -770,6 +793,7 @@ The flow:
 
 ### Write Lock (lock)
 
+[src/runtime/rwmutex.go, lines 121-140](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=121)
 ```go
 // src/runtime/rwmutex.go, lines 121-140
 func (rw *rwmutex) lock() {
@@ -804,6 +828,7 @@ The protocol:
 
 ### Read Unlock (runlock)
 
+[src/runtime/rwmutex.go, lines 101-118](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=101)
 ```go
 // src/runtime/rwmutex.go, lines 101-118
 func (rw *rwmutex) runlock() {
@@ -833,6 +858,7 @@ When a reader unlocks:
 
 ### Write Unlock
 
+[src/runtime/rwmutex.go, lines 143-164](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/rwmutex.go;l=143)
 ```go
 // src/runtime/rwmutex.go, lines 143-164
 func (rw *rwmutex) unlock() {
