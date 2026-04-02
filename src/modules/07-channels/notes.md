@@ -703,7 +703,7 @@ channel address for lock acquisition).
 #### Step 1: Generate randomized poll order
 
 ```go
-// src/runtime/select.go, lines 167-197
+// src/runtime/select.go, lines 167-177
 
     // generate permuted order
     norder := 0

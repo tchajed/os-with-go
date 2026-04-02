@@ -38,7 +38,6 @@ The Go scheduler is built around three core abstractions, described at the top o
 
 ```go
 // src/runtime/proc.go lines 24-34
-// https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=24
 // Goroutine scheduler
 // The scheduler's job is to distribute ready-to-run goroutines over
 // worker threads.
@@ -92,9 +91,10 @@ The P struct is defined in [`src/runtime/runtime2.go`, lines 772-928](https://cs
 
 ### Key Fields
 
+From [`src/runtime/runtime2.go`, lines 772-818](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=772):
+
 ```go
-// src/runtime/runtime2.go lines 772-818
-// https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=772
+// src/runtime/runtime2.go lines 772-835
 type p struct {
     id          int32
     status      uint32     // one of pidle/prunning/...
@@ -151,8 +151,10 @@ This is a **lock-free, fixed-size circular buffer** of 256 goroutine pointers. K
 
 ### The runnext Slot
 
+From [`src/runtime/runtime2.go`, lines 806-818](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=806):
+
 ```go
-// src/runtime/runtime2.go, lines 807-819
+// src/runtime/runtime2.go, lines 806-818
 // runnext, if non-nil, is a runnable G that was ready'd by
 // the current G and should be run next instead of what's in
 // runq if there's time remaining in the running G's time
@@ -184,12 +186,12 @@ The P also holds various caches to reduce contention on global data structures:
 
 ## Part 3: The schedt Struct -- Global Scheduler State (5 min)
 
-The global scheduler state is held in a single `schedt` struct (variable `sched`), defined in `src/runtime/runtime2.go`, lines 931-1049.
+The global scheduler state is held in a single `schedt` struct (variable `sched`), defined in [`src/runtime/runtime2.go`, lines 930-1053](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=930).
 
 ### Key Fields
 
 ```go
-// src/runtime/runtime2.go, lines 931-1003
+// src/runtime/runtime2.go, lines 930-976
 type schedt struct {
     goidgen    atomic.Uint64
     lastpoll   atomic.Int64 // time of last network poll
@@ -243,7 +245,7 @@ The design principle: **fast paths use local, per-P state; slow paths fall back 
 
 ## Part 4: The gobuf Struct -- Saved Register State (5 min)
 
-When a goroutine is descheduled, its register state is saved into a `gobuf`:
+When a goroutine is descheduled, its register state is saved into a `gobuf`. From [`src/runtime/runtime2.go`, lines 303-322](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=303):
 
 ```go
 // src/runtime/runtime2.go, lines 303-322
@@ -271,7 +273,7 @@ Why only 6 fields? The Go compiler cooperates with the scheduler to ensure that 
 
 ### schedule()
 
-The scheduling loop is the heart of the runtime. Every M that is ready to do work calls `schedule()`, which finds a runnable goroutine and starts executing it. From `src/runtime/proc.go`, lines 4135-4231:
+The scheduling loop is the heart of the runtime. Every M that is ready to do work calls `schedule()`, which finds a runnable goroutine and starts executing it. From [`src/runtime/proc.go`, lines 4135-4231](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4135):
 
 ```go
 // src/runtime/proc.go, lines 4135-4231
@@ -338,7 +340,7 @@ Important: `execute()` never returns. When the goroutine eventually yields, the 
 
 ### execute()
 
-From `src/runtime/proc.go`, lines 3331-3383:
+From [`src/runtime/proc.go`, lines 3331-3383](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3331):
 
 ```go
 // src/runtime/proc.go, lines 3331-3383
@@ -383,7 +385,7 @@ Key steps:
 
 ## Part 6: findRunnable() -- Finding Work (15 min)
 
-`findRunnable()` is the most complex function in the scheduler. It implements a priority-ordered search for work. From `src/runtime/proc.go`, lines 3389-3658.
+`findRunnable()` is the most complex function in the scheduler. It implements a priority-ordered search for work. From [`src/runtime/proc.go`, lines 3389-3658](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3389).
 
 ### The Priority Order
 
@@ -488,6 +490,8 @@ top:
 
 ### The 1/61 Fairness Check
 
+From [`src/runtime/proc.go`, line 3443](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3443):
+
 ```go
 // src/runtime/proc.go, line 3443
 if pp.schedtick%61 == 0 && !sched.runq.empty() {
@@ -497,14 +501,14 @@ Every 61st scheduling decision, the scheduler checks the global queue *before* t
 
 ### Work Stealing
 
-When the local queue is empty and the global queue is empty, the scheduler attempts to **steal** work from other Ps:
+When the local queue is empty and the global queue is empty, the scheduler attempts to **steal** work from other Ps. From [`src/runtime/proc.go`, line 3522](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3522):
 
 ```go
 // src/runtime/proc.go, line 3522
 gp, inheritTime, tnow, w, newWork := stealWork(now)
 ```
 
-`stealWork` iterates over all Ps in a random order and attempts to steal half of another P's local run queue. This is the key mechanism for load balancing across cores. The number of spinning Ms is limited to half the busy Ps to avoid excessive CPU consumption:
+`stealWork` iterates over all Ps in a random order and attempts to steal half of another P's local run queue. This is the key mechanism for load balancing across cores. The number of spinning Ms is limited to half the busy Ps to avoid excessive CPU consumption. From [`src/runtime/proc.go`, line 3517](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3517):
 
 ```go
 // src/runtime/proc.go, line 3517
@@ -517,7 +521,7 @@ if mp.spinning || 2*sched.nmspinning.Load() < gomaxprocs-sched.npidle.Load() {
 
 ### Creation: newproc / newproc1
 
-When Go code executes `go f()`, the compiler emits a call to `newproc`:
+When Go code executes `go f()`, the compiler emits a call to `newproc`. From [`src/runtime/proc.go`, lines 5295-5308](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=5295):
 
 ```go
 // src/runtime/proc.go, lines 5295-5308
@@ -543,7 +547,7 @@ Steps:
 3. Put the new G on the current P's local run queue via `runqput`, with `next=true` (so it goes into `runnext`)
 4. If the runtime is past initialization, call `wakep()` to wake an idle M if one exists
 
-`newproc1` does the detailed initialization, from `src/runtime/proc.go`, lines 5313-5394:
+`newproc1` does the detailed initialization, from [`src/runtime/proc.go`, lines 5313-5427](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=5313):
 
 ```go
 // src/runtime/proc.go, lines 5313-5357
@@ -588,7 +592,7 @@ Covered above in Part 5. The key transition: `_Grunnable` -> `_Grunning`, then `
 
 `gopark` and `goready` (below) are the runtime's universal blocking and waking primitives. Channels (Module 7), mutexes (Module 6), and I/O (Module 10) all ultimately use `gopark` to suspend a goroutine and `goready` to wake it. Understanding this pair is key to understanding all blocking operations in Go.
 
-When a goroutine needs to block (channel operation, mutex, sleep, etc.), it calls `gopark`:
+When a goroutine needs to block (channel operation, mutex, sleep, etc.), it calls `gopark`. From [`src/runtime/proc.go`, lines 445-463](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=445):
 
 ```go
 // src/runtime/proc.go, lines 445-463
@@ -614,7 +618,7 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer,
 }
 ```
 
-`gopark` stores the wait reason and unlock function, then calls `mcall(park_m)`. `mcall` switches from the user goroutine's stack to the M's g0 stack and calls `park_m`:
+`gopark` stores the wait reason and unlock function, then calls `mcall(park_m)`. `mcall` switches from the user goroutine's stack to the M's g0 stack and calls `park_m`. From [`src/runtime/proc.go`, lines 4253-4302](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4253):
 
 ```go
 // src/runtime/proc.go, lines 4253-4302
@@ -658,10 +662,10 @@ The unlock function pattern is important: it allows the runtime to atomically re
 
 ### Waking: goready / ready
 
-When a blocked goroutine should be woken (e.g., a value arrives on a channel), `goready` is called:
+When a blocked goroutine should be woken (e.g., a value arrives on a channel), `goready` is called. From [`src/runtime/proc.go`, lines 481-485](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=481):
 
 ```go
-// src/runtime/proc.go, lines 481-484
+// src/runtime/proc.go, lines 481-485
 func goready(gp *g, traceskip int) {
     systemstack(func() {
         ready(gp, traceskip, true)
@@ -669,7 +673,7 @@ func goready(gp *g, traceskip int) {
 }
 ```
 
-Which calls `ready`:
+Which calls `ready`. From [`src/runtime/proc.go`, lines 1120-1140](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=1120):
 
 ```go
 // src/runtime/proc.go, lines 1120-1140
@@ -703,7 +707,7 @@ Key steps:
 
 ### Exit: goexit0 / gdestroy
 
-When a goroutine's function returns, it returns into `goexit` (which was set up during creation). The cleanup happens in `goexit0`:
+When a goroutine's function returns, it returns into `goexit` (which was set up during creation). The cleanup happens in `goexit0`. From [`src/runtime/proc.go`, lines 4491-4501](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4491):
 
 ```go
 // src/runtime/proc.go, lines 4491-4501
@@ -717,10 +721,10 @@ func goexit0(gp *g) {
 }
 ```
 
-And `gdestroy` does the actual cleanup, from `src/runtime/proc.go`, lines 4503-4539:
+And `gdestroy` does the actual cleanup, from [`src/runtime/proc.go`, lines 4503-4539](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4503):
 
 ```go
-// src/runtime/proc.go, lines 4503-4539
+// src/runtime/proc.go, lines 4503-4511
 func gdestroy(gp *g) {
     mp := getg().m
     pp := mp.p.ptr()
@@ -802,7 +806,7 @@ Key steps:
 
 ### runqput -- Adding to the Local Queue
 
-From `src/runtime/proc.go`, lines 7478-7520:
+From [`src/runtime/proc.go`, lines 7478-7520](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7478):
 
 ```go
 // src/runtime/proc.go, lines 7478-7520
@@ -850,10 +854,10 @@ The logic:
 
 ### runqputslow -- Overflow to Global Queue
 
-From `src/runtime/proc.go`, lines 7524-7559:
+From [`src/runtime/proc.go`, lines 7524-7560](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7524):
 
 ```go
-// src/runtime/proc.go, lines 7524-7559
+// src/runtime/proc.go, lines 7524-7560
 func runqputslow(pp *p, gp *g, h, t uint32) bool {
     var batch [len(pp.runq)/2 + 1]*g
 
@@ -885,7 +889,7 @@ When the local queue is full, **half** of it (128 goroutines) plus the new gorou
 
 ### runqget -- Taking from the Local Queue
 
-From `src/runtime/proc.go`, lines 7598-7619:
+From [`src/runtime/proc.go`, lines 7598-7619](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7598):
 
 ```go
 // src/runtime/proc.go, lines 7598-7619
@@ -958,16 +962,16 @@ With `runnext`:
 4. Consumer processes value, sends result/blocks
 5. Very low scheduling latency
 
-From the comment in `src/runtime/runtime2.go`, lines 807-818:
+From the comment in [`src/runtime/runtime2.go`, lines 806-818](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=806):
 
 > If a set of goroutines is locked in a communicate-and-wait pattern, this schedules that set as a unit and eliminates the (potentially large) scheduling latency that otherwise arises from adding the ready'd goroutines to the end of the run queue.
 
 ### The Starvation Guard
 
-There is a subtle starvation risk: if two goroutines keep waking each other via `runnext`, they could monopolize the P forever. The `sysmon` thread (system monitor) guards against this by preempting goroutines that run too long. From `runqput`:
+There is a subtle starvation risk: if two goroutines keep waking each other via `runnext`, they could monopolize the P forever. The `sysmon` thread (system monitor) guards against this by preempting goroutines that run too long. From [`src/runtime/proc.go`, lines 7479-7489](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7479):
 
 ```go
-// src/runtime/proc.go, lines 7479-7488
+// src/runtime/proc.go, lines 7479-7489
 if !haveSysmon && next {
     // A runnext goroutine shares the same time slice as the
     // current goroutine. To prevent a ping-pong pair from
@@ -1016,4 +1020,4 @@ On platforms without `sysmon` (like Wasm), `runnext` is disabled entirely to pre
 - Go source: `src/runtime/proc.go` (scheduler implementation)
 - Go source: `src/runtime/runtime2.go` (data structures)
 - Design document: https://golang.org/s/go11sched (Scalable Go Scheduler)
-- `src/runtime/proc.go` lines 36-97: detailed comment on worker thread parking/unparking strategy
+- [`src/runtime/proc.go`, lines 36-97](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=36): detailed comment on worker thread parking/unparking strategy

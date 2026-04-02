@@ -21,7 +21,7 @@ Recommended resources for deeper exploration of the topics covered in this cours
 ## Go Runtime Internals
 
 - **The Go runtime scheduler source code comments**
-  `src/runtime/proc.go` lines 24-116 contain an excellent design document explaining
+  [`src/runtime/proc.go` lines 24-116](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=24) contain an excellent design document explaining
   the GMP model and the rationale behind spinning threads.
 
 - **Go scheduler design document** (Dmitry Vyukov)
@@ -29,7 +29,7 @@ Recommended resources for deeper exploration of the topics covered in this cours
   [docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw](https://docs.google.com/document/d/1TTj4T2JO42uD5ID9e89oa0sLKhJYD0Y_kqxDv3I3XMw)
 
 - **Go memory allocator design** (based on TCMalloc)
-  `src/runtime/malloc.go` lines 1-100 describe the allocator architecture. The design
+  [`src/runtime/malloc.go` lines 1-100](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1) describe the allocator architecture. The design
   is based on TCMalloc (Thread-Caching Malloc) by Google.
 
 - **Getting to Go: The Journey of Go's Garbage Collector** (Rick Hudson)
@@ -37,7 +37,7 @@ Recommended resources for deeper exploration of the topics covered in this cours
   [blog.golang.org/ismmkeynote](https://go.dev/blog/ismmkeynote)
 
 - **Go GC design document**
-  `src/runtime/mgc.go` lines 1-110 describe the four GC phases in detail.
+  [`src/runtime/mgc.go` lines 1-110](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mgc.go;l=1) describe the four GC phases in detail.
 
 - **A Guide to the Go Garbage Collector** (official Go documentation)
   [tip.golang.org/doc/gc-guide](https://tip.golang.org/doc/gc-guide)

@@ -119,7 +119,7 @@ Every goroutine's stack bounds are tracked in the `g` struct. The stack itself i
 described by a simple pair of pointers:
 
 ```go
-// src/runtime/runtime2.go, lines 462-465
+// [src/runtime/runtime2.go, lines 462-465](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=462)
 type stack struct {
 	lo uintptr
 	hi uintptr
@@ -135,7 +135,7 @@ is the "bottom" (the limit).
 The first fields of the `g` struct are dedicated to stack management:
 
 ```go
-// src/runtime/runtime2.go, lines 473-483
+// [src/runtime/runtime2.go, lines 473-483](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/runtime2.go;l=473)
 type g struct {
 	// Stack parameters.
 	// stack describes the actual stack memory: [stack.lo, stack.hi).
@@ -167,7 +167,7 @@ The stack layout includes a guard region at the bottom. From the comments in
 `stack.go`:
 
 ```go
-// src/runtime/stack.go, lines 20-68
+// [src/runtime/stack.go, lines 20-68](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=20)
 /*
 Stack layout parameters.
 
@@ -226,7 +226,7 @@ The visual layout of a goroutine stack:
 ### Constants
 
 ```go
-// src/runtime/stack.go, lines 70-103
+// [src/runtime/stack.go, lines 70-103](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=70)
 const (
 	stackSystem = goos.IsWindows*4096 + goos.IsPlan9*512 + goos.IsIos*goarch.IsArm64*1024
 
@@ -253,7 +253,7 @@ The `stackguard0` field serves double duty. Beyond stack overflow detection, it
 is used for **cooperative preemption**:
 
 ```go
-// src/runtime/stack.go, lines 127-137
+// [src/runtime/stack.go, lines 70-103](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=70)
 const (
 	// Goroutine preemption request.
 	// 0xfffffade in hex.
@@ -293,7 +293,7 @@ an assembly trampoline that saves the current context and calls `newstack()`.
 ### newstack(): The Growth Entry Point
 
 ```go
-// src/runtime/stack.go, lines 1014-1016, 1026
+// [src/runtime/stack.go, lines 1014-1026, 1026](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1014)
 // Called from runtime·morestack when more stack is needed.
 // Allocate larger stack and relocate to new stack.
 // Stack growth is multiplicative, for constant amortized cost.
@@ -306,7 +306,7 @@ The `newstack` function (line 1026) handles both preemption and actual stack gro
 After checking for preemption (lines 1093-1146), it doubles the stack size:
 
 ```go
-// src/runtime/stack.go, lines 1148-1151
+// [src/runtime/stack.go, lines 1148-1151](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1148)
 	// Allocate a bigger segment and move the stack.
 	oldsize := gp.stack.hi - gp.stack.lo
 	newsize := oldsize * 2
@@ -315,7 +315,7 @@ After checking for preemption (lines 1093-1146), it doubles the stack size:
 It then ensures the new size is sufficient for the pending frame:
 
 ```go
-// src/runtime/stack.go, lines 1152-1162
+// [src/runtime/stack.go, lines 1152-1162](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1152)
 	// Make sure we grow at least as much as needed to fit the new frame.
 	if f := findfunc(gp.sched.pc); f.valid() {
 		max := uintptr(funcMaxSPDelta(f))
@@ -331,7 +331,7 @@ The goroutine transitions to `_Gcopystack` status (preventing the GC from scanni
 it during the copy), and then calls `copystack`:
 
 ```go
-// src/runtime/stack.go, lines 1183-1192
+// [src/runtime/stack.go, lines 1183-1192](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1183)
 	casgstatus(gp, _Grunning, _Gcopystack)
 	copystack(gp, newsize)
 	casgstatus(gp, _Gcopystack, _Grunning)
@@ -343,7 +343,7 @@ it during the copy), and then calls `copystack`:
 The `copystack` function (line 900) performs the actual stack relocation:
 
 ```go
-// src/runtime/stack.go, lines 898-903
+// [src/runtime/stack.go, lines 898-904](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=898)
 // Copies gp's stack to a new stack of a different size.
 // Caller must have changed gp status to Gcopystack.
 func copystack(gp *g, newsize uintptr) {
@@ -401,7 +401,7 @@ The `adjustpointer` function (line 610) checks whether a pointer falls within th
 old stack bounds and, if so, adjusts it by the delta:
 
 ```go
-// src/runtime/stack.go, lines 608-632
+// [src/runtime/stack.go, lines 610-615](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=610)
 func adjustpointer(adjinfo *adjustinfo, vpp unsafe.Pointer) {
 	pp := (*uintptr)(vpp)
 	p := *pp
@@ -425,7 +425,7 @@ For small stacks (up to a few orders above the fixed stack size), the runtime
 maintains **per-P caches** for lock-free allocation:
 
 ```go
-// src/runtime/stack.go, lines 147-168
+// [src/runtime/stack.go, lines 147-168](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=147)
 // Global pool of spans that have free stacks.
 // Stacks are assigned an order according to size.
 //
@@ -453,7 +453,7 @@ var stackLarge struct {
 The allocation fast path in `stackalloc` (line 344) checks the per-P mcache first:
 
 ```go
-// src/runtime/stack.go, lines 388-397
+// [src/runtime/stack.go, lines 388-397](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=388)
 		} else {
 			c := thisg.m.p.ptr().mcache
 			x = c.stackcache[order].list
@@ -476,7 +476,7 @@ For large stacks (beyond the cached sizes), `stackalloc` allocates directly from
 the memory heap:
 
 ```go
-// src/runtime/stack.go, lines 405-430
+// [src/runtime/stack.go, lines 405-430](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=405)
 	} else {
 		var s *mspan
 		npage := uintptr(n) >> gc.PageShift
@@ -509,7 +509,7 @@ The `stackfree` function (line 463) mirrors `stackalloc`. Small stacks are retur
 to the per-P cache:
 
 ```go
-// src/runtime/stack.go, lines 501-532
+// [src/runtime/stack.go, lines 501-532](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=501)
 	if n < fixedStack<<_NumStackOrders && n < _StackCacheSize {
 		// ...
 		if stackNoCache != 0 || gp.m.p == 0 || gp.m.preemptoff != "" {
@@ -530,7 +530,7 @@ to the per-P cache:
 Large stacks are returned differently depending on GC phase:
 
 ```go
-// src/runtime/stack.go, lines 533-555
+// [src/runtime/stack.go, lines 533-555](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=533)
 	} else {
 		s := spanOfUnchecked(uintptr(v))
 		if gcphase == _GCoff {
@@ -558,7 +558,7 @@ The `shrinkstack` function (line 1257) halves the stack if the goroutine is usin
 less than 1/4 of its allocated space:
 
 ```go
-// src/runtime/stack.go, lines 1253-1306
+// [src/runtime/stack.go, lines 1253-1306](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1253)
 // Maybe shrink the stack being used by gp.
 func shrinkstack(gp *g) {
 	// ...
@@ -589,7 +589,7 @@ The `preemptShrink` flag in the G struct allows the GC to request that a gorouti
 shrink its stack at the next synchronous safe point:
 
 ```go
-// src/runtime/stack.go, lines 1130-1134
+// [src/runtime/stack.go, lines 1130-1135](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/stack.go;l=1130)
 		if gp.preemptShrink {
 			// We're at a synchronous safe point now, so
 			// do the pending stack shrink.

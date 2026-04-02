@@ -93,7 +93,7 @@ The public-facing file type in Go is `os.File`. It is defined as a pointer to
 a private `file` struct:
 
 ```go
-// src/os/file_unix.go, lines 55-66
+// [src/os/file_unix.go, lines 55-66](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/os/file_unix.go;l=55)
 // file is the real representation of *File.
 // The extra level of indirection ensures that no clients of os
 // can overwrite this data, which could cause the finalizer
@@ -118,7 +118,7 @@ Key observations:
 Go 1.16 introduced a filesystem abstraction via the `io/fs` package:
 
 ```go
-// src/io/fs/fs.go, lines 40-52
+// [src/io/fs/fs.go, lines 40-52](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/io/fs/fs.go;l=40)
 type FS interface {
 	// Open opens the named file.
 	Open(name string) (File, error)
@@ -128,7 +128,7 @@ type FS interface {
 And the minimal `File` interface:
 
 ```go
-// src/io/fs/fs.go, lines 95-99
+// [src/io/fs/fs.go, lines 95-99](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/io/fs/fs.go;l=95)
 type File interface {
 	Stat() (FileInfo, error)
 	Read([]byte) (int, error)
@@ -176,7 +176,7 @@ The `internal/poll.FD` struct is the workhorse of Go's I/O system. It wraps a
 raw file descriptor with synchronization and poller integration:
 
 ```go
-// src/internal/poll/fd_unix.go, lines 17-48
+// [src/internal/poll/fd_unix.go, lines 17-48](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/internal/poll/fd_unix.go;l=17)
 // FD is a file descriptor. The net and os packages use this type as a
 // field of a larger type representing a network connection or OS file.
 type FD struct {
@@ -225,7 +225,7 @@ Key fields:
 When a file is opened, the `FD.Init` method registers it with the poller:
 
 ```go
-// src/internal/poll/fd_unix.go, lines 55-73
+// [src/internal/poll/fd_unix.go, lines 55-73](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/internal/poll/fd_unix.go;l=55)
 func (fd *FD) Init(net string, pollable bool) error {
 	fd.SysFile.init()
 
@@ -256,7 +256,7 @@ The most important method is `FD.Read`. This is where non-blocking I/O meets
 goroutine scheduling:
 
 ```go
-// src/internal/poll/fd_unix.go, lines 140-173
+// [src/internal/poll/fd_unix.go, lines 140-173](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/internal/poll/fd_unix.go;l=140)
 // Read implements io.Reader.
 func (fd *FD) Read(p []byte) (int, error) {
 	if err := fd.readLock(); err != nil {
@@ -310,7 +310,7 @@ When Go opens a file or socket, it puts the descriptor into non-blocking mode.
 This happens in the `newFile` function:
 
 ```go
-// src/os/file_unix.go, lines 193-209
+// [src/os/file_unix.go, lines 194-210](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/os/file_unix.go;l=194)
 	clearNonBlock := false
 	if pollable {
 		if nonBlocking {
@@ -329,7 +329,7 @@ This happens in the `newFile` function:
 Then the FD is registered with the poller:
 
 ```go
-// src/os/file_unix.go, lines 218-222
+// [src/os/file_unix.go, lines 219-223](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/os/file_unix.go;l=219)
 	if pollErr := f.pfd.Init("file", pollable); pollErr != nil && clearNonBlock {
 		if err := syscall.SetNonblock(fd, false); err == nil {
 			f.nonblock = false
@@ -344,7 +344,7 @@ directories cannot be polled with kqueue (they always report as ready). The
 `newFile` function checks for this:
 
 ```go
-// src/os/file_unix.go, lines 164-191
+// [src/os/file_unix.go, lines 165-192](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/os/file_unix.go;l=165)
 	if kind == kindOpenFile {
 		switch runtime.GOOS {
 		case "darwin", "ios", "dragonfly", "freebsd", "netbsd", "openbsd":
@@ -380,7 +380,7 @@ The network poller lives in `runtime/netpoll.go` and provides a platform-indepen
 interface. Each platform implements the actual polling mechanism:
 
 ```go
-// src/runtime/netpoll.go, lines 15-41
+// [src/runtime/netpoll.go, lines 16-37](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll.go;l=16)
 // A particular implementation (epoll/kqueue/port/AIX/Windows)
 // must define the following functions:
 //
@@ -408,7 +408,7 @@ interface. Each platform implements the actual polling mechanism:
 Each file descriptor registered with the poller gets a `pollDesc`:
 
 ```go
-// src/runtime/netpoll.go, lines 75-115
+// [src/runtime/netpoll.go, lines 75-115](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll.go;l=75)
 type pollDesc struct {
 	_     sys.NotInHeap
 	link  *pollDesc      // in pollcache, protected by pollcache.lock
@@ -444,7 +444,7 @@ reader and writer goroutines respectively.
 The semaphores (`rg`, `wg`) can be in one of four states:
 
 ```go
-// src/runtime/netpoll.go, lines 51-68
+// [src/runtime/netpoll.go, lines 51-68](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll.go;l=51)
 // pollDesc contains 2 binary semaphores, rg and wg, to park reader and writer
 // goroutines respectively. The semaphore can be in the following states:
 //
@@ -500,7 +500,7 @@ When the platform poller detects that a file descriptor is ready, it calls
 `netpollready`:
 
 ```go
-// src/runtime/netpoll.go, lines 483-510
+// [src/runtime/netpoll.go, lines 483-510](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll.go;l=483)
 // netpollready is called by the platform-specific netpoll function.
 // It declares that the fd associated with pd is ready for I/O.
 // The toRun argument is used to build a list of goroutines to return
@@ -538,7 +538,7 @@ scheduler, which puts these goroutines back on run queues.
 The Linux implementation uses `epoll` in **edge-triggered** mode:
 
 ```go
-// src/runtime/netpoll_epoll.go, lines 15-19
+// [src/runtime/netpoll_epoll.go, lines 15-19](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_epoll.go;l=15)
 var (
 	epfd           int32         = -1 // epoll descriptor
 	netpollEventFd uintptr            // eventfd for netpollBreak
@@ -549,7 +549,7 @@ var (
 Initialization creates an epoll instance and an eventfd for waking the poller:
 
 ```go
-// src/runtime/netpoll_epoll.go, lines 21-43
+// [src/runtime/netpoll_epoll.go, lines 21-43](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_epoll.go;l=21)
 func netpollinit() {
 	var errno uintptr
 	epfd, errno = linux.EpollCreate1(linux.EPOLL_CLOEXEC)
@@ -566,7 +566,7 @@ func netpollinit() {
 Registering a file descriptor uses edge-triggered mode (`EPOLLET`):
 
 ```go
-// src/runtime/netpoll_epoll.go, lines 49-55
+// [src/runtime/netpoll_epoll.go, lines 49-55](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_epoll.go;l=49)
 func netpollopen(fd uintptr, pd *pollDesc) uintptr {
 	var ev linux.EpollEvent
 	ev.Events = linux.EPOLLIN | linux.EPOLLOUT | linux.EPOLLRDHUP | linux.EPOLLET
@@ -584,7 +584,7 @@ The flags `EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLET` mean:
 The main polling function calls `epoll_wait`:
 
 ```go
-// src/runtime/netpoll_epoll.go, lines 99-175
+// [src/runtime/netpoll_epoll.go, lines 99-176](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_epoll.go;l=99)
 func netpoll(delay int64) (gList, int32) {
 	// ... convert delay to milliseconds ...
 	var events [128]linux.EpollEvent
@@ -627,7 +627,7 @@ The macOS/BSD implementation uses `kqueue` with `EV_CLEAR` (the kqueue equivalen
 of edge-triggered mode):
 
 ```go
-// src/runtime/netpoll_kqueue.go, lines 32-60
+// [src/runtime/netpoll_kqueue.go, lines 32-60](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_kqueue.go;l=32)
 func netpollopen(fd uintptr, pd *pollDesc) int32 {
 	// Arm both EVFILT_READ and EVFILT_WRITE in edge-triggered mode (EV_CLEAR)
 	var ev [2]keventt
@@ -657,7 +657,7 @@ Key differences from epoll:
 The polling function is structurally similar:
 
 ```go
-// src/runtime/netpoll_kqueue.go, lines 90-183
+// [src/runtime/netpoll_kqueue.go, lines 90-183](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_kqueue.go;l=90)
 func netpoll(delay int64) (gList, int32) {
 	// ...
 	var events [64]keventt
@@ -692,7 +692,7 @@ Both implementations provide a way to wake the poller from another thread:
 
 **Linux** uses an `eventfd`:
 ```go
-// src/runtime/netpoll_epoll.go, lines 67-89
+// [src/runtime/netpoll_epoll.go, lines 67-89](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_epoll.go;l=67)
 func netpollBreak() {
 	if !netpollWakeSig.CompareAndSwap(0, 1) {
 		return  // already being woken
@@ -711,7 +711,7 @@ func netpollBreak() {
 
 **macOS/BSD** uses a platform-specific wakeup mechanism (`wakeNetpoll`):
 ```go
-// src/runtime/netpoll_kqueue.go, lines 73-80
+// [src/runtime/netpoll_kqueue.go, lines 73-80](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/netpoll_kqueue.go;l=73)
 func netpollBreak() {
 	if !netpollWakeSig.CompareAndSwap(0, 1) {
 		return
@@ -734,7 +734,7 @@ poller as part of its work-stealing loop. When there is no other work to do,
 the scheduler thread blocks in the poller:
 
 ```go
-// src/runtime/proc.go, lines 3731-3754
+// [src/runtime/proc.go, lines 3731-3754](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3731)
 	// Poll network until next timer.
 	if netpollinited() && (netpollAnyWaiters() || pollUntil != 0) && sched.lastpoll.Swap(0) != 0 {
 		sched.pollUntil.Store(pollUntil)

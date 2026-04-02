@@ -30,7 +30,7 @@ By the end of this module, students will understand:
 
 Traditional OS schedulers and early Go (before Go 1.1) used a single global run queue protected by a mutex. Every time a goroutine became runnable or a thread needed work, it had to acquire this lock. On a 64-core machine, this single lock becomes a devastating bottleneck.
 
-The Go scheduler explicitly rejected centralization. From the top-of-file comment in `proc.go`:
+The Go scheduler explicitly rejected centralization. From the top-of-file comment in [`proc.go`](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=36):
 
 ```go
 // [src/runtime/proc.go, lines 36-56](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=36)
@@ -75,6 +75,8 @@ Each P has a local run queue (a 256-element ring buffer). Work is distributed ac
 ### stealWork: The Top-Level Stealer
 
 When `findRunnable()` can't find work locally, it calls `stealWork()`. This function makes up to 4 passes over all Ps in a random order, trying to steal goroutines:
+
+From [src/runtime/proc.go, lines 3828-3895](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3828):
 
 ```go
 // src/runtime/proc.go, lines 3828-3895
@@ -127,6 +129,8 @@ func stealWork(now int64) (gp *g, inheritTime bool, rnow, pollUntil int64, newWo
 
 The actual stealing is a two-step process. `runqsteal` calls `runqgrab` to grab half the victim's goroutines, then returns one to run immediately:
 
+From [src/runtime/proc.go, lines 7727-7747](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7727):
+
 ```go
 // src/runtime/proc.go, lines 7727-7747
 // Steal half of elements from local runnable queue of p2
@@ -153,6 +157,8 @@ func runqsteal(pp, p2 *p, stealRunNextG bool) *g {
 ```
 
 The `runqgrab` function is the lock-free core. It steals `n - n/2` goroutines (i.e., half, rounding up for the thief):
+
+From [src/runtime/proc.go, lines 7662-7725](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7662):
 
 ```go
 // src/runtime/proc.go, lines 7662-7725
@@ -211,6 +217,8 @@ Stealing from `runnext` is the last resort (only on the final steal attempt). Th
 
 A "spinning" thread is an M that has no work but is actively looking for some. It has not yet gone to sleep. Spinning threads are a controlled form of busy-waiting that trades CPU cycles for reduced latency.
 
+From [src/runtime/proc.go, lines 68-83](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=68):
+
 ```go
 // src/runtime/proc.go, lines 68-83
 // A worker thread is considered spinning if it is out of local work and did
@@ -243,6 +251,8 @@ The wake-up decision (in `wakep()`) is:
 
 If both conditions hold, wake one thread. That thread becomes spinning, searches for work, and if it finds some, it calls `resetspinning()` which calls `wakep()` again -- potentially waking another thread. This creates a cascade that ramps up parallelism smoothly.
 
+From [src/runtime/proc.go, lines 4021-4035](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4021):
+
 ```go
 // src/runtime/proc.go, lines 4021-4035
 func resetspinning() {
@@ -265,6 +275,8 @@ func resetspinning() {
 ### The Delicate Dance: Spinning to Non-Spinning Transition
 
 The transition from spinning to non-spinning is the trickiest part of the scheduler. There is a race between a thread submitting new work and a spinning thread deciding to park:
+
+From [src/runtime/proc.go, lines 3622-3638](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3622):
 
 ```go
 // src/runtime/proc.go, lines 3622-3638
@@ -311,6 +323,8 @@ This is a classic example of the "flag + data" synchronization pattern. The memo
 
 When a P's local run queue is full (256 entries), the next `runqput` call triggers `runqputslow`, which moves half the local queue to the global queue:
 
+From [src/runtime/proc.go, lines 7524-7560](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=7524):
+
 ```go
 // src/runtime/proc.go, lines 7524-7560
 func runqputslow(pp *p, gp *g, h, t uint32) bool {
@@ -353,6 +367,8 @@ The global queue requires `sched.lock`, which is why it's avoided on the fast pa
 
 Without special handling, two goroutines on a local queue could starve goroutines on the global queue by constantly respawning each other. The scheduler prevents this:
 
+From [src/runtime/proc.go, lines 3440-3450](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=3440):
+
 ```go
 // src/runtime/proc.go, lines 3440-3450
     // Check the global runnable queue once in a while to ensure fairness.
@@ -386,6 +402,8 @@ if SP < g.stackguard0 {
 
 The scheduler exploits this for cooperative preemption. To preempt a goroutine, it sets `gp.stackguard0 = stackPreempt` (a value so large that *any* stack check will fail). The goroutine then calls `morestack`, which detects the preemption request and yields:
 
+From [src/runtime/proc.go, lines 6880-6886](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6880):
+
 ```go
 // src/runtime/proc.go, lines 6880-6886
     gp.preempt = true
@@ -397,7 +415,7 @@ The scheduler exploits this for cooperative preemption. To preempt a goroutine, 
     gp.stackguard0 = stackPreempt
 ```
 
-From `preempt.go` (lines 27-33):
+From [`preempt.go`, lines 27-33](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/preempt.go;l=27):
 ```go
 // Synchronous safe-points are implemented by overloading the stack
 // bound check in function prologues. To preempt a goroutine at the
@@ -417,6 +435,8 @@ From `preempt.go` (lines 27-33):
 ### The SIGURG Choice
 
 Go 1.14 introduced true preemptive scheduling via OS signals. The runtime sends a signal to the thread running a goroutine that needs preemption. But which signal?
+
+From [src/runtime/signal_unix.go, lines 44-74](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/signal_unix.go;l=44):
 
 ```go
 // src/runtime/signal_unix.go, lines 44-74
@@ -460,7 +480,7 @@ This is a great example of systems engineering trade-offs. The signal must be:
 
 ### How Async Preemption Works
 
-From `preempt.go` (lines 35-43):
+From [`preempt.go`, lines 35-43](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/preempt.go;l=35):
 ```go
 // Preemption at asynchronous safe-points is implemented by suspending
 // the thread using an OS mechanism (e.g., signals) and inspecting its
@@ -484,6 +504,8 @@ The flow is:
 **Async safe-points**: Not every instruction is safe for preemption. The runtime needs to be able to find all GC roots (stack pointers). The compiler emits metadata marking which instructions are safe.
 
 ### preemptone: The Combined Approach
+
+From [src/runtime/proc.go, lines 6866-6895](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6866):
 
 ```go
 // src/runtime/proc.go, lines 6866-6895
@@ -529,8 +551,10 @@ Notice the belt-and-suspenders approach: it sets BOTH the cooperative preemption
 - Polling the network (if no other thread is doing it)
 - Triggering garbage collection
 
+From [src/runtime/proc.go, lines 6486-6502](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6486):
+
 ```go
-// src/runtime/proc.go, lines 6486-6506
+// src/runtime/proc.go, lines 6486-6502
 func sysmon() {
     lock(&sched.lock)
     sched.nmsys++
@@ -563,12 +587,16 @@ func sysmon() {
 
 The `retake` function is called by `sysmon` to enforce time slices and reclaim Ps from syscalls:
 
+From [src/runtime/proc.go, lines 6626-6628](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6626):
+
 ```go
 // src/runtime/proc.go, lines 6626-6628
 // forcePreemptNS is the time slice given to a G before it is
 // preempted.
 const forcePreemptNS = 10 * 1000 * 1000 // 10ms
 ```
+
+From [src/runtime/proc.go, lines 6656-6671](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6656):
 
 ```go
 // src/runtime/proc.go, lines 6656-6671
@@ -595,6 +623,8 @@ The logic is:
 
 When a goroutine enters a syscall, its M is blocked in the kernel. But the P is sitting idle. The `retake` function can steal this P and give it to another M:
 
+From [src/runtime/proc.go, lines 6700-6705](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=6700):
+
 ```go
 // src/runtime/proc.go, lines 6700-6705
         // On the one hand we don't want to retake Ps if there is no other work to do,
@@ -615,6 +645,8 @@ When the M returns from the syscall, it finds its P gone. It must acquire a new 
 ### The schedule() Function: Putting It All Together
 
 The main scheduler loop ties everything together:
+
+From [src/runtime/proc.go, lines 4135-4231](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/proc.go;l=4135):
 
 ```go
 // src/runtime/proc.go, lines 4135-4231

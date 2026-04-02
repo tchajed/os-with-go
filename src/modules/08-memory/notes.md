@@ -142,10 +142,10 @@ The allocator is documented at the top of `malloc.go`:
 
 ### The allocation hierarchy
 
-[`src/runtime/malloc.go` lines 27-63](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=27):
+[`src/runtime/malloc.go` lines 27-47](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=27):
 
 ```
-// src/runtime/malloc.go, lines 27-63
+// src/runtime/malloc.go, lines 27-47
 
 // Allocating a small object proceeds up a hierarchy of caches:
 //
@@ -577,8 +577,10 @@ block:
 
 ### Implementation
 
+[`src/runtime/malloc.go` lines 1299-1332](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1299):
+
 ```go
-// src/runtime/malloc.go, lines 1299-1324
+// src/runtime/malloc.go, lines 1299-1332
 
 c := getMCache(mp)
 off := c.tinyoffset
@@ -621,8 +623,10 @@ large reduction in allocation overhead.
 
 Every heap allocation in Go flows through `mallocgc`:
 
+[`src/runtime/malloc.go` lines 1119-1129](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1119):
+
 ```go
-// src/runtime/malloc.go, lines 1119-1128
+// src/runtime/malloc.go, lines 1119-1129
 
 func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
     if doubleCheckMalloc {
@@ -639,8 +643,10 @@ func mallocgc(size uintptr, typ *_type, needzero bool) unsafe.Pointer {
 
 ### Allocation paths
 
+[`src/runtime/malloc.go` lines 1186-1209](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1186):
+
 ```go
-// src/runtime/malloc.go, lines 1186-1200
+// src/runtime/malloc.go, lines 1186-1209
 
 if size <= maxSmallSize-gc.MallocHeaderSize {
     if typ == nil || !typ.Pointers() {
@@ -669,10 +675,13 @@ Three paths:
 
 ### GC assist
 
+[`src/runtime/malloc.go` lines 1162-1166](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=1162):
+
 ```go
 // src/runtime/malloc.go, lines 1162-1166
 
-// Assist the GC if needed.
+// Assist the GC if needed. (On the reuse path, we currently compensate for this;
+// changes here might require changes there.)
 if gcBlackenEnabled != 0 {
     deductAssistCredit(size)
 }
@@ -690,6 +699,8 @@ to maintain system-wide progress.
 ---
 
 ## 9. Lazy Zeroing
+
+[`src/runtime/malloc.go` lines 65-75](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/malloc.go;l=65):
 
 ```go
 // src/runtime/malloc.go, lines 65-75
@@ -722,7 +733,7 @@ pages are "still clean."
 
 ## 10. Garbage Collection Overview
 
-The Go garbage collector is described at the top of `mgc.go`:
+The Go garbage collector is described at the top of [`src/runtime/mgc.go` lines 5-10](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mgc.go;l=5):
 
 ```go
 // src/runtime/mgc.go, lines 5-10
@@ -738,6 +749,8 @@ The Go garbage collector is described at the top of `mgc.go`:
 ```
 
 ### The Four Phases
+
+[`src/runtime/mgc.go` lines 24-82](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mgc.go;l=24):
 
 ```
 // src/runtime/mgc.go, lines 24-82
@@ -869,8 +882,10 @@ writes.
 
 ## 12. Concurrent Sweep
 
+[`src/runtime/mgc.go` lines 84-95](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mgc.go;l=84):
+
 ```go
-// src/runtime/mgc.go, lines 84-110
+// src/runtime/mgc.go, lines 84-95
 
 // Concurrent sweep.
 //
@@ -896,6 +911,8 @@ Two mechanisms drive sweeping:
 
 The `sweepgen` field in `mspan` tracks the sweep state:
 
+[`src/runtime/mheap.go` lines 494-500](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mheap.go;l=494):
+
 ```go
 // src/runtime/mheap.go, lines 494-500
 
@@ -905,11 +922,16 @@ The `sweepgen` field in `mspan` tracks the sweep state:
 // if sweepgen == h->sweepgen, the span is swept and ready to use
 // if sweepgen == h->sweepgen + 1, the span was cached before sweep
 //   began and is still cached, and needs sweeping
+// if sweepgen == h->sweepgen + 3, the span was swept and then cached
+//   and is still cached
+// h->sweepgen is incremented by 2 after every GC
 ```
 
 ---
 
 ## 13. GC Triggers and Pacing
+
+[`src/runtime/mgc.go` lines 112-118](https://cs.opensource.google/go/go/+/refs/tags/go1.26.1:src/runtime/mgc.go;l=112):
 
 ```go
 // src/runtime/mgc.go, lines 112-118
