@@ -15,3 +15,14 @@ Install [mdbook](https://rust-lang.github.io/mdBook/guide/installation.html).
 mdbook serve
 mdbook build
 ```
+
+### Maintaining source links
+
+Code snippets include citations to the Go runtime source with links to specific line numbers. When updating to a new Go version, use the verification tool to check and fix line numbers:
+
+```
+go run ./tools/verify-lines -go-root ~/sw/go       # check citations
+go run ./tools/verify-lines -go-root ~/sw/go -fix   # auto-fix shifted lines
+```
+
+The tool reads the `VERSION` file from the Go source tree to set the tag in URLs. Use `-tag go1.XX` to override.
