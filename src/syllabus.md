@@ -2,7 +2,7 @@
 
 ## Course Overview
 
-This 10-hour mini course teaches core operating systems concepts using the Go runtime
+This mini course teaches core operating systems concepts using the Go runtime
 as a living, readable case study. Rather than studying OS theory in isolation, students
 will read and analyze production code that implements scheduling, concurrency,
 memory management, and I/O — the same code that runs every Go program.
@@ -29,24 +29,27 @@ By the end of this course, students will be able to:
 
 1. **Explain the role of an operating system** and identify which OS responsibilities
    the Go runtime handles in user space.
-2. **Trace how a system call works** from a Go function call through the syscall
-   package down to the hardware instruction, and explain the user/kernel boundary.
-3. **Distinguish processes, OS threads, and goroutines**, and explain why user-level
+2. **Distinguish processes, OS threads, and goroutines**, and explain why user-level
    threading is useful.
-4. **Describe the GMP scheduling model** (goroutines, machines, processors) and
+3. **Describe the GMP scheduling model** (goroutines, machines, processors) and
    trace a goroutine through its lifecycle states.
-5. **Explain work stealing** as a distributed scheduling strategy and analyze its
+4. **Explain work stealing** as a distributed scheduling strategy and analyze its
    tradeoffs versus centralized scheduling.
-6. **Analyze low-level synchronization primitives** (futexes, semaphores, spin locks)
+5. **Analyze low-level synchronization primitives** (futexes, semaphores, spin locks)
    and explain how they build on hardware atomics and OS support.
-7. **Read and explain the channel implementation**, including the blocking/waking
+6. **Read and explain the channel implementation**, including the blocking/waking
    mechanism and the select algorithm.
-8. **Describe a multi-level memory allocator** and explain how per-CPU caches,
-   size classes, and spans reduce fragmentation and contention.
-9. **Explain how goroutine stacks grow and shrink** dynamically, contrasting this
-   with fixed-size OS thread stacks.
-10. **Trace an I/O operation** from `os.File.Read()` through the internal poller
+7. **Trace an I/O operation** from `os.File.Read()` through the internal poller
     to epoll/kqueue, and explain how the runtime makes blocking I/O non-blocking.
+
+*Optional learning outcomes:*
+
+8. **Trace how a system call works** from a Go function call through the syscall
+   package down to the hardware instruction, and explain the user/kernel boundary.
+9. **Describe a multi-level memory allocator** and explain how per-CPU caches,
+   size classes, and spans reduce fragmentation and contention.
+10. **Explain how goroutine stacks grow and shrink** dynamically, contrasting this
+   with fixed-size OS thread stacks.
 
 ---
 
@@ -55,17 +58,22 @@ By the end of this course, students will be able to:
 | # | Module | Duration | Key Runtime Files |
 |---|--------|----------|-------------------|
 | 1 | [Introduction: The Runtime as an OS](modules/01-introduction/notes.md) | 45 min | `runtime/` overview |
-| 2 | [System Calls](modules/02-syscalls/notes.md) | 60 min | `sys_linux_amd64.s`, `syscall/` |
-| 3 | [Processes, Threads, and Goroutines](modules/03-threads/notes.md) | 60 min | `runtime2.go`, `os_linux.go` |
-| 4 | [The Go Scheduler](modules/04-scheduler/notes.md) | 75 min | `proc.go`, `runtime2.go` |
-| 5 | [Work Stealing and Preemption](modules/05-work-stealing/notes.md) | 60 min | `proc.go`, `signal_unix.go` |
-| 6 | [Synchronization Primitives](modules/06-synchronization/notes.md) | 60 min | `lock_futex.go`, `sema.go`, `rwmutex.go` |
-| 7 | [Channels and Select](modules/07-channels/notes.md) | 60 min | `chan.go`, `select.go` |
-| 8 | [Memory Management](modules/08-memory/notes.md) | 60 min | `malloc.go`, `mheap.go`, `mcache.go` |
-| 9 | [Goroutine Stacks](modules/09-stacks/notes.md) | 45 min | `stack.go` |
-| 10 | [File Systems, I/O, and the Network Poller](modules/10-io/notes.md) | 60 min | `netpoll.go`, `os/file.go`, `internal/poll/` |
+| 2 | [Processes, Threads, and Goroutines](modules/03-threads/notes.md) | 60 min | `runtime2.go`, `os_linux.go` |
+| 3 | [The Go Scheduler](modules/04-scheduler/notes.md) | 75 min | `proc.go`, `runtime2.go` |
+| 4 | [Work Stealing and Preemption](modules/05-work-stealing/notes.md) | 60 min | `proc.go`, `signal_unix.go` |
+| 5 | [Synchronization Primitives](modules/06-synchronization/notes.md) | 60 min | `lock_futex.go`, `sema.go`, `rwmutex.go` |
+| 6 | [Channels and Select](modules/07-channels/notes.md) | 60 min | `chan.go`, `select.go` |
+| 7 | [File Systems, I/O, and the Network Poller](modules/10-io/notes.md) | 60 min | `netpoll.go`, `os/file.go`, `internal/poll/` |
 
-**Total: 9 hours 45 minutes** (allows flexibility for questions and discussion)
+**Total: 7 hours** (allows flexibility for questions and discussion)
+
+### Optional Modules
+
+| Module | Duration | Key Runtime Files |
+|--------|----------|-------------------|
+| [System Calls](modules/02-syscalls/notes.md) | 60 min | `sys_linux_amd64.s`, `syscall/` |
+| [Memory Management](modules/08-memory/notes.md) | 60 min | `malloc.go`, `mheap.go`, `mcache.go` |
+| [Goroutine Stacks](modules/09-stacks/notes.md) | 45 min | `stack.go` |
 
 ---
 
@@ -85,18 +93,19 @@ By the end of this course, students will be able to:
 
 The course tells a coherent story, building from the bottom up:
 
-1. **Modules 1-2** establish the foundation: what an OS does and how programs
-   talk to the kernel via system calls.
-2. **Modules 3-5** cover the scheduler — the heart of the runtime. Students learn
+1. **Module 1** establishes the foundation: what an OS does and how the Go
+   runtime acts as a user-space operating system.
+2. **Modules 2-4** cover the scheduler — the heart of the runtime. Students learn
    why goroutines exist, how the GMP model works, and how work stealing keeps
    all CPUs busy.
-3. **Modules 6-7** explore concurrency from the programmer's perspective:
+3. **Modules 5-6** explore concurrency from the programmer's perspective:
    how locks and channels are implemented on top of the scheduler primitives
-   (gopark/goready) introduced in Modules 4-5.
-4. **Modules 8-9** cover memory: how the allocator and stack manager provide
-   the illusion of unlimited memory to goroutines.
-5. **Module 10** ties everything together by showing how I/O integrates with
+   (gopark/goready) introduced in Modules 3-4.
+4. **Module 7** ties everything together by showing how I/O integrates with
    the scheduler, completing the picture of the runtime as a full OS.
+
+The **optional modules** (System Calls, Memory Management, Goroutine Stacks)
+provide deeper dives into specific subsystems and can be covered as time permits.
 
 ---
 
