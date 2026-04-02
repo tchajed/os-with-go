@@ -1,5 +1,5 @@
 [book]
-title = "Learn Operating Systems with Go"
+title = "Operating Systems with Go"
 authors = ["Tej Chajed"]
 language = "en"
 src = "src"

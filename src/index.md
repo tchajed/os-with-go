@@ -1,7 +1,7 @@
 # Operating Systems Through the Go Runtime
 
-A mini course that teaches core operating systems concepts using the
-Go runtime as a living case study.
+A mini course that teaches operating systems concepts through the
+Go runtime.
 
 ---
 
