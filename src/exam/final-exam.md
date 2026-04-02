@@ -1,7 +1,7 @@
 # Final Exam: Operating Systems Through the Go Runtime
 
-**Duration:** 3 hours
-**Total Points:** 100
+**Duration:** 3 hours<br>
+**Total Points:** 100<br>
 **Open book: You may refer to the Go source code and course materials.**
 
 ---
@@ -175,7 +175,7 @@ When a 2KB stack is full, a 4KB stack is allocated and 2KB is copied. When 4KB i
 | 4 | 16KB | 32KB | 16KB |
 | 5 | 32KB | 64KB | 32KB |
 
-Total bytes copied: 2 + 4 + 8 + 16 + 32 = 62KB, which is slightly less than 2 x 64KB = 128KB.
+Total bytes copied: 2 + 4 + 8 + 16 + 32 = 62KB. In general, total copy work is bounded by 2 * final_size = 2 * 64KB = 128KB, and indeed 62KB < 128KB.
 
 In general, the total copy work is bounded by 2 * final_size. Since the goroutine uses final_size bytes of stack over its lifetime, the amortized overhead is at most 2x -- a constant factor. Each function call contributes O(1) amortized copying cost.
 

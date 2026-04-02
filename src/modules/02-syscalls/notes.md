@@ -14,8 +14,8 @@ A modern operating system divides execution into two privilege levels:
 A **system call** (syscall) is the mechanism by which user-mode code requests services from the kernel. On x86-64 Linux, the transition happens via the `SYSCALL` instruction, which:
 
 1. Saves the user-mode instruction pointer (RIP) and flags (RFLAGS)
-2. Loads the kernel-mode instruction pointer and stack pointer from MSRs (Model-Specific Registers)
-3. Switches to ring 0 (kernel privilege level)
+2. Loads the kernel-mode instruction pointer and stack pointer from MSRs (Model-Specific Registers — special CPU registers that the kernel configures during boot to specify where to jump when a syscall occurs)
+3. Switches to ring 0 (kernel privilege level — x86 CPUs define privilege "rings," where ring 0 is the most privileged level used by the kernel, and ring 3 is the least privileged level where user code runs)
 4. Jumps to the kernel's syscall entry point
 
 The kernel looks at the value in `RAX` (the syscall number), dispatches to the appropriate handler, and returns to user mode via `SYSRET`.
@@ -154,6 +154,8 @@ Also note that Go uses `openat` with `AT_FDCWD` instead of `open`, because Andro
 ## 3. macOS: libc Trampolines (10 min)
 
 On macOS (Darwin), Go **cannot** make syscalls directly. Apple does not guarantee a stable syscall ABI -- the syscall numbers and conventions can change between macOS versions. Instead, Go must call through libc.
+
+Since macOS on Apple Silicon uses ARM64, the assembly syntax below differs from the x86-64 we saw above. Key differences: arguments go in registers R0-R7, `BL` is the branch-and-link (call) instruction, and `RSP` is the stack pointer.
 
 The trampoline pattern is visible in `src/runtime/sys_darwin_arm64.s`:
 
@@ -487,21 +489,22 @@ func exitsyscall() {
     gp.waitsince = 0
 
     ...
-    // Transition from _Gsyscall back to _Grunning.
-    if gp.bubble != nil || !gp.atomicstatus.CompareAndSwap(_Gsyscall, _Grunning) {
-        casgstatus(gp, _Gsyscall, _Grunning)
-    }
-
-    // Check if we still have our P.
+    // Check if we still have our P (fast path).
     oldp := gp.m.oldp.ptr()
     gp.m.oldp.set(nil)
 
     pp := gp.m.p.ptr()
     if pp != nil {
-        // Fast path: we still have our P. Just emit a trace event.
+        // Fast path: we still have our P.
+        // Transition _Gsyscall -> _Grunning and continue.
+        if gp.bubble != nil || !gp.atomicstatus.CompareAndSwap(_Gsyscall, _Grunning) {
+            casgstatus(gp, _Gsyscall, _Grunning)
+        }
         ...
     } else {
         // Slow path: we lost our P. Try to get another one.
+        // If no P available, the goroutine goes _Gsyscall -> _Grunnable
+        // and is placed on the global run queue.
         systemstack(func() {
             if pp := exitsyscallTryGetP(oldp); pp != nil {
                 // Got a P, install it and continue.
@@ -559,7 +562,7 @@ func retake(now int64) uint32 {
 }
 ```
 
-`sysmon` checks the `syscalltick` to see how long the P has been in a syscall. If it's been too long (~20 microseconds for the first check, increasing with backoff), `sysmon` steals the P and hands it to another M that has goroutines waiting to run.
+`sysmon` checks the `syscalltick` to see how long the P has been in a syscall. If it's been too long (the threshold is 10ms, defined by `forcePreemptNS`), `sysmon` steals the P and hands it to another M that has goroutines waiting to run.
 
 ### The Full Lifecycle
 

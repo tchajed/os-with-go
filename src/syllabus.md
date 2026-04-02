@@ -13,8 +13,10 @@ allocator and garbage collector, handles signals, and implements its own I/O sch
 All of this is written in readable Go (with some assembly), making it far more
 approachable than a kernel like Linux.
 
-**Prerequisites:** Basic programming experience. Familiarity with Go syntax is helpful
-but not required — the course introduces Go idioms as they appear.
+**Prerequisites:** An introductory systems programming or computer organization course
+(or equivalent). Students should be comfortable reading C-like code and have basic
+familiarity with concepts like pointers, memory addresses, and CPU registers. Go syntax
+is introduced as needed — prior Go experience is helpful but not required.
 
 **Source code:** All code references point to the Go source tree. Students should have
 a copy available (the course references files under `src/runtime/` and `src/os/`).
@@ -63,7 +65,7 @@ By the end of this course, students will be able to:
 | 9 | [Goroutine Stacks](modules/09-stacks/notes.md) | 45 min | `stack.go` |
 | 10 | [File Systems, I/O, and the Network Poller](modules/10-io/notes.md) | 60 min | `netpoll.go`, `os/file.go`, `internal/poll/` |
 
-**Total: 10 hours 25 minutes** (allows flexibility for questions and discussion)
+**Total: 9 hours 45 minutes** (allows flexibility for questions and discussion)
 
 ---
 
@@ -71,7 +73,7 @@ By the end of this course, students will be able to:
 
 | Assessment | Description | Weight |
 |------------|-------------|--------|
-| [Reading Checks](modules/) (per module) | Short comprehension questions after each module | 20% |
+| [Reading Checks](modules/01-introduction/comprehension.md) (per module) | Short comprehension questions after each module | 20% |
 | [Assignment 1: System Call Tracer](assignments/assignment1.md) | Build a tool that traces Go program system calls | 20% |
 | [Assignment 2: Goroutine Scheduler](assignments/assignment2.md) | Implement a simplified GMP scheduler | 30% |
 | [Assignment 3: Concurrent Data Structure](assignments/assignment3.md) | Build a channel-like primitive from scratch | 15% |

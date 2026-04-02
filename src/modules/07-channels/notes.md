@@ -3,8 +3,14 @@
 ## Overview
 
 Channels are Go's primary communication primitive, implementing Hoare's
-Communicating Sequential Processes (CSP) model. Under the hood, a channel is a
-mutex-protected circular buffer with embedded wait queues. The `select`
+Communicating Sequential Processes (CSP) model. CSP is a formal model of
+concurrent computation where independent processes communicate exclusively
+through message passing, not shared memory. In CSP, sending and receiving are
+synchronization points — a sender blocks until a receiver is ready (and vice
+versa for unbuffered channels). Go's channels implement this model, though
+buffered channels relax the strict synchronous coupling.
+
+Under the hood, a channel is a mutex-protected circular buffer with embedded wait queues. The `select`
 statement multiplexes across multiple channels using a carefully designed
 algorithm that prevents deadlocks and ensures fairness.
 

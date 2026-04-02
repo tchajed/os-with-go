@@ -185,6 +185,8 @@ A **spinning** thread: has no work, but is actively searching.
 1. There is an idle P, **AND**
 2. `sched.nmspinning == 0`
 
+> **Note:** The source comment says `nmspinning>1` but means `>0`; the code checks `== 0`. This is a known comment inconsistency.
+
 This prevents **thundering herd** -- 1000 new goroutines don't wake 1000 threads.
 
 ---

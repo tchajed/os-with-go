@@ -38,7 +38,7 @@ Describe the three-level memory allocation hierarchy in Go: `mcache`, `mcentral`
 
 **False.** Go uses a **concurrent, tri-color mark-sweep** collector. It only stops the world (STW) briefly at two points:
 
-1. **STW Phase 1 (Mark Setup):** All goroutines are paused to enable the write barrier, flip the GC phase to "mark," and scan stacks/globals for root pointers. This typically takes <1ms.
+1. **STW Phase 1 (Sweep Termination):** All goroutines are paused to finish any remaining sweeping from the previous cycle, enable the write barrier, and transition to the mark phase. This typically takes <1ms.
 
 2. **Concurrent Mark:** Goroutines resume execution. GC mark workers run concurrently alongside application goroutines, tracing reachable objects. The write barrier ensures new pointer writes are tracked. This phase does most of the work.
 

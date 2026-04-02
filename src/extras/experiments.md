@@ -353,10 +353,11 @@ func main() {
     go func() {
         // Tight loop with no function calls
         // In Go 1.14+, this will be preempted via SIGURG
+        // (asynchronous signal-based preemption)
         // In older Go, this would monopolize the P
         for {
-            // The compiler inserts preemption checks at loop back-edges
-            // since Go 1.14, so this will eventually yield
+            // Go 1.14+ uses signal-based async preemption (SIGURG),
+            // so even tight loops without function calls are preemptible
         }
     }()
 

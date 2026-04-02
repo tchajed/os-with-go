@@ -1,4 +1,4 @@
-## Module 2: System Calls
+# Module 2: System Calls
 
 How Go Crosses the User/Kernel Boundary
 
@@ -466,11 +466,12 @@ This is exactly how an OS kernel manages I/O-bound vs. CPU-bound processes -- ju
 
 ---
 
-## Next: Process Scheduling
+## Next: Processes, Threads, and Goroutines (Module 3)
 
-How does the Go scheduler decide which goroutine to run?
+What are the abstractions the Go runtime schedules?
 
-- `schedule()` and `findRunnable()`
-- Work stealing algorithm
+- OS threads (M) vs. goroutines (G)
+- The `g` and `m` structs in detail
+- Goroutine lifecycle states
 - Global vs. local run queues
 - The `runnext` optimization

@@ -161,31 +161,7 @@ When the goroutine is woken (because one channel operation completed), it must r
 
 ---
 
-### Question 6 (True/False with Explanation)
-**True or False:** Sending to a closed channel returns immediately with a zero value.
-
-<details><summary>Answer</summary>
-
-**False.** Sending to a closed channel **panics** (not returns a zero value). The `chansend` function checks:
-
-```go
-if c.closed != 0 {
-    unlock(&c.lock)
-    panic(plainError("send on closed channel"))
-}
-```
-
-The zero-value behavior applies to **receiving** from a closed channel: once a closed channel's buffer is drained, all subsequent receives return the zero value of the element type and `false` for the second return value (the "ok" flag).
-
-This asymmetry exists by design:
-- Closing signals "no more values will be sent." Receivers should handle this gracefully (get zero values).
-- Sending to a closed channel indicates a programming error (the sender did not know the channel was closed), so it panics to surface the bug immediately.
-
-</details>
-
----
-
-### Question 7 (Short Answer)
+### Question 6 (Short Answer)
 Why does `selectgo` use a random permutation (`pollorder`) rather than checking cases in source-code order?
 
 <details><summary>Answer</summary>

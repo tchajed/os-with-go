@@ -222,6 +222,8 @@ A "spinning" thread is an M that has no work but is actively looking for some. I
 
 **The invariant**: If there is at least one spinning thread, we don't wake new threads when work arrives. This prevents thundering herd -- imagine 1000 goroutines becoming runnable at once; without this, we'd wake 1000 threads.
 
+> **Note:** The Go source comment says `nmspinning>1` (more than one), but the text says "at least one" and the actual code in `wakep()` checks `nmspinning == 0` (i.e., wake only if there are *zero* spinning threads). The `>1` in the comment appears to be a long-standing typo; the intended meaning is `>0`.
+
 ### The Wake-up Policy: wakep()
 
 The wake-up decision (in `wakep()`) is:
@@ -273,6 +275,8 @@ The transition from spinning to non-spinning is the trickiest part of the schedu
 // signal for resetspinning to unpark a new worker thread (because
 // there can be more than one starving goroutine).
 ```
+
+A **memory barrier** (or fence) is a CPU instruction that constrains the order in which memory operations become visible to other cores. Without barriers, the CPU and compiler may reorder reads and writes for performance. A StoreLoad barrier ensures that all stores before the barrier are visible to other cores before any loads after the barrier execute.
 
 **The pattern for work submission:**
 1. Submit work to queue

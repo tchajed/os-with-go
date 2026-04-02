@@ -570,6 +570,8 @@ Covered above in Part 5. The key transition: `_Grunnable` -> `_Grunning`, then `
 
 ### Blocking: gopark / park_m
 
+`gopark` and `goready` (below) are the runtime's universal blocking and waking primitives. Channels (Module 7), mutexes (Module 6), and I/O (Module 10) all ultimately use `gopark` to suspend a goroutine and `goready` to wake it. Understanding this pair is key to understanding all blocking operations in Go.
+
 When a goroutine needs to block (channel operation, mutex, sleep, etc.), it calls `gopark`:
 
 ```go

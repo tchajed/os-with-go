@@ -19,7 +19,7 @@ The Go runtime is a substantial piece of systems software (~150k lines of Go and
 | OS Concept | Kernel Implementation | Go Runtime Implementation |
 |---|---|---|
 | Processes/threads | `fork`, `clone`, kernel scheduler | Goroutines (`G`), `runtime.newproc` |
-| CPU scheduling | CFS, time slices, run queues | Work-stealing scheduler, per-P run queues |
+| CPU scheduling | CFS (Completely Fair Scheduler), time slices, run queues | Work-stealing scheduler, per-P run queues |
 | Virtual memory | Page tables, `mmap` | Garbage-collected heap, `mheap`, `mspan` |
 | I/O multiplexing | `epoll`, `kqueue`, `io_uring` | Integrated netpoller (`netpoll_epoll.go`) |
 | System calls | `SYSCALL` instruction, trap table | `entersyscall`/`exitsyscall` handoff |
@@ -223,14 +223,14 @@ This course explores OS concepts through the lens of the Go runtime:
 
 1. **Introduction** (this module) -- The runtime as a user-space OS; G, M, P overview
 2. **System Calls** -- How Go crosses the user/kernel boundary; `SYSCALL` instruction; `entersyscall`/`exitsyscall`
-3. **Process Scheduling** -- The work-stealing scheduler; `schedule()`, `findRunnable()`, run queues
-4. **Preemption** -- Cooperative vs. asynchronous preemption; signal-based preemption with `SIGURG`
-5. **Memory Management** -- Virtual memory concepts; Go's memory allocator; size classes; `mspan`/`mcache`/`mcentral`/`mheap`
-6. **Garbage Collection** -- Concurrent tri-color mark-sweep; write barriers; GC pacing
-7. **Stacks** -- Segmented vs. contiguous stacks; stack growth; stack copying
-8. **Synchronization** -- Futexes, semaphores; channel implementation; `sync.Mutex` internals
-9. **I/O Multiplexing** -- `epoll`/`kqueue`; the integrated netpoller; non-blocking I/O
-10. **Putting It All Together** -- Tracing and profiling; `runtime/trace`; observing the runtime in action
+3. **Processes, Threads, and Goroutines** -- OS threads vs. goroutines; the G and M structs; goroutine states
+4. **The Go Scheduler** -- The scheduling loop; `schedule()`, `findRunnable()`, `execute()`; run queues
+5. **Work Stealing and Preemption** -- Distributed scheduling; cooperative and asynchronous preemption via `SIGURG`
+6. **Synchronization Primitives** -- Futexes, semaphores, spin locks; `sync.Mutex` internals
+7. **Channels and Select** -- Channel implementation; `hchan`, `chansend`/`chanrecv`; the `selectgo` algorithm
+8. **Memory Management** -- Virtual memory concepts; Go's allocator hierarchy; size classes; garbage collection
+9. **Goroutine Stacks** -- Growable stacks; stack growth and copying; contrast with fixed OS thread stacks
+10. **File Systems, I/O, and the Network Poller** -- `epoll`/`kqueue`; the integrated netpoller; non-blocking I/O
 
 ### Suggested Exercises
 

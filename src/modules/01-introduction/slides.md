@@ -1,4 +1,4 @@
-## Module 1: The Runtime as an OS
+# Module 1: The Runtime as an OS
 
 Operating Systems Through the Go Runtime
 
@@ -34,7 +34,7 @@ It implements:
 | OS Concept | Kernel | Go Runtime |
 |---|---|---|
 | Threads | `clone`/`pthread_create` | Goroutines |
-| Scheduling | CFS, run queues | Work-stealing, per-P queues |
+| Scheduling | CFS (Completely Fair Scheduler), run queues | Work-stealing, per-P queues |
 | Virtual memory | Page tables, `mmap` | GC heap, `mspan`, `mcache` |
 | I/O multiplex | `epoll`, `kqueue` | Integrated netpoller |
 | Preemption | Timer interrupts | `SIGURG` signals |
@@ -225,7 +225,7 @@ func findRunnable() *g {
 }
 ```
 
-We'll study this in detail in Module 3.
+We'll study this in detail in Module 4.
 
 ---
 
@@ -246,14 +246,14 @@ Analogous to a kernel's timer interrupt handler.
 
 1. **Introduction** -- The runtime as a user-space OS (today)
 2. **System Calls** -- Crossing the user/kernel boundary
-3. **Scheduling** -- Work-stealing, `schedule()`, `findRunnable()`
-4. **Preemption** -- Cooperative + async preemption via SIGURG
-5. **Memory Management** -- Allocator hierarchy, virtual memory
-6. **Garbage Collection** -- Concurrent mark-sweep, write barriers
-7. **Stacks** -- Growable stacks, stack copying
-8. **Synchronization** -- Futexes, channels, mutexes
-9. **I/O Multiplexing** -- epoll/kqueue, netpoller
-10. **Tracing and Profiling** -- Observing the runtime
+3. **Threads and Goroutines** -- OS threads vs. goroutines, G and M structs
+4. **The Go Scheduler** -- `schedule()`, `findRunnable()`, `execute()`
+5. **Work Stealing and Preemption** -- Distributed scheduling, SIGURG
+6. **Synchronization** -- Futexes, semaphores, spin locks, mutexes
+7. **Channels and Select** -- `hchan`, `chansend`/`chanrecv`, `selectgo`
+8. **Memory Management** -- Allocator hierarchy, GC, virtual memory
+9. **Goroutine Stacks** -- Growable stacks, stack copying
+10. **I/O and the Network Poller** -- epoll/kqueue, netpoller
 
 ---
 

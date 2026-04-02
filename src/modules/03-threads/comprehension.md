@@ -61,7 +61,7 @@ What specific design choices make goroutines different from both?
 **vs. Green threads:**
 - Green threads (e.g., early Java) typically use N:1 scheduling (all green threads on one OS thread). Goroutines use M:N scheduling (many goroutines on many OS threads via the GMP model), enabling true parallelism.
 - Green threads often cannot handle blocking syscalls without blocking all green threads. Go's runtime detaches the P from a blocked M, allowing other goroutines to continue.
-- Goroutines have growable stacks via segmented/copying stacks; many green thread implementations use fixed-size stacks.
+- Goroutines have growable, copying stacks (Go switched from segmented to contiguous copying stacks in Go 1.4); many green thread implementations use fixed-size stacks.
 - Go's scheduler includes work stealing, which most green thread implementations lack.
 - Go integrates non-blocking I/O (network poller) transparently, so goroutines that do I/O appear to block but actually yield to the scheduler.
 
@@ -126,30 +126,7 @@ The pattern `systemstack(func() { ... })` switches to `g0`'s stack to execute se
 
 ---
 
-### Question 5 (What Would Happen If...)
-What would happen if goroutine stacks were fixed at 2KB and could never grow? Consider a program with deep recursion or large local variables.
-
-<details><summary>Answer</summary>
-
-With fixed 2KB stacks:
-
-1. **Stack overflows:** Any function call chain deeper than roughly 20-30 frames (depending on local variable sizes) would overflow the stack. This would crash the program or corrupt adjacent memory.
-
-2. **No recursion:** Recursive algorithms (tree traversal, quicksort, etc.) would be essentially unusable for non-trivial input sizes.
-
-3. **Large local variables:** A single function with a local `[1024]byte` array would consume half the stack immediately, leaving almost no room for any other calls.
-
-4. **Trade-off with goroutine count:** To avoid overflows, users would need larger fixed stacks (e.g., 1MB). But 1MB x 1,000,000 goroutines = 1TB of memory (or at least virtual address space). The small initial stack is what makes millions of goroutines feasible.
-
-5. **No `defer`/`panic` chains:** Complex defer chains and panic recovery would quickly exhaust a 2KB stack.
-
-Go solves this with growable stacks: each function prologue checks if there is enough stack space and calls `morestack` -> `newstack` -> `copystack` if not, doubling the stack size and copying all contents to the new location. This gives goroutines effectively unlimited stack depth while keeping initial allocation tiny.
-
-</details>
-
----
-
-### Question 6 (Short Answer)
+### Question 5 (Short Answer)
 What are the possible states a goroutine (`g`) can be in? Describe the transitions between `_Grunnable`, `_Grunning`, `_Gwaiting`, and `_Gsyscall`.
 
 <details><summary>Answer</summary>

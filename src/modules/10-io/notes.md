@@ -506,8 +506,7 @@ func netpollopen(fd uintptr, pd *pollDesc) uintptr {
 The flags `EPOLLIN | EPOLLOUT | EPOLLRDHUP | EPOLLET` mean:
 - Monitor for both read and write readiness
 - Detect remote hangup (`EPOLLRDHUP`)
-- **Edge-triggered** (`EPOLLET`): only notify on state changes, not while data
-  is available (this avoids redundant wakeups)
+- **Edge-triggered** (`EPOLLET`): only notify when readiness *changes* (e.g., new data arrives), not continuously while data remains available. This contrasts with **level-triggered** mode (the default) where the kernel repeatedly reports readiness as long as the condition holds. Edge-triggered is more efficient for Go's model because each fd has exactly one goroutine waiting, so there is no risk of missing events.
 
 The main polling function calls `epoll_wait`:
 
@@ -859,9 +858,10 @@ the goroutine and it seamlessly resumes.
 1. What happens when you pass an `os.File` to C code via cgo? Can the poller
    still manage it, or does the fd revert to blocking mode?
 
-2. Regular files on Linux do support epoll, but regular files on macOS do not
-   support kqueue. How does Go handle `os.File.Read` on a regular file on macOS?
-   (Hint: check the `pollable` logic in `newFile`.)
+2. Regular files are always reported as ready by epoll on Linux (making epoll
+   effectively useless for them), and regular files on macOS do not support
+   kqueue at all. Given this, how does Go handle `os.File.Read` on a regular
+   file? (Hint: check the `pollable` logic in `newFile`.)
 
 3. Why does the poller use edge-triggered mode instead of level-triggered? What
    would go wrong with level-triggered notifications in Go's model?
