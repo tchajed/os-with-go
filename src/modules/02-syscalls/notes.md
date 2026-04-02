@@ -432,7 +432,7 @@ The key optimization:
 
 The vDSO implementation works by having the kernel map a read-only page of time data into user space, updated by the kernel on every timer tick. The user-space code just reads from this page. This turns a ~100ns syscall into a ~20ns function call.
 
-Note the comment: "We don't know how much stack space the VDSO code will need, so switch to g0." The runtime switches to the `g0` stack (the OS-thread-sized stack) before calling vDSO code, because the vDSO is essentially kernel-provided C code that assumes a normal-sized stack -- not the 2-8 KB goroutine stack.
+Note the comment: "We don't know how much stack space the VDSO code will need, so switch to g0." The runtime switches to the `g0` stack (the OS-thread-sized stack) before calling vDSO code, because the vDSO is essentially kernel-provided C code that assumes a normal-sized stack -- not the small goroutine stack (which starts at 2 KB).
 
 ## 6. entersyscall/exitsyscall: The Scheduler Handoff (10 min)
 

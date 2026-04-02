@@ -66,14 +66,6 @@ ordinary memory allocation. The price is that the compiler must generate precise
 how Go implements this design, from the compiler-inserted prologue checks to the
 stack copying algorithm and the per-P allocation pools that make it fast.
 
-## Overview
-
-Every thread of execution needs a stack -- a region of memory for local variables,
-function arguments, return addresses, and saved registers. How a runtime manages
-stacks has profound implications for scalability. This module examines how Go's
-runtime implements dynamically-growing, contiguous stacks for goroutines, enabling
-millions of goroutines where OS threads would exhaust memory.
-
 ---
 
 ## 1. OS Thread Stacks: The Fixed-Size Problem (10 min)

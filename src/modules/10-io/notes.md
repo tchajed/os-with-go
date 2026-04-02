@@ -83,16 +83,6 @@ exactly how this works, from the `os.File` type through the `internal/poll`
 package down to the platform-specific poller implementations and their
 integration with the scheduler.
 
-## Overview
-
-One of Go's most celebrated features is that goroutine I/O "just works" -- you
-write blocking `Read` and `Write` calls, but under the hood the runtime uses
-non-blocking I/O and an event-driven poller to avoid tying up OS threads. This
-module traces the full path from `os.File.Read()` down through the internal
-polling layer to the platform-specific network poller (`epoll` on Linux, `kqueue`
-on macOS/BSD), showing how the runtime integrates I/O readiness with goroutine
-scheduling.
-
 ---
 
 ## 1. The File Abstraction in Go (10 min)

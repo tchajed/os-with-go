@@ -225,22 +225,25 @@ Without Ps, every goroutine operation would require locking a global run queue, 
     └─────┘     └─────┘     └─────┘
 ```
 
-An M must acquire a P before it can run Go code. When a goroutine enters a blocking system call, the runtime can detach the P from that M and hand it to a different M, keeping the CPU utilized. This is the topic of Module 2.
+An M must acquire a P before it can run Go code. When a goroutine enters a blocking system call, the runtime can detach the P from that M and hand it to a different M, keeping the CPU utilized. This is covered in the [Processes, Threads, and Goroutines](../03-threads/notes.md) module.
 
 ## 5. Course Roadmap Preview (5 min)
 
-This course explores OS concepts through the lens of the Go runtime:
+This course explores OS concepts through the lens of the Go runtime. The seven core modules tell a bottom-up story:
 
 1. **Introduction** (this module) -- The runtime as a user-space OS; G, M, P overview
-2. **System Calls** -- How Go crosses the user/kernel boundary; `SYSCALL` instruction; `entersyscall`/`exitsyscall`
 3. **Processes, Threads, and Goroutines** -- OS threads vs. goroutines; the G and M structs; goroutine states
 4. **The Go Scheduler** -- The scheduling loop; `schedule()`, `findRunnable()`, `execute()`; run queues
 5. **Work Stealing and Preemption** -- Distributed scheduling; cooperative and asynchronous preemption via `SIGURG`
 6. **Synchronization Primitives** -- Futexes, semaphores, spin locks; `sync.Mutex` internals
 7. **Channels and Select** -- Channel implementation; `hchan`, `chansend`/`chanrecv`; the `selectgo` algorithm
+10. **File Systems, I/O, and the Network Poller** -- `epoll`/`kqueue`; the integrated netpoller; non-blocking I/O
+
+Three optional modules provide deeper dives into specific subsystems:
+
+2. **System Calls** -- How Go crosses the user/kernel boundary; `SYSCALL` instruction; `entersyscall`/`exitsyscall`
 8. **Memory Management** -- Virtual memory concepts; Go's allocator hierarchy; size classes; garbage collection
 9. **Goroutine Stacks** -- Growable stacks; stack growth and copying; contrast with fixed OS thread stacks
-10. **File Systems, I/O, and the Network Poller** -- `epoll`/`kqueue`; the integrated netpoller; non-blocking I/O
 
 ### Suggested Exercises
 
@@ -253,7 +256,7 @@ This course explores OS concepts through the lens of the Go runtime:
 
 ## Key Definitions
 
-- **Goroutine (G)**: A lightweight, user-space thread of execution managed by the Go runtime. Initial stack size is 2-8 KB (vs. ~1 MB for OS threads).
+- **Goroutine (G)**: A lightweight, user-space thread of execution managed by the Go runtime. Initial stack size is 2 KB (vs. ~1 MB for OS threads).
 - **Machine (M)**: An OS thread. The runtime creates Ms as needed and parks them when idle.
 - **Processor (P)**: A logical scheduling context. An M needs a P to run Go code. The number of Ps is set by `GOMAXPROCS`.
 - **Work stealing**: When a P's run queue is empty, its M steals goroutines from other Ps' run queues, balancing load without central coordination.

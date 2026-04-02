@@ -75,21 +75,6 @@ concurrently with the running program.
 
 ---
 
-## Overview
-
-Memory management sits at the intersection of hardware (virtual memory, TLBs),
-operating system (page tables, `mmap`), and language runtime (allocator, garbage
-collector). Go's memory allocator is derived from TCMalloc (Thread-Caching
-Malloc) but has diverged significantly. It uses a hierarchy of caches to
-minimize lock contention and a concurrent, tri-color mark-and-sweep garbage
-collector.
-
-This module traces an allocation from the Go programmer's `new(T)` down through
-the runtime allocator to the OS `mmap` system call, then examines how the
-garbage collector reclaims memory concurrently with the running program.
-
----
-
 ## 1. Virtual Memory Review
 
 ### Pages and page tables

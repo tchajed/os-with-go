@@ -84,24 +84,6 @@ allow a single goroutine to wait on many channels at once. Understanding this
 machinery connects the high-level elegance of CSP to the low-level realities of
 locks, memory layout, and scheduler integration.
 
-## Overview
-
-Channels are Go's primary communication primitive, implementing Hoare's
-Communicating Sequential Processes (CSP) model. CSP is a formal model of
-concurrent computation where independent processes communicate exclusively
-through message passing, not shared memory. In CSP, sending and receiving are
-synchronization points — a sender blocks until a receiver is ready (and vice
-versa for unbuffered channels). Go's channels implement this model, though
-buffered channels relax the strict synchronous coupling.
-
-Under the hood, a channel is a mutex-protected circular buffer with embedded wait queues. The `select`
-statement multiplexes across multiple channels using a carefully designed
-algorithm that prevents deadlocks and ensures fairness.
-
-This module examines the runtime implementation of channels and select in detail,
-studying the data structures, synchronization invariants, and the multi-pass
-select algorithm.
-
 ---
 
 ## 1. Channel Invariants

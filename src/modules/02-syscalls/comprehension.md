@@ -66,7 +66,9 @@ Other valid disadvantages: no automatic DNS resolution via nsswitch/NSS, no auto
 
 <details><summary>Answer</summary>
 
-**False.** When a goroutine enters a blocking syscall, the runtime calls `entersyscall()` which dissociates the P from the M. The `sysmon` thread (or other mechanisms) can then "hand off" the P to a different M so that other goroutines on that P's run queue can continue executing. When the syscall returns, the goroutine calls `exitsyscall()` and tries to re-acquire a P. If its old P is unavailable, it tries to get any idle P; if none are available, the goroutine is placed on the global run queue and the M parks itself.
+**It depends — mostly false.** The P initially remains attached to the M when `entersyscall()` is called; the runtime optimistically assumes the syscall will return quickly. However, `entersyscall()` transitions the goroutine to `_Gsyscall` status, which signals to the rest of the runtime that this P is available for stealing. If the syscall takes too long (>10ms), the `sysmon` thread's `retake()` function detaches the P from the blocked M and hands it to another M so that other goroutines on that P's run queue can continue executing.
+
+When the syscall returns, the goroutine calls `exitsyscall()`. If the P is still attached (the fast path), execution resumes immediately. If the P was stolen, the goroutine tries to acquire any idle P; if none are available, it is placed on the global run queue and the M parks itself.
 
 This is one of the key reasons for the M/P separation in the GMP model.
 

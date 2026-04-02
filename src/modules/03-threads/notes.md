@@ -525,7 +525,7 @@ This is the fundamental insight behind Go's concurrency model: goroutines provid
 1. Why does Go use `clone()` directly on Linux instead of `pthread_create()`? What control does this give the runtime?
 2. If goroutines are so cheap, why does Go still need OS threads at all? Why not implement everything in user space?
 3. What would happen if goroutine stacks were fixed-size (say, 1 MB) instead of dynamically growing from 2 KB? How would this affect the design of Go programs?
-4. The `g` struct stores `stackguard0`, which can be set to `StackPreempt` to trigger preemption. How is this different from how the OS preempts threads? (We will explore this more in Module 4.)
+4. The `g` struct stores `stackguard0`, which can be set to `StackPreempt` to trigger preemption. How is this different from how the OS preempts threads? (We will explore this more in Module 5.)
 
 ---
 
