@@ -1,5 +1,71 @@
 # Module 9: Goroutine Stacks (45 min)
 
+## Background: Stack Management and the Cost of Concurrency
+
+The call stack is one of the oldest and most fundamental abstractions in computing.
+Every time a function is called, a new *stack frame* is pushed onto the stack,
+holding local variables, the return address, saved registers, and function
+arguments. When the function returns, its frame is popped. This last-in, first-out
+(LIFO) discipline is elegant and efficient: allocation is a single pointer
+decrement (on architectures where the stack grows downward), and deallocation is
+a pointer increment. There is no fragmentation, no free-list traversal, and no
+garbage collection -- just a stack pointer moving up and down. This simplicity
+is why nearly every compiled language uses a call stack, and why hardware provides
+dedicated instructions (`CALL`, `RET`, `PUSH`, `POP` on x86) to manipulate it.
+
+Operating systems allocate a fixed-size stack for each thread at creation time.
+On Linux, the default is 8 MB (configurable via `ulimit -s` or
+`pthread_attr_setstacksize`); macOS uses 512 KB for secondary threads; Windows
+defaults to 1 MB. To detect overflow, the OS places a *guard page* at the bottom
+of the stack -- a page mapped with no permissions (`PROT_NONE`). If the stack
+pointer crosses into the guard page, the hardware triggers a fault, and the OS
+delivers a signal (SIGSEGV on Unix) or structured exception (on Windows). This
+mechanism is simple and adds zero runtime overhead to normal execution, since the
+check is performed by the MMU in hardware. But the fixed-size design forces a
+difficult trade-off: set the stack too small and deep recursion crashes; set it
+too large and memory is wasted. Most programs use only a few kilobytes of their
+multi-megabyte stack, yet the full allocation must be reserved up front. Some
+systems also deploy *stack canaries* -- sentinel values placed between the return
+address and local variables that are checked on function return to detect
+buffer-overflow attacks -- but these serve security rather than growth management.
+
+This fixed-size model becomes a serious bottleneck for highly concurrent systems.
+A server handling 10,000 simultaneous connections with one thread per connection
+commits 80 GB of virtual address space to stacks alone. At a million connections,
+the numbers become absurd. Even though modern virtual memory systems use demand
+paging (physical pages are not allocated until touched), the page table entries,
+TLB pressure, and kernel bookkeeping for a million threads impose real costs.
+This is the fundamental tension that drives language runtimes to seek alternatives:
+how do you support millions of concurrent tasks when each one needs a stack?
+
+Different runtimes have explored different answers. GCC's *split stacks* (used by
+early Go through version 1.3) and similar *segmented stack* designs allocate small
+initial stack segments and link new segments on demand. This avoids the upfront
+memory commitment, but introduces the notorious "hot split" problem: if a function
+near the segment boundary is called repeatedly in a tight loop, each call allocates
+a new segment and each return frees it, causing severe thrashing. Erlang's BEAM VM
+takes a different approach entirely, giving each process a tiny initial stack
+(sometimes as small as 233 words) that grows incrementally, enabled by the fact
+that Erlang's immutable data model means the stack rarely holds pointers that would
+complicate relocation. Rust's async model sidesteps the problem altogether for
+asynchronous code: `async fn` compiles to a state machine (a "stackless coroutine")
+that captures only the variables live across yield points, requiring no contiguous
+stack at all. This is memory-efficient but means async and synchronous Rust code
+use fundamentally different execution models.
+
+Go's solution, adopted in Go 1.4 and still in use today, is the *contiguous
+growable stack*: goroutines start with a 2 KB stack, and when more space is needed,
+the runtime allocates a new stack of double the size, copies the old stack contents
+to the new location, adjusts every pointer that referenced the old stack, and frees
+the old allocation. This approach eliminates the hot split problem (doubling
+provides amortized O(1) cost per frame), preserves cache locality (the stack
+remains a single contiguous region), and requires no hardware or OS support beyond
+ordinary memory allocation. The price is that the compiler must generate precise
+*stack maps* -- bitmaps that identify which words in every stack frame are pointers
+-- so the runtime knows exactly what to adjust during a copy. This module examines
+how Go implements this design, from the compiler-inserted prologue checks to the
+stack copying algorithm and the per-P allocation pools that make it fast.
+
 ## Overview
 
 Every thread of execution needs a stack -- a region of memory for local variables,

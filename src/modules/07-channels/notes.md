@@ -1,5 +1,89 @@
 # Module 7: Channels and Select (60 min)
 
+## Background: Message Passing and the CSP Tradition
+
+Concurrent programs must coordinate access to shared state, and the history of
+systems programming offers two fundamental paradigms for doing so. The first,
+**shared memory with synchronization**, gives threads direct access to common
+data structures and uses locks, condition variables, and atomic operations to
+prevent races. This is the model of pthreads, Java's `synchronized` blocks, and
+the mutexes we studied earlier in this course. The second paradigm, **message
+passing**, structures concurrent programs as independent sequential processes
+that communicate by sending and receiving messages over explicit channels. Rather
+than protecting shared data with locks, message-passing programs avoid sharing
+altogether: data moves between processes by copying (or transferring ownership),
+and synchronization is implicit in the send/receive handshake. The distinction
+is not absolute -- as we will see, Go's channel implementation itself uses a
+mutex internally -- but it reflects a deep difference in how programmers reason
+about concurrency. The shared-memory style asks "how do I protect this data?"
+while the message-passing style asks "how do I route this data?"
+
+The theoretical foundations of message passing trace to two landmark papers from
+the 1970s. Carl Hewitt's **Actor model** (1973) proposed that computation
+consists of autonomous actors that communicate by sending asynchronous messages
+to named recipients; each actor has a mailbox, processes messages one at a time,
+and can create new actors or send messages in response. Tony Hoare's
+**Communicating Sequential Processes** (CSP, 1978) took a different approach:
+processes communicate through unnamed, synchronous channels, and a send blocks
+until a matching receive occurs (and vice versa). Where the Actor model
+emphasizes identity (messages are sent *to* a specific actor), CSP emphasizes
+the channel as a first-class connective tissue between anonymous processes. The
+Actor model's asynchronous, identity-based messaging influenced Erlang, Akka,
+and the "let it crash" school of fault-tolerant systems. CSP's synchronous,
+channel-based model influenced occam, Limbo, and -- most prominently today --
+Go. Both models avoid shared mutable state, but they differ in buffering
+semantics, naming, and the role of the communication medium itself.
+
+These ideas have been realized in strikingly different ways across programming
+languages and systems. Erlang processes communicate through asynchronous
+**mailboxes** with selective receive, giving each process an unbounded message
+queue and pattern matching to pluck out messages of interest -- a direct
+descendant of the Actor model. Rust's standard library provides `mpsc`
+(multi-producer, single-consumer) channels that transfer ownership of values,
+leveraging the type system to guarantee that sent data cannot be accessed by the
+sender afterward; the `crossbeam` crate extends this with multi-consumer
+channels and a `select!` macro. Kotlin offers channels within its coroutine
+framework, with configurable buffering policies (rendezvous, buffered,
+conflated, unlimited) that let programmers tune the coupling between producer
+and consumer. Clojure's `core.async` brings CSP-style channels to the JVM with
+`go` blocks that compile to state machines, much as Go's goroutines are
+multiplexed onto OS threads. Even Unix pipes, dating to Doug McIlroy's 1964
+proposal and Ken Thompson's 1973 implementation, embody the same principle:
+composing programs as sequential stages connected by byte streams, with
+back-pressure arising naturally from the pipe buffer's bounded capacity. Go's
+channels sit squarely in this lineage, offering typed, optionally-buffered
+channels as first-class values, with goroutines as lightweight processes.
+
+A key operation in any channel-based system is **multiplexing**: waiting on
+multiple channels simultaneously and proceeding with whichever is ready first.
+This problem has deep roots in operating systems. Unix's `select()` system call
+(4.2BSD, 1983) let a process block until any file descriptor in a set became
+ready for I/O -- solving the problem of a server needing to handle multiple
+clients without dedicating a thread to each one. `poll()` improved the interface,
+and Linux's `epoll` (2002) scaled it to hundreds of thousands of descriptors.
+Go's `select` statement is the channel-level analogue: it blocks until one of
+several channel operations can proceed, then executes that case. But Go's
+`select` adds two refinements absent from Unix I/O multiplexing. First,
+**randomized fairness**: when multiple cases are ready simultaneously, `select`
+chooses one uniformly at random, preventing starvation. Second, **deadlock-safe
+locking**: the `select` implementation acquires locks on all involved channels
+in address order to prevent lock-ordering deadlocks, a technique borrowed from
+database concurrency control. The combination of randomization and careful lock
+management makes `select` both fair and safe, properties that are surprisingly
+difficult to achieve together.
+
+In this module, we open up Go's channel and select implementation to see how
+these ideas are realized in practice. The runtime's `hchan` struct is a
+mutex-protected circular buffer with embedded wait queues -- a bounded
+producer-consumer buffer, much like the ones studied in OS textbooks, but with
+several clever optimizations such as direct sender-to-receiver copying that
+bypasses the buffer entirely. The `select` implementation is a carefully
+orchestrated multi-pass algorithm that shuffles cases for fairness, sorts them
+for deadlock freedom, and uses per-goroutine "pseudo-g" (`sudog`) structures to
+allow a single goroutine to wait on many channels at once. Understanding this
+machinery connects the high-level elegance of CSP to the low-level realities of
+locks, memory layout, and scheduler integration.
+
 ## Overview
 
 Channels are Go's primary communication primitive, implementing Hoare's

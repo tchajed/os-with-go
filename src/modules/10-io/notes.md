@@ -1,5 +1,88 @@
 # Module 10: File Systems, I/O, and the Network Poller (60 min)
 
+## Background: I/O Multiplexing and the Quest for Scalable Networking
+
+I/O is the interface between a program and the outside world -- disks, networks,
+terminals, pipes, and devices. The fundamental challenge of I/O is that it is
+_slow_ relative to computation. A modern CPU can execute billions of instructions
+per second, but a network round-trip across the same data center takes tens of
+microseconds, and a spinning disk seek takes milliseconds -- an eternity in CPU
+time. The simplest programming model, blocking I/O, has a thread call `read()`
+and wait until data arrives. This works well for a single connection, but it
+means one OS thread per concurrent I/O operation. Since OS threads are expensive
+(each consumes kernel memory for its stack and task struct, and context-switching
+between thousands of them bogs down the scheduler), blocking I/O hits a wall
+when you need to handle many connections simultaneously. Unix's
+"everything-is-a-file" abstraction gives us a uniform interface (file
+descriptors, `read`, `write`, `close`), but it does not solve the problem of
+_waiting_ on many file descriptors at once.
+
+The history of I/O multiplexing on Unix and Linux is a story of successive
+attempts to solve this scaling problem. The original `select()` system call,
+introduced in 4.2BSD in 1983, let a process monitor multiple file descriptors
+for readiness. But `select` has painful limitations: it uses a fixed-size
+bitmask (typically limited to 1024 descriptors), and every call requires copying
+the entire set of descriptors into the kernel and scanning all of them
+regardless of how many are actually ready. `poll()` (SVR3, 1986) removed the
+fixed-size limit by using an array of `pollfd` structs, but it still requires a
+linear scan of all monitored descriptors on every call -- O(n) in the total
+number of descriptors, not the number of _ready_ descriptors. For a server with
+10,000 connections where only a handful have data at any moment, this is
+wasteful. Linux's `epoll` (2002) and BSD's `kqueue` (2000, FreeBSD 4.1) finally
+solved this with stateful, kernel-maintained interest sets: you register
+descriptors once, and the kernel returns only the ready ones, giving O(1)
+behavior with respect to the total number of monitored descriptors. More
+recently, Linux's `io_uring` (2019) pushes the boundary further with a
+shared-memory submission/completion ring that eliminates system call overhead
+entirely for batched I/O, enabling truly asynchronous operations for both
+network and disk I/O.
+
+These kernel mechanisms were developed in response to a concrete engineering
+challenge articulated by Dan Kegel in his influential 1999 essay, "The C10K
+Problem": how do you build a server that handles 10,000 concurrent connections
+on commodity hardware? At the time, this was considered very difficult. The
+thread-per-connection model consumed too much memory and CPU on context
+switches. Kegel surveyed the landscape of available approaches -- non-blocking
+I/O with `select`/`poll`, signal-driven I/O (`SIGIO`), and the then-nascent
+asynchronous I/O interfaces -- and argued that the OS needed better primitives.
+The C10K essay directly influenced the development of `epoll` and `kqueue`, and
+shaped the design of high-performance servers like Nginx (which replaced
+Apache's thread-per-connection model with a single-threaded event loop). Today,
+the frontier has moved to the "C10M problem" -- ten _million_ concurrent
+connections -- driven by `epoll`, `io_uring`, and kernel-bypass techniques like
+DPDK.
+
+Different language runtimes have taken different approaches to giving
+programmers a usable API on top of these kernel primitives. Event-driven
+frameworks like libevent, libev, and libuv abstract over platform differences
+(`epoll` on Linux, `kqueue` on macOS/BSD, IOCP on Windows) and expose a
+callback-based API: register interest in an event, provide a function to call
+when it fires. Node.js builds on libuv and embraces this model fully -- a
+single-threaded event loop runs JavaScript callbacks when I/O completes, with a
+thread pool for operations that lack async OS support (like file I/O on Linux).
+Java took a different path: the NIO (New I/O) package introduced `Selector` and
+non-blocking channels, but the callback-style programming was complex enough
+that frameworks like Netty arose to manage it. Java 21's virtual threads
+(Project Loom) revisit the problem with lightweight user-space threads, much
+like goroutines. Rust's async ecosystem (Tokio runtime, mio for portable event
+notification) uses `async`/`await` syntax compiled into state machines, offering
+zero-cost abstractions but requiring the programmer to reason about pinning,
+lifetimes, and `Send`/`Sync` bounds.
+
+Go's approach is distinctive: it hides all this complexity behind synchronous,
+blocking-style I/O calls. When a goroutine calls `conn.Read()`, it looks like a
+blocking call, and the goroutine does block -- but the OS thread does not. Under
+the hood, the Go runtime sets file descriptors to non-blocking mode, attempts
+the I/O, and if the operation would block (`EAGAIN`), it parks the goroutine on
+the runtime's integrated network poller (`epoll` on Linux, `kqueue` on
+macOS/BSD). The OS thread is freed to run other goroutines. When the kernel
+signals that data is ready, the scheduler wakes the parked goroutine and it
+retries the operation. The programmer writes simple sequential code; the runtime
+provides the efficiency of an event-driven architecture. This module traces
+exactly how this works, from the `os.File` type through the `internal/poll`
+package down to the platform-specific poller implementations and their
+integration with the scheduler.
+
 ## Overview
 
 One of Go's most celebrated features is that goroutine I/O "just works" -- you

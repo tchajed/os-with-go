@@ -4,6 +4,78 @@
 
 ---
 
+## Background: From Processes to Lightweight Threads
+
+The history of concurrent execution in operating systems is a story of
+progressively reducing overhead. Early computers in the 1950s and 1960s ran one
+program at a time in **batch processing** mode: a job was loaded, it ran to
+completion, and the next job was loaded. The insight that CPUs spent most of
+their time waiting for I/O led to **multiprogramming** in systems like IBM
+OS/360 and Multics, where multiple programs could be resident in memory
+simultaneously, and the OS would switch between them when one blocked on I/O.
+Each program ran as a **process** with its own protected address space, file
+descriptors, and kernel metadata. This isolation was essential for safety, but
+it came at a cost: creating a process meant duplicating page tables, allocating
+kernel data structures, and flushing the TLB. By the 1980s, researchers
+recognized that many concurrent activities within the same application did not
+need full isolation. This led to the development of **threads**---multiple
+execution contexts sharing a single address space. The POSIX threads
+(pthreads) standard, formalized in 1995 as IEEE 1003.1c, gave Unix systems a
+portable API for kernel-managed threads, each with its own stack (typically 1--8
+MB), register set, and scheduling state.
+
+Linux took a distinctive approach to this problem. Rather than implementing
+threads as a fundamentally different abstraction from processes, Linux unified
+them under a single kernel data structure: `task_struct`. The `clone()` system
+call, introduced in Linux 2.0 (1996), accepts a bitmask of flags that specify
+exactly which resources the new task should share with its parent---address
+space (`CLONE_VM`), file descriptors (`CLONE_FILES`), signal handlers
+(`CLONE_SIGHAND`), and more. A "process" is simply a `clone()` call that
+shares nothing; a "thread" is a `clone()` call that shares (almost)
+everything. The kernel scheduler treats both identically. This design is
+elegant and flexible, and it is why the Go runtime can call `clone()` directly
+on Linux to create OS threads, bypassing the pthreads library entirely and
+retaining full control over stack placement and signal masks.
+
+Even with threads being cheaper than processes, OS threads remain expensive at
+scale. Each thread requires a kernel scheduling entity, a fixed-size stack (8
+MB of virtual address space on Linux by default, 512 KB on macOS), and context
+switches that cost 1--10 microseconds due to kernel entry/exit, register
+save/restore, and cache/TLB disruption. Dan Kegel's influential "C10K problem"
+essay (1999) crystallized the challenge: how do you handle 10,000 simultaneous
+network connections on a single server? A thread-per-connection model buckles
+under the weight of memory consumption and scheduling overhead at that scale.
+The problem has only intensified in the era of microservices and cloud
+computing, where C10M (ten million connections) is the new frontier.
+
+This tension between the *convenience* of threads (a sequential programming
+model for each task) and their *cost* has driven a decades-long search for
+lightweight alternatives. Solaris 2 introduced **green threads** in the early
+1990s, multiplexing user-level threads onto a smaller number of kernel threads.
+The GNU Portable Threads library (Pth) offered cooperative user-level threading
+on any Unix system. Erlang, designed for telecom switches, built its entire
+runtime around ultra-lightweight **processes** (not OS processes) that could
+number in the millions. More recently, Java's **Project Loom** (finalized in
+Java 21, 2023) introduced virtual threads that are scheduled by the JVM rather
+than the OS. Rust's async/await model compiles asynchronous tasks into
+state machines that are driven by a user-space executor. Each of these
+approaches embodies the same core idea: decouple the unit of concurrent work
+from the OS thread, so that the programmer can think in terms of tasks while
+the runtime manages the mapping to hardware.
+
+Go's answer to this problem is the **goroutine**: a user-level thread that
+starts with a 2 KB stack, is scheduled cooperatively (with asynchronous
+preemption added in Go 1.14), and can be created in about a microsecond. The
+Go runtime multiplexes potentially millions of goroutines onto a small pool of
+OS threads, handling all the complexity of stack growth, blocking system calls,
+and work stealing behind the scenes. This module examines how that machinery
+works, starting from the OS primitives (processes and threads) that form the
+foundation, then diving into Go's runtime representations of OS threads (the
+`m` struct) and goroutines (the `g` struct), and finally tracing the lifecycle
+of a goroutine through its state transitions.
+
+---
+
 ## Learning Objectives
 
 By the end of this module, students will be able to:

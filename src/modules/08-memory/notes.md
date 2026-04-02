@@ -1,5 +1,80 @@
 # Module 8: Memory Management (60 min)
 
+## Background: Memory Management from Hardware to Runtime
+
+Memory management is a problem that spans every layer of a computer system, from
+the hardware up to application code. At the bottom, the CPU's memory management
+unit (MMU) translates virtual addresses to physical addresses using page tables
+-- a mechanism first pioneered by the Atlas computer at the University of
+Manchester in 1962, which introduced the concept of "one-level storage" where
+programs could address more memory than physically existed. That idea became
+virtual memory, and by the 1970s it was universal. Modern systems use multi-level
+page tables (four or five levels on x86-64) to map a 48- or 57-bit virtual
+address space, with the TLB caching recent translations to avoid the cost of a
+full page table walk on every memory access. The page -- typically 4 KB -- is the
+fundamental unit of this translation, though huge pages (2 MB or 1 GB on x86)
+reduce TLB pressure for large working sets.
+
+The operating system kernel manages the page tables and physical memory.
+Linux uses a **buddy allocator** to manage physical page frames: it maintains
+free lists of power-of-two-sized page blocks and splits or coalesces them as
+needed, providing O(log n) allocation with low external fragmentation. On top of
+the buddy allocator sits the **SLUB allocator** (the successor to the original
+slab allocator designed by Jeff Bonwick at Sun in 1994), which carves pages into
+fixed-size object caches for frequently allocated kernel structures like inodes,
+dentries, and socket buffers. SLUB maintains per-CPU freelists to minimize lock
+contention -- a design principle we will see repeated at every level of the
+stack. The kernel exposes memory to user space through system calls like `mmap`,
+which creates virtual address mappings that are backed by physical pages lazily,
+on first access (demand paging). Transparent Huge Pages (THP) allow the kernel
+to automatically promote 4 KB pages to 2 MB huge pages, improving TLB
+utilization for large allocations without requiring application changes.
+
+For user-space programs, calling `mmap` for every allocation would be far too
+expensive -- each call requires a transition to kernel mode and manipulation of
+page table entries. User-space allocators like **dlmalloc** (Doug Lea's malloc,
+the basis of glibc's allocator), **jemalloc** (developed for FreeBSD and later
+adopted by Facebook), **tcmalloc** (Google's Thread-Caching Malloc), and
+**mimalloc** (Microsoft Research's compact allocator) all solve this by
+requesting large chunks of memory from the OS and then sub-dividing them
+efficiently. These allocators face a common set of challenges: minimizing
+fragmentation (both *internal* fragmentation from rounding up to size classes and
+*external* fragmentation from non-contiguous free blocks), reducing lock
+contention in multi-threaded programs (typically through per-thread or per-CPU
+caches), and maintaining good cache locality. tcmalloc's key innovation was its
+hierarchy of thread-local caches, central freelists, and a global page heap --
+a design that directly inspired Go's memory allocator.
+
+Where manual allocators require the programmer to pair every allocation with an
+explicit free, **garbage collection** automates memory reclamation by
+identifying objects that are no longer reachable. The idea dates back to John
+McCarthy's Lisp in 1960, which used a simple stop-the-world mark-and-sweep
+collector. Since then, GC research has produced a rich taxonomy of approaches:
+**reference counting** (tracking how many pointers refer to each object, used by
+CPython and Swift), **generational collection** (exploiting the observation that
+most objects die young, pioneered by David Ungar in 1984), **copying/compacting
+collectors** (which eliminate fragmentation by relocating live objects), and
+**concurrent/incremental collectors** (which minimize pause times by doing GC
+work alongside the application). Java's ecosystem showcases this diversity: its
+**G1** collector partitions the heap into regions for incremental collection,
+**ZGC** uses colored pointers and load barriers to achieve sub-millisecond
+pauses on multi-terabyte heaps, and **Shenandoah** performs concurrent
+compaction using Brooks forwarding pointers. On modern NUMA systems, allocators
+must also be topology-aware -- allocating memory on the same NUMA node as the
+thread that will use it, since cross-node accesses can be 2-3x slower.
+
+Go's runtime sits at the intersection of these ideas. Its memory allocator
+descends from tcmalloc but has diverged significantly, using a hierarchy of
+per-P caches (`mcache`), per-size-class central lists (`mcentral`), and a global
+heap (`mheap`) backed by `mmap`. Its garbage collector is a concurrent,
+tri-color mark-and-sweep design -- non-generational and non-compacting, but with
+sub-millisecond STW pauses achieved through concurrent marking with a hybrid
+write barrier. In this module, we trace an allocation from `new(T)` all the way
+down to `mmap`, then examine how the garbage collector reclaims memory
+concurrently with the running program.
+
+---
+
 ## Overview
 
 Memory management sits at the intersection of hardware (virtual memory, TLBs),
